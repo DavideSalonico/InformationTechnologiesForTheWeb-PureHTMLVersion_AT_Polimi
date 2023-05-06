@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="TIWProject_Jaskaran_Salonico">
+        <wb-resource deploy-path="/" source-path="/src/main/webapp" tag="defaultRootSource"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
+        <property name="context-root" value="TIWProject_Jaskaran_Salonico"/>
+        <property name="java-output-path" value="/TIWProject_Jaskaran_Salonico/build/classes"/>
+    </wb-module>
+</project-modules>
