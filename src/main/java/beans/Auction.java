@@ -9,43 +9,36 @@ public class Auction {
 	private LocalDateTime expiring_time;
 	private int creator;
 	
-	public int getAuctionId() {
-		return this.auction_id;
+	public int getAuction_id() {
+		return auction_id;
 	}
-	
-	public void setAuctionId(int auctionId) {
-		this.auction_id = auctionId;
+	public void setAuction_id(int auction_id) {
+		this.auction_id = auction_id;
 	}
-	
-	public boolean getOpen() {
-		return this.open;
+	public boolean isOpen() {
+		return open;
 	}
-	
 	public void setOpen(boolean open) {
 		this.open = open;
 	}
-	
-	public int getInitialPrice() {
-		return this.initial_price;
+	public int getInitial_price() {
+		return initial_price;
 	}
-	
-	public void setInitialPrice(int initialPrice) {
-		this.initial_price = initialPrice;
+	public void setInitial_price(int initial_price) {
+		this.initial_price = initial_price;
 	}
-	
-	public LocalDateTime getExpiringTime() {
-		return this.expiring_time;
+	public LocalDateTime getExpiring_time() {
+		return expiring_time;
 	}
-	
-	public void setExpiringTime(LocalDateTime expiringTime) {
-		this.expiring_time = expiringTime;
+	public void setExpiring_time(LocalDateTime expiring_time) {
+		this.expiring_time = expiring_time;
 	}
-	
 	public int getCreator() {
-		return this.creator;
+		return creator;
 	}
-	
 	public void setCreator(int creator) {
 		this.creator = creator;
 	}
+	
+	
 }
