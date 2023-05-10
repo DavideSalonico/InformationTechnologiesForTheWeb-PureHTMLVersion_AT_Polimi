@@ -6,6 +6,7 @@ public class Auction {
 	private int auction_id;
 	private boolean open;
 	private int initial_price;
+	private int minimum_raise;
 	private LocalDateTime expiring_time;
 	private int creator;
 	
@@ -38,6 +39,12 @@ public class Auction {
 	}
 	public void setCreator(int creator) {
 		this.creator = creator;
+	}
+	public int getMinimum_raise() {
+		return minimum_raise;
+	}
+	public void setMinimum_raise(int minimum_raise) {
+		this.minimum_raise = minimum_raise;
 	}
 	
 	

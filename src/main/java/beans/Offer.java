@@ -1,5 +1,6 @@
 package beans;
 
+import java.sql.Date;
 import java.time.LocalDateTime;
 
 public class Offer {
@@ -23,8 +24,8 @@ public class Offer {
 	public LocalDateTime getTime() {
 		return time;
 	}
-	public void setTime(LocalDateTime time) {
-		this.time = time;
+	public void setTime(LocalDateTime date) {
+		this.time = date;
 	}
 	public int getUser() {
 		return user;
