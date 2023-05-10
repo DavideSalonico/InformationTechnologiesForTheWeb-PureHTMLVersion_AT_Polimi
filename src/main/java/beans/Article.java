@@ -1,10 +1,12 @@
 package beans;
 
+import java.sql.Blob;
+
 public class Article {
 	private int article_id;
 	private String name;
 	private String description;
-	private String image;
+	private Blob image;
 	private int article_creator;
 	private int auction_id;
 	private int price;
@@ -38,11 +40,11 @@ public class Article {
 		this.description = description;
 	}
 
-	public String getImage() {
+	public Blob getImage() {
 		return image;
 	}
 
-	public void setImage(String image) {
+	public void setImage(Blob image) {
 		this.image = image;
 	}
 
