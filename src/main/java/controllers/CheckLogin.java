@@ -76,7 +76,8 @@ public class CheckLogin extends HttpServlet {
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not Possible to check credentials"); 
 			return;                                                                                                
 		}                                                                                                          
-		                                                                                                           
+		                                                                         
+		
 		// If the user exists, add info to the session and go to home page, otherwise                              
 		// show login page with error message                                                                      
 		                                                                                                           
