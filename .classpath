@@ -14,5 +14,7 @@
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
 	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/mysql-connector-j-8.0.32.jar"/>
+	<classpathentry kind="lib" path="/TIW-MissionExpensesManagement/src/main/webapp/WEB-INF/lib/thymeleaf-3.0.11.RELEASE.jar"/>
+	<classpathentry kind="lib" path="/TIW-MissionExpensesManagement/src/main/webapp/WEB-INF/lib/apache-commons-lang.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

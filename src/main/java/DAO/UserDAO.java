@@ -19,8 +19,8 @@ public class UserDAO {
 		this.connection = con;
 	}
 	
-	public boolean checkCredentials(String username, String password) throws SQLException{
-		boolean check = false;
+	public User checkCredentials(String username, String password) throws SQLException{
+		User user = null;
 		String query = "SELECT * FROM user WHERE username = ? AND password = ?";
 		try {
 			this.pstatement = connection.prepareStatement(query);
@@ -29,8 +29,16 @@ public class UserDAO {
 			pstatement.setString(1, password);
 			result = pstatement.executeQuery();
 			// If there is a match the entire row is returned here as a result
-			if(result.next()) {
-				check = true;
+			if (!result.isBeforeFirst()) // no results, credential check failed
+				return null;
+			else {
+				result.next();
+				user = new User();
+				user.setUser_id(result.getInt("user_id"));
+				user.setUsername(result.getString("username"));
+				user.setPassword(result.getString("password"));
+				user.setAddress(result.getString("address"));
+				return user;
 			}
 		} catch (SQLException e) {
 		    e.printStackTrace();
@@ -48,7 +56,7 @@ public class UserDAO {
 				throw new SQLException(e2);
 			}
 		}	
-		return check;
+		return user;
 	}
 	}
 	
