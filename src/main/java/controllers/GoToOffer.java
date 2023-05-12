@@ -3,8 +3,6 @@ package controllers;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.List;
-
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -45,6 +43,8 @@ public class GoToOffer extends HttpServlet {
 		connection = ConnectionHandler.getConnection(getServletContext());
 	}
 	
+	
+	// A VOLTE USA LA doGET e a volte la doPOST BOOOOH
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 	
