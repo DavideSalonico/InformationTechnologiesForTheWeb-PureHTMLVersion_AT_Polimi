@@ -51,6 +51,37 @@ public class OfferDAO {
 		return offers;
 	}
 	
+	public Offer getOffer(int offer_id) throws SQLException{
+		Offer offers = null;
+		try {
+			pstatement = connection.prepareStatement("SELECT * FROM offer WHERE offer_id = ?");
+			pstatement.setInt(1, offer_id);
+			result = pstatement.executeQuery();
+			result.next();
+			Offer off = new Offer();
+			off.setOffer_id(result.getInt("offer_id"));
+			off.setPrice(result.getInt("price"));
+			off.setTime(result.getTimestamp("time").toLocalDateTime());
+			off.setUser(result.getInt("user"));
+			off.setAuction(result.getInt("auction"));	
+		} catch(SQLException e) {
+			e.printStackTrace();
+			throw new SQLException(e);
+		} finally {
+			try {
+				result.close();
+			} catch(Exception e1) {
+				throw new SQLException(e1);
+			}
+			try {
+				pstatement.close();
+			} catch(Exception e2) {
+				throw new SQLException(e2);
+			}
+		}	
+		return offers;
+	}
+	
 	public Offer getWinningOffer(int auction_id) throws SQLException{
 		Offer off = new Offer();
 		try {
@@ -58,6 +89,7 @@ public class OfferDAO {
 			pstatement = connection.prepareStatement("SELECT * FROM offer WHERE time = MIN(SELECT time FROM offer WHERE auction_id = ?)");
 			pstatement.setInt(1, auction_id);
 			result = pstatement.executeQuery();
+			result.next();   //NECESSARIO, dovremmo fare un controllo 
 			off.setOffer_id(result.getInt("offer_id"));
 			off.setPrice(result.getInt("price"));
 			off.setTime(result.getTimestamp("time").toLocalDateTime());
