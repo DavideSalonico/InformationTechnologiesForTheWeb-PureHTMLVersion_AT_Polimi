@@ -232,23 +232,23 @@ public class AuctionDAO {
 	}
 	
 	public boolean changeAuctionStatus(int auction_id) throws SQLException{
-				int result = 0;		
-				try {
-					pstatement = connection.prepareStatement("UPDATE auction SET open = 0 WHERE auction_id = ?");
-					pstatement.setInt(1, auction_id);
-					result = pstatement.executeUpdate();
-					// If there is an affected row, it means that the auction has been closed
-					if(result > 0)
-						return true;
-				} catch (SQLException e) {
-				    e.printStackTrace();
-					throw new SQLException(e);
-				} finally {
-					try {
-						pstatement.close();
-					} catch (Exception e1) {}
-				}		
-				return false;
+		int result = 0;		
+		try {
+			pstatement = connection.prepareStatement("UPDATE auction SET open = 0 WHERE auction_id = ?");
+			pstatement.setInt(1, auction_id);
+			result = pstatement.executeUpdate();
+			// If there is an affected row, it means that the auction has been closed
+			if(result > 0)
+				return true;
+		} catch (SQLException e) {
+		    e.printStackTrace();
+			throw new SQLException(e);
+		} finally {
+			try {
+				pstatement.close();
+			} catch (Exception e1) {}
+		}		
+		return false;
 	}
 	
 	private Auction resultToAuction(ResultSet result) throws SQLException{
