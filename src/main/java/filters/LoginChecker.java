@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-@WebFilter("/*")
+@WebFilter(servletNames = {"/CloseAuction", "/CreateAuction", "/GoToAuctionDetails", "/GoToHomePage", "/GoToOffer", "/GoToPurchase", "/GoToSell", "/MakeOffer" })
 public class LoginChecker implements Filter{
 
 	public LoginChecker() {
