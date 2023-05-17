@@ -46,23 +46,15 @@ public class GoToOffer extends HttpServlet {
 		offerDAO = new OfferDAO(connection);
 	}
 	
-	
-	// A VOLTE USA LA doGET e a volte la doPOST BOOOOH
+
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 	
-		// If the user is not logged in (not present in session) redirect to the login
-		String loginpath = getServletContext().getContextPath() + "/index.html";
-		HttpSession session = request.getSession();
-		if (session.isNew() || session.getAttribute("user") == null) {
-			response.sendRedirect(loginpath);
-			return;
-		}
-	
 		// get and check params
 		Integer offer_id = null;
+		
 		try {
-			offer_id = Integer.parseInt(request.getParameter("offer_id"));
+			offer_id = Integer.parseInt(request.getParameter("offer_id"));    //AGGIUNGERE ALL'URL
 		} catch (NumberFormatException | NullPointerException e) {
 			// only for debugging e.printStackTrace();
 			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Incorrect param values");
@@ -70,7 +62,7 @@ public class GoToOffer extends HttpServlet {
 		}
 	
 		
-		Offer offer = new Offer();
+		Offer offer;
 		try {
 			offer = offerDAO.getOffer(offer_id);
 			if (offer == null) {
@@ -84,7 +76,7 @@ public class GoToOffer extends HttpServlet {
 		}
 	
 		// Redirect to AuctionDetails 
-		String path = "/WEB-INF/Offer.html";
+		String path = "/WEB-INF/offer.html";    //CAPIRE SE MODIFICARE DINAMICAMENTE
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 		ctx.setVariable("offer", offer);

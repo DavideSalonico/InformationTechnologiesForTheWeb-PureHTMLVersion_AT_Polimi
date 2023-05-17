@@ -71,7 +71,7 @@ public class GoToSell extends HttpServlet {
 			return;
 		}
 
-		String path = "/WEB-INF/vendo.html";
+		String path = "/WEB-INF/sell.html";
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 		// PASSO VALORI ALLA PAGINA DI RITORNO 
@@ -79,7 +79,6 @@ public class GoToSell extends HttpServlet {
 		ctx.setVariable("closedAuctions", closedAuctions);
 		templateEngine.process(path, ctx, response.getWriter());
 
-		
 	}
 
 	//DEFAULT

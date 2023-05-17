@@ -31,7 +31,7 @@ public class CheckLogin extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
 	private TemplateEngine templateEngine;
-	UserDAO userDao;
+	private UserDAO userDao;
 	
     
     public CheckLogin() {
@@ -39,7 +39,7 @@ public class CheckLogin extends HttpServlet {
     }
 
 
-	public void init(ServletConfig config) throws ServletException {
+	public void init(ServletConfig config) throws ServletException {   // FORSE DA METTERE IN UN TRY CATCH
 		connection = ConnectionHandler.getConnection(getServletContext());
 		ServletContext servletContext = getServletContext();
 		ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
@@ -88,7 +88,7 @@ public class CheckLogin extends HttpServlet {
 			ServletContext servletContext = getServletContext();                                                   
 			final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());         
 			ctx.setVariable("errorMsg", "Incorrect username or password");                                         
-			path = "/CheckLogin";                                                                                  
+			path = getServletContext().getContextPath() + "/login.html";                                                                                  
 			templateEngine.process(path, ctx, response.getWriter());                                               
 		} else {                                                                                                   
 			request.getSession().setAttribute("user", user);                                                       

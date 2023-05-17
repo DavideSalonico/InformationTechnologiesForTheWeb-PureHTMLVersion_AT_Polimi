@@ -70,26 +70,24 @@ public class GoToPurchase extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-				if(request.getParameter("key") != null)
-				{
+				if(request.getParameter("key") != null){
 					if(filterAuctions(request, response))
 						setupPage(request, response);
-				}
-				else if(request.getParameter("js") != null && request.getParameter("js").equals("visited"))
-				{
+				}else if(request.getParameter("js") != null && request.getParameter("js").equals("visited")){
 					// This method is executed only for the javascript version
 					getVisitedAuctions(request, response);
-				}
+					}
 				// If there is no key parameter, proceeds only whit the setup
-				else
-				{
+				else{
 					setupPage(request, response);
 				}		
 	}
 	
 	// Method required for the javascript version
     private void getVisitedAuctions(HttpServletRequest request, HttpServletResponse response) throws IOException{}
-    	
+    private void setupPage(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{}
+   
+	
 	
 	private boolean validateKey(String key)
     {
@@ -104,9 +102,12 @@ public class GoToPurchase extends HttpServlet {
     {
     	List<Auction> auctions = new ArrayList<>();
     	List <Article> articles = null;
+    	// Used to calculate the remaining time before the expiration of 
+    	LocalDateTime logLdt = (LocalDateTime) request.getSession(false).getAttribute("creationTime");
     	// Used to check if the deadline of each auction is after the current datetime
     	LocalDateTime currLdt = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
     	// The Linked Hash Maps is used because it preserves the order of the elements
+    	
     	// All auctions with their articles are stored inside them
     	LinkedHashMap<Auction,List<Article>> filteredOpenAuctions = new LinkedHashMap<>();
     	// The order here is not important
@@ -140,7 +141,7 @@ public class GoToPurchase extends HttpServlet {
    				{
    					// This filters the auctions by their current state and checks if their deadlines are after the datetime related
    					// to the submit of the keyword. After that it adds the auctions to the LinkedHashMap, along with their articles.
-   					if(auction.isOpen() && auction.getVa)
+   					if(auction.isOpen() && auction.getExpiring_time().isAfter(currLdt))
    					{
    			    		try {
    							// This is used to retrieve the articles related to each auction

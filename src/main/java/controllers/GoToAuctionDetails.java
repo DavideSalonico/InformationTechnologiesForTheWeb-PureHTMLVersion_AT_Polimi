@@ -54,18 +54,11 @@ public class GoToAuctionDetails extends HttpServlet {private static final long s
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 	
-		// If the user is not logged in (not present in session) redirect to the login
-		String loginpath = getServletContext().getContextPath() + "/index.html";
-		HttpSession session = request.getSession();
-		if (session.isNew() || session.getAttribute("user") == null) {
-			response.sendRedirect(loginpath);
-			return;
-		}
 	
 		// get and check params
 		Integer auction_id = null;
 		try {
-			auction_id = Integer.parseInt(request.getParameter("auction_id"));
+			auction_id = Integer.parseInt(request.getParameter("auction_id"));   // AGGIUNGERE PARAMETRO ALLA URL
 		} catch (NumberFormatException | NullPointerException e) {
 			// only for debugging e.printStackTrace();
 			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Incorrect param values");
@@ -91,7 +84,7 @@ public class GoToAuctionDetails extends HttpServlet {private static final long s
 		}
 	
 		// Redirect to AuctionDetails 
-		String path = "/WEB-INF/AuctionDetails.html";
+		String path = "/WEB-INF/auctionDetails.html";
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 		// PASSO VALORI ALLA PAGINA DI RITORNO 
