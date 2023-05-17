@@ -3,16 +3,35 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
 	version="4.0">
+	<context-param>
+		<param-name>dbUrl</param-name>
+		<param-value>jdbc:mysql://localhost:3306/test?serverTimezone=UTC</param-value>
+	</context-param>
+	<context-param>
+		<param-name>dbUser</param-name>
+		<param-value>root</param-value>
+	</context-param>
+	<context-param>
+		<param-name>dbPassword</param-name>
+		<param-value>P13r0Fr4t3rn4l1!</param-value>
+	</context-param>
+	<context-param>
+		<param-name>dbDriver</param-name>
+		<param-value>com.mysql.cj.jdbc.Driver</param-value>
+	</context-param>
 	<servlet>
-		<servlet-name>TestServlet</servlet-name>
-		<servlet-class>TestServlet</servlet-class>
+		<servlet-name>CheckLogin</servlet-name>
+		<servlet-class>controllers.CheckLogin</servlet-class>
 	</servlet>
 	<servlet>
-		<servlet-name>ConnectionTester</servlet-name>
-		<servlet-class>jdbctest.ConnectionTester</servlet-class>
+		<servlet-name>LoginChecker</servlet-name>
+		<servlet-class>filters.LoginChecker</servlet-class>
 	</servlet>
-	<servlet-mapping>
-		<servlet-name>ConnectionTester</servlet-name>
-		<url-pattern>/</url-pattern>
-	</servlet-mapping>
+	<servlet>
+		<servlet-name>GoToHomePage</servlet-name>
+		<servlet-class>controllers.GoToHomePage</servlet-class>
+	</servlet>
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+	</welcome-file-list>
 </web-app>
