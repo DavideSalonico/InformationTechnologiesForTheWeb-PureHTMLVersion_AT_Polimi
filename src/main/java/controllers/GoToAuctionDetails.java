@@ -29,6 +29,8 @@ import utils.ConnectionHandler;
 public class GoToAuctionDetails extends HttpServlet {private static final long serialVersionUID = 1L;
 	private Connection connection = null;
 	private TemplateEngine templateEngine;
+	OfferDAO offerDAO;
+	AuctionDAO auctionDAO;
 	
 	public GoToAuctionDetails() {
 		super();
@@ -43,6 +45,10 @@ public class GoToAuctionDetails extends HttpServlet {private static final long s
 		templateResolver.setSuffix(".html");
 	
 		connection = ConnectionHandler.getConnection(getServletContext());
+		
+		//Initialize DAO only once and not every doGet()
+		offerDAO = new OfferDAO(connection);
+		auctionDAO = new AuctionDAO(connection);
 	}
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -66,8 +72,7 @@ public class GoToAuctionDetails extends HttpServlet {private static final long s
 			return;
 		}
 	
-		OfferDAO offerDAO = new OfferDAO(connection);
-		AuctionDAO auctionDAO = new AuctionDAO(connection);
+		
 		
 		List<Offer> offers = null;
 		Auction auction = null;

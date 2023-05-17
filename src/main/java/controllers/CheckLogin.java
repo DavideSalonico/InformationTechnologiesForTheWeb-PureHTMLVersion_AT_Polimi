@@ -31,6 +31,7 @@ public class CheckLogin extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
 	private TemplateEngine templateEngine;
+	UserDAO userDao;
 	
     
     public CheckLogin() {
@@ -46,6 +47,8 @@ public class CheckLogin extends HttpServlet {
 		this.templateEngine = new TemplateEngine();
 		this.templateEngine.setTemplateResolver(templateResolver);
 		templateResolver.setSuffix(".html");
+		
+		userDao = new UserDAO(connection);  // Initialize the connection only once, not every doPost()
 	}
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -67,8 +70,7 @@ public class CheckLogin extends HttpServlet {
 			return;                                                                                                
 		}                                                                                                          
 		                                                                                                           
-		// query db to authenticate for user                                                                       
-		UserDAO userDao = new UserDAO(connection);                                                                 
+		// query db to authenticate for user                                                                                                                                        
 		User user = null;                                                                                          
 		try {                                                                                                      
 			user = userDao.checkCredentials(usrn, pwd);                                                            

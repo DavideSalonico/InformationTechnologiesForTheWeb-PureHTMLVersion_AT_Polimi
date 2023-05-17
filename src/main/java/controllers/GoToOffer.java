@@ -27,6 +27,7 @@ public class GoToOffer extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
 	private TemplateEngine templateEngine;
+	OfferDAO offerDAO;
 	
 	public GoToOffer() {
 		super();
@@ -41,6 +42,8 @@ public class GoToOffer extends HttpServlet {
 		templateResolver.setSuffix(".html");
 	
 		connection = ConnectionHandler.getConnection(getServletContext());
+		
+		offerDAO = new OfferDAO(connection);
 	}
 	
 	
@@ -66,7 +69,7 @@ public class GoToOffer extends HttpServlet {
 			return;
 		}
 	
-		OfferDAO offerDAO = new OfferDAO(connection);
+		
 		Offer offer = new Offer();
 		try {
 			offer = offerDAO.getOffer(offer_id);
