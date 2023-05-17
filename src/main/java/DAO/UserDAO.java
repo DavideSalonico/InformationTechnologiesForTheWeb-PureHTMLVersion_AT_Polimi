@@ -56,9 +56,8 @@ public class UserDAO {
 				throw new SQLException(e2);
 			}
 		}	
-		return user;
 	}
-	}
+	
 	
 	
 	public User getUser(int user_id) throws SQLException{
