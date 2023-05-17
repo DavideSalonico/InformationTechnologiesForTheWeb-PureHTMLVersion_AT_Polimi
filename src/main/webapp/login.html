@@ -18,6 +18,9 @@
             <label for="password">Password:</label>
             <input type="password" id="password" name="password" required>
         </div>
+        <div th:if="${errorMsg}" class="error-message">
+            <span th:text="${errorMsg}"></span>
+        </div>
         <button type="submit">Accedi</button>
     </form>
 </div>
