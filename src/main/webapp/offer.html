@@ -1,10 +1,61 @@
 <!DOCTYPE html>
-<html>
+<html lang="it" dir="ltr" xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+    <title>Offerte</title>
+    <link rel="icon" th:href="@{/img/icon.png}">
+    <link rel="stylesheet" type="text/css" href = "css/main.css">
+    <link rel="stylesheet" type="text/css" href="css/auctions-offers.css">
+    <link rel="stylesheet" type="text/css" href="css/auction-details.css">
+    <link rel="stylesheet" type="text/css" href="css/offer.css">
 </head>
 <body>
-
+<p th:remove="all">Questa è una pagina dinamica, viene generata a runtime, non è previsto un accesso diretto!</p>
+<div class="col lft-col">
+    <div class="quick-nav">
+        <h3>Navigazione Rapida</h3>
+        <ul>
+            <a href="#dtl-art"><li>Dettagli</li></a>
+            <a href="#dtl-offers"><li>Offerte</li></a>
+            <a href="#offr-new"><li>Nuova offerta</li></a>
+        </ul>
+    </div>
+</div>
+<div class="col mid-col">
+    <div class="row first-row details">
+        <h2 th:if="${auction == null or isExpired}">Informazioni</h2>
+        <p th:if="${auction == null}">L'asta selezionata non esiste!</p>
+        <p th:if="${isExpired}">L'asta per l'articolo selezionato è scaduta!</p>
+        <section th:if="${auction != null and not isExpired}">
+            <div th:replace="WEB-INF/fragments.html :: showDetails"></div>
+        </section>
+    </div>
+    <div class="row second-row offers-list" th:if="${auction != null and not isExpired}">
+        <section th:replace="WEB-INF/fragments.html :: showOffers(0)"></section>
+    </div>
+    <div class="row third-row form" th:if="${auction != null and not isExpired}">
+        <h2 id="offr-new">Nuova offerta</h2>
+        <form action="#" th:action="@{/MakeOffer}" method="post">
+            <div>
+                <label for="offer">Valore:</label>
+                <input type="number" name="offer" id="offer" min="1" max="2000000000" step="1" th:min="${min}" th:value="${min}" th:with="min=${not offers.isEmpty()} ? ${maxAuctionOffer.value + auction.minUpsideOffer} : ${auction.initialPrice}" required>
+                <span>&euro;</span>
+                <input type="hidden" name="auctionId" th:value="${auction.id}">
+            </div>
+            <button name="offer-submit" type="submit">Conferma</button>
+        </form>
+    </div>
+</div>
+<div class="col rgt-col">
+    <div class="quick-nav menu">
+        <h3>Menu</h3>
+        <ul>
+            <a href="#" th:href="@{/home.jsp}"><li>Home</li></a>
+            <a href="#" th:href="@{/GoToAcquisto}"><li>Acquista</li></a>
+            <a href="#" th:href="@{/GoToVendo}"><li>Vendi</li></a>
+            <a href="#" th:href="@{/Logout}"><li>Esci</li></a>
+        </ul>
+    </div>
+</div>
 </body>
 </html>
