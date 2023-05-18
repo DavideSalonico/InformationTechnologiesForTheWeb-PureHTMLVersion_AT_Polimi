@@ -1,1 +1,11 @@
-@charset "UTF-8";
+@charset "UTF-8";@charset "ISO-8859-1";
+body {
+  /* Loads the image stored locally */
+  background: url("../img/sell.jpg");
+  /* The image won't be repeated(showed only once) */
+  background-repeat: no-repeat;
+  /* centers the image */
+  background-position: center;
+  /* the image will be scaled to occupy just the needed space */
+  background-size: cover;
+}
