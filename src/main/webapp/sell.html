@@ -1,10 +1,84 @@
 <!DOCTYPE html>
-<html>
+<html lang="it" dir="ltr" xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+    <title>Vendita</title>
+    <link rel="icon" th:href="@{/img/icon.png}">
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <link rel="stylesheet" type="text/css" href="css/auctions-offers.css">
+    <link rel="stylesheet" type="text/css" href="css/vendo.css">
 </head>
 <body>
-
+    <p th:remove="all">Questa è una pagina dinamica, viene generata a runtime, non è previsto un accesso diretto!</p>
+    <div class="col lft-col">
+        <div class="quick-nav">
+            <h3>Navigazione Rapida</h3>
+            <ul>
+                <li><a href="#open-auc">Aste Aperte</a></li>
+                <li><a href="#closed-auc">Aste Chiuse</a></li>
+                <li><a href="#create-auc">Crea Asta</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="col mid-col">
+        <div class="row first-row auc-list">
+            <h2 id="open-auc">Aste Aperte</h2>
+            <p th:if="${userOpenAuctions.isEmpty()}">Non hai nessuna asta aperta al momento!</p>
+            <section th:replace="~{WEB-INF/fragments.html :: showAuctions (${userOpenAuctions}, 1)}"></section>
+        </div>
+        <div class="row second-row auc-list">
+            <h2 id="closed-auc">Aste Chiuse</h2>
+            <p th:if="${userClosedAuctions.isEmpty()}">Non hai ancora chiuso nessuna asta!</p>
+            <section th:replace="~{WEB-INF/fragments.html :: showAuctions (${userClosedAuctions}, 0)}"></section>
+        </div>
+        <div class="row third-row form">
+            <h2 id="create-auc">Creazione di una nuova asta</h2>
+            <form action="#" th:action="@{/CreateAuction}" method="post" enctype="multipart/form-data">
+                <div>
+                    <label for="name">Nome Articolo:</label>
+                    <input type="text" name="name" id="name" min="4" max="50" required>
+                </div>
+                <div>
+                    <label for="description">Descrizione:</label>
+                    <textarea name="description" id="description" rows="4" cols="50" minlength="20" maxlength="3000" placeholder=" ..." spellcheck="false" required></textarea>
+                </div>
+                <div>
+                    <label for="image">Immagine:</label>
+                    <input type="file" name="image" id="image" accept="image/*"  required>
+                </div>
+                <div>
+                    <label for="initialPrice">Prezzo Iniziale:</label>
+                    <input type="number" name="initialPrice" id="initialPrice" min="1" step="1" max="700000000" required>
+                    <span> &euro;</span>
+                </div>
+                <div>
+                    <label for="minUpsideOffer">Rialzo Minimo:</label>
+                    <input type="number" name="minUpsideOffer" id="minUpsideOffer" min="50" step="1" max="100000" required>
+                    <span> &euro;</span>
+                </div>
+                <div>
+                    <label for="deadline">Scadenza (futura): </label>
+                    <input type="datetime-local" name="deadline" id="deadline" th:min="${ldt}" placeholder="yyyy-MM-ddTHH:mm" th:value="${ldt}" required>
+                </div>
+                <button name="auction-submit" type="submit">Crea Asta</button>
+            </form>
+        </div>
+    </div>
+    <div class="col rgt-col">
+        <div class="quick-nav menu">
+            <h3>Menu</h3>
+            <ul>
+                <li><a th:href="@{/home.jsp}">Home</a></li>
+                <li><a th:href="@{/GoToAcquisto}">Acquista</a></li>
+                <li><a th:href="@{/GoToVendo}">Vendi</a></li>
+                <li><a th:href="@{/Logout}">Esci</a></li>
+            </ul>
+        </div>
+    </div>
 </body>
 </html>
+
+
+
+
+

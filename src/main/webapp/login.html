@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
-		<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/main.css">
-		<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/login.css">
+		<link rel="stylesheet" type="text/css" href="css/main.css">
+		<link rel="stylesheet" type="text/css" href="css/login.css">
 </head>
 <body>
-<div class="container">
+<div class="col lft-col"></div>
+<div class="col mid-col form lgn-form">
     <h2>Accedi</h2>
     <form th:action="@{/CheckLogin}" method="post">
         <div>
@@ -21,8 +22,23 @@
         <div th:if="${errorMsg}" class="error-message">
             <span th:text="${errorMsg}"></span>
         </div>
+        <div>
+			<input type="radio" name="version" value="html" required>
+			<label>Html</label>
+			<input type="radio" name="version" value="js" required>
+			<label>Javascript</label>
+		</div>
         <button type="submit">Accedi</button>
     </form>
+    <div th:unless="${sessionScope.currUser == null}">
+        <div th:if="${cookie.AsteOnline != null}">
+            <meta http-equiv="Refresh" th:content="0; url=AsteOnline.jsp" />
+        </div>
+        <div th:unless="${cookie.AsteOnline != null}">
+            <meta http-equiv="Refresh" th:content="0; url=home.jsp" />
+        </div>
+    </div>
 </div>
+<div class="col rgt-col"></div>
 </body>
 </html>
