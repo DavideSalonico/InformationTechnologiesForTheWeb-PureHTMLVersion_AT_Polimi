@@ -1,38 +1,34 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr" xmlns:th="http://www.thymeleaf.org">
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="ISO-8859-1">
-    <title>Online Auctions</title>
-    <link rel="icon" th:href="@{${pageContext.request.contextPath}/img/icon.png}">
-    <link rel="stylesheet" type="text/css" href="css/main.css}">
-    <link rel="stylesheet" type="text/css" href="css/index.css}">
+<meta charset="UTF-8">
+<title>Login</title>
+<link rel="stylesheet" type="text/css" href="css/main.css">
+<link rel="stylesheet" type="text/css" href="css/login.css">
 </head>
 <body>
-    <div class="col lft-col"></div>
-    <div class="col mid-col introduction">
-        <section class="overview">
-            <div th:if="${session.currUser == null}">
-                <a th:href="@{/login}">Login</a>
-            </div>
-            <div th:if="${session.currUser != null}">
-                <h2>Online Auctions!</h2>
-                <p>Welcome back <span th:text="${session.currUser.username}"></span></p>
-                <p><strong>Online Auctions</strong></p>
-                <h2>Privacy Policy</h2>
-                <p>HolaHolaHola</p>
-            </div>
-        </section>
-    </div>
-    <div class="col rgt-col">
-        <div class="quick-nav menu">
-            <h3>Menu</h3>
-            <ul>
-                <li><a href="index.html">Home</a></li>
-                <li><a href="purchase.html">Purchase</a></li>
-                <li><a href="sell.html">Sell</a></li>
-                <li><a href="logout.html">Exit</a></li>
-            </ul>
-        </div>
-    </div>
+	<div class="col lft-col"></div>
+	<div class="col mid-col form lgn-form">
+		<h2>Accedi</h2>
+		<form th:action="@{/CheckLogin}" method="post">
+			<div>
+				<label for="username">Nome Utente:</label> <input type="text"
+					id="username" name="username" required>
+			</div>
+			<div>
+				<label for="password">Password:</label> <input type="password"
+					id="password" name="password" required>
+			</div>
+			<div th:if="${errorMsg}" class="error-message">
+				<span th:text="${errorMsg}"></span>
+			</div>
+			<div>
+				<input type="radio" name="version" value="html" required> <label>Html</label>
+				<input type="radio" name="version" value="js" required> <label>Javascript</label>
+			</div>
+			<button type="submit">Accedi</button>
+		</form>
+	</div>
+	<div class="col rgt-col"></div>
 </body>
 </html>
