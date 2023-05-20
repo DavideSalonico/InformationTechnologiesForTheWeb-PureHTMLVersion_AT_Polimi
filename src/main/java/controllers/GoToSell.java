@@ -36,7 +36,7 @@ public class GoToSell extends HttpServlet {
         super();
     }
 
-	public void init(ServletConfig config) throws ServletException {
+	public void init() throws ServletException {
 		ServletContext servletContext = getServletContext();
 		ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
 		templateResolver.setTemplateMode(TemplateMode.HTML);

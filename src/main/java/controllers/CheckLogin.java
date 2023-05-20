@@ -39,7 +39,7 @@ public class CheckLogin extends HttpServlet {
     }
 
 
-	public void init(ServletConfig config) throws ServletException {   // FORSE DA METTERE IN UN TRY CATCH
+	public void init() throws ServletException {   // FORSE DA METTERE IN UN TRY CATCH
 		connection = ConnectionHandler.getConnection(getServletContext());
 		ServletContext servletContext = getServletContext();
 		ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
