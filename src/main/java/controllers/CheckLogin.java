@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.UnavailableException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -40,8 +41,8 @@ public class CheckLogin extends HttpServlet {
 
 
 	public void init() throws ServletException {   // FORSE DA METTERE IN UN TRY CATCH
-		connection = ConnectionHandler.getConnection(getServletContext());
 		ServletContext servletContext = getServletContext();
+		connection = ConnectionHandler.getConnection(servletContext);
 		ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
 		templateResolver.setTemplateMode(TemplateMode.HTML);
 		this.templateEngine = new TemplateEngine();
@@ -51,6 +52,13 @@ public class CheckLogin extends HttpServlet {
 		userDao = new UserDAO(connection);  // Initialize the connection only once, not every doPost()
 	}
 	
+	@Override
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		WebContext context = new WebContext(request, response, getServletContext(), request.getLocale());
+        templateEngine.process("index", context, response.getWriter());
+	}
+
+
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// obtain and escape params                                                                                
 		String usrn = null;                                                                                        

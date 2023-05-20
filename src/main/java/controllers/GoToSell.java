@@ -40,11 +40,11 @@ public class GoToSell extends HttpServlet {
 		ServletContext servletContext = getServletContext();
 		ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
 		templateResolver.setTemplateMode(TemplateMode.HTML);
+		templateResolver.setSuffix(".html");
 		this.templateEngine = new TemplateEngine();
 		this.templateEngine.setTemplateResolver(templateResolver);
-		templateResolver.setSuffix(".html");
 	
-		connection = ConnectionHandler.getConnection(getServletContext());
+		connection = ConnectionHandler.getConnection(servletContext);
 		
 		auctionDAO = new AuctionDAO(connection);
 	}

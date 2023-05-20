@@ -19,18 +19,6 @@
 		<param-name>dbDriver</param-name>
 		<param-value>com.mysql.cj.jdbc.Driver</param-value>
 	</context-param>
-	<servlet>
-		<servlet-name>CheckLogin</servlet-name>
-		<servlet-class>controllers.CheckLogin</servlet-class>
-	</servlet>
-	<servlet>
-		<servlet-name>LoginChecker</servlet-name>
-		<servlet-class>filters.LoginChecker</servlet-class>
-	</servlet>
-	<servlet>
-		<servlet-name>GoToHomePage</servlet-name>
-		<servlet-class>controllers.GoToHomePage</servlet-class>
-	</servlet>
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
 	</welcome-file-list>

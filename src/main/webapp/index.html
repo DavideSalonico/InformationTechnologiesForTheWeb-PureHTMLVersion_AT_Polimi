@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <title>Login</title>
-<link rel="stylesheet" type="text/css" href="css/main.css">
-<link rel="stylesheet" type="text/css" href="css/login.css">
+<link rel="stylesheet" type="text/css" href="/css/main.css" th:href="@{/css/main.css}">
+<link rel="stylesheet" type="text/css" href="/css/index.css" th:href="@{/css/index.css}">
 </head>
 <body>
 	<div class="col lft-col"></div>
 	<div class="col mid-col form lgn-form">
 		<h2>Accedi</h2>
-		<form th:action="@{/CheckLogin}" method="post">
+		<form action="#" th:action="@{/CheckLogin}" method="post">
 			<div>
 				<label for="username">Nome Utente:</label> <input type="text"
 					id="username" name="username" required>

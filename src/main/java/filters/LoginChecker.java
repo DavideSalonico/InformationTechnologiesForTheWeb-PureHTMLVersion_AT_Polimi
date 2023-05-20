@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-@WebFilter(servletNames = {"/CloseAuction", "/CreateAuction", "/GoToAuctionDetails", "/GoToHomePage", "/GoToOffer", "/GoToPurchase", "/GoToSell", "/MakeOffer", "/Home" })
+@WebFilter(servletNames = {"/CloseAuction", "/CreateAuction", "/GoToAuctionDetails", "/GoToHomePage", "/GoToOffer", "/GoToPurchase", "/GoToSell", "/MakeOffer"})
 public class LoginChecker implements Filter{
 
 	public LoginChecker() {
@@ -39,7 +39,7 @@ public class LoginChecker implements Filter{
 		// java.lang.String login path = "/index.html";
 		HttpServletRequest req = (HttpServletRequest) request;
 		HttpServletResponse res = (HttpServletResponse) response;
-		String loginpath = req.getServletContext().getContextPath() + "/login.html";
+		String loginpath = req.getServletContext().getContextPath() + "/index.html";
 
 		HttpSession s = req.getSession();
 		if (s.isNew() || s.getAttribute("user") == null) {

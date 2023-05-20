@@ -1,7 +1,9 @@
 package controllers;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -16,7 +18,7 @@ import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 import utils.ConnectionHandler;
 
-@WebServlet("/Home")
+@WebServlet("/GoToHome")
 public class GoToHome extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
@@ -34,12 +36,17 @@ public class GoToHome extends HttpServlet {
 		this.templateEngine = new TemplateEngine();
 		this.templateEngine.setTemplateResolver(templateResolver);
 		
-	
-		connection = ConnectionHandler.getConnection(getServletContext());
+		connection = ConnectionHandler.getConnection(servletContext);
 	}
 	
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response){}
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException{
+				// Redirect to the Home page and add missions to the parameters
+				String path = "home.html";
+				ServletContext servletContext = getServletContext();
+				final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
+				templateEngine.process(path, ctx, response.getWriter());
+	}
 	
 	public void destroy() {
 		try {
