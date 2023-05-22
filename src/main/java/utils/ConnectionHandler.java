@@ -11,6 +11,7 @@ public class ConnectionHandler {
 
 	public static Connection getConnection(ServletContext context){
 		Connection connection = null;
+		if(context == null)System.out.println("context is null");
 		try {
 			String url = context.getInitParameter("dbUrl");
 			String user = context.getInitParameter("dbUser");

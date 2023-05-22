@@ -42,7 +42,12 @@ public class CheckLogin extends HttpServlet {
 
 	public void init() throws ServletException {   // FORSE DA METTERE IN UN TRY CATCH
 		ServletContext servletContext = getServletContext();
-		connection = ConnectionHandler.getConnection(servletContext);
+		try {
+			connection = ConnectionHandler.getConnection(servletContext);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
 		templateResolver.setTemplateMode(TemplateMode.HTML);
 		this.templateEngine = new TemplateEngine();
@@ -62,18 +67,18 @@ public class CheckLogin extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// obtain and escape params                                                                                
 		String usrn = null;                                                                                        
-		String pwd = null;                                                                                         
+		String pwd = null;     
 		                                                                                                           
-		try {                                                                                                      
-			usrn = StringEscapeUtils.escapeJava(request.getParameter("username"));                                 
-			pwd = StringEscapeUtils.escapeJava(request.getParameter("pwd"));                                       
+		try {        
+			usrn = (String) request.getParameter("username");                                 
+			pwd = (String)request.getParameter("password");                                       
 			                                                                                                       
 			if (usrn == null || pwd == null || usrn.isEmpty() || pwd.isEmpty()) {                                  
 				throw new Exception("Missing or empty credential value");                                          
 			}                                                                                                      
 		                                                                                                           
 		} catch (Exception e) {                                                                                    
-			// for debugging only e.printStackTrace();                                                             
+			e.printStackTrace();                                                             
 			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing credential value");                    
 			return;                                                                                                
 		}                                                                                                          
@@ -96,11 +101,11 @@ public class CheckLogin extends HttpServlet {
 			ServletContext servletContext = getServletContext();                                                   
 			final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());         
 			ctx.setVariable("errorMsg", "Incorrect username or password");                                         
-			path = getServletContext().getContextPath() + "/login.html";                                                                                  
+			path = getServletContext().getContextPath() + "/index.html";                                                                                  
 			templateEngine.process(path, ctx, response.getWriter());                                               
 		} else {                                                                                                   
 			request.getSession().setAttribute("user", user);                                                       
-			path = getServletContext().getContextPath() + "/index";                                                 
+			path = getServletContext().getContextPath() + "/home";                                                 
 			response.sendRedirect(path);                                                                           
 		}                                                                                                          
 	}

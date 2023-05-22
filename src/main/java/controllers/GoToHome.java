@@ -41,7 +41,7 @@ public class GoToHome extends HttpServlet {
 	
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException{
-				// Redirect to the Home page and add missions to the parameters
+				// Redirect to the Home page
 				String path = "home.html";
 				ServletContext servletContext = getServletContext();
 				final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
