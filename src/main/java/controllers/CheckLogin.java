@@ -96,18 +96,18 @@ public class CheckLogin extends HttpServlet {
 		// If the user exists, add info to the session and go to home page, otherwise                              
 		// show login page with error message                                                                      
 		                                                                                                           
-		String path;                                                                                               
-		if (user == null) {                                                                                        
-			ServletContext servletContext = getServletContext();                                                   
-			final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());         
-			ctx.setVariable("errorMsg", "Incorrect username or password");                                         
-			path = getServletContext().getContextPath() + "/index.html";                                                                                  
-			templateEngine.process(path, ctx, response.getWriter());                                               
-		} else {                                                                                                   
-			request.getSession().setAttribute("user", user);                                                       
-			path = getServletContext().getContextPath() + "/home";                                                 
-			response.sendRedirect(path);                                                                           
-		}                                                                                                          
+		String path;
+		if (user == null) {
+			ServletContext servletContext = getServletContext();
+			final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
+			ctx.setVariable("errorMsg", "Incorrect username or password");
+			path = "/index.html";
+			templateEngine.process(path, ctx, response.getWriter());
+		} else {
+			request.getSession().setAttribute("user", user);
+			path = getServletContext().getContextPath() + "/GoToHome";
+			response.sendRedirect(path);
+		}                                                                                                       
 	}
 	
 	public void destroy() {
@@ -118,4 +118,6 @@ public class CheckLogin extends HttpServlet {
 		}
 	}
 
+	//TODO: Far funzionare il filtro
+	//TODO: Non mettere link a pagine ma chiamare servlet
 }

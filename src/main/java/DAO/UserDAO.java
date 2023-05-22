@@ -26,7 +26,7 @@ public class UserDAO {
 			this.pstatement = connection.prepareStatement(query);
 			// This sets the user_id as first parameter of the query
 			pstatement.setString(1, username);
-			pstatement.setString(1, password);
+			pstatement.setString(2, password);
 			result = pstatement.executeQuery();
 			// If there is a match the entire row is returned here as a result
 			if (!result.isBeforeFirst()) // no results, credential check failed

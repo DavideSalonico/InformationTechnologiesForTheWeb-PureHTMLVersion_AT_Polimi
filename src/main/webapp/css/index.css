@@ -1,7 +1,7 @@
 @charset "ISO-8859-1";
 body {
   /* Loads the image stored locally */
-  background: url("../img/home.jpg");
+  background: url("../img/login.jpg");
   /* The image won't be repeated(showed only once) */
   background-repeat: no-repeat;
   /* centers the image */
@@ -10,30 +10,18 @@ body {
   background-size: cover;
 }
 
-lft-col {
-	width: 0%;
-}
 
-.overview {
-	padding: 15px;
-}
-
-.introduction {
-	margin-top: 9%;
-	left: 14%;
-}
-
-.introduction p {
-	/* Justify the description and doesn't cut words */
-	text-align: justify;
-  	text-justify: inter-word;
-   	font-size: 18px;
-}
-
-.introduction h2 {
-	text-align: center;
-}
-
-.introduction h2:first-child {
-	font-size: 30px;
+.lgn-form {
+	position: fixed;
+	width: 50%;
+	top: 35%;
+	/* The left and right columns' width is always set to 25% */
+	left: 25%;
+	right: 25%;
+	/* This sets the green, red, blue and opacity values (alpha) */
+	background: rgba(32, 32, 32, 0.9);
+	border: 1px solid #333333;
+	/* Smooths the angles */
+	border-radius: 5px;
+	color: #B3B3B3;
 }

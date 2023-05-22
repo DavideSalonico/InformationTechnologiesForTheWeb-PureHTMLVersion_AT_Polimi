@@ -42,8 +42,8 @@ public class GoToHome extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException{
 				// Redirect to the Home page
-				String path = "home.html";
 				ServletContext servletContext = getServletContext();
+				String path = "/WEB-INF/home.html";
 				final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 				templateEngine.process(path, ctx, response.getWriter());
 	}

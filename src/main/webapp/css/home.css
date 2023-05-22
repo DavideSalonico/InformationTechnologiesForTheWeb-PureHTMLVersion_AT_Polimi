@@ -1,0 +1,39 @@
+@charset "ISO-8859-1";
+body {
+  /* Loads the image stored locally */
+  background: url("../img/home.jpg");
+  /* The image won't be repeated(showed only once) */
+  background-repeat: no-repeat;
+  /* centers the image */
+  background-position: center;
+  /* the image will be scaled to occupy just the needed space */
+  background-size: cover;
+}
+
+lft-col {
+	width: 0%;
+}
+
+.overview {
+	padding: 15px;
+}
+
+.introduction {
+	margin-top: 9%;
+	left: 14%;
+}
+
+.introduction p {
+	/* Justify the description and doesn't cut words */
+	text-align: justify;
+  	text-justify: inter-word;
+   	font-size: 18px;
+}
+
+.introduction h2 {
+	text-align: center;
+}
+
+.introduction h2:first-child {
+	font-size: 30px;
+}
