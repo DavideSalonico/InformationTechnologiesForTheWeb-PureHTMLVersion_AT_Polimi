@@ -14,23 +14,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-@WebServlet("/LoginChecker")
-@WebFilter(servletNames = {"/CloseAuction", "/CreateAuction", "/GoToAuctionDetails", "/GoToHome", "/GoToOffer", "/Purchase", "/GoToSell", "/MakeOffer"})
+@WebFilter({"/CloseAuction", "/CreateAuction", "/GoToAuctionDetails", "/GoToHome", "/GoToOffer", "/Purchase", "/GoToSell", "/MakeOffer"})
 public class LoginChecker implements Filter{
-
-	public LoginChecker() {
-		super();
-	}
-
-	@Override
-	public void destroy() {
-		Filter.super.destroy();
-	}
-
-	@Override
-	public void init(FilterConfig filterConfig) throws ServletException {
-		Filter.super.init(filterConfig);
-	}
 
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -48,8 +33,13 @@ public class LoginChecker implements Filter{
 			res.sendRedirect(loginpath);
 			return;
 		}
-		// pass the request along the filter chain
-		chain.doFilter(request, response);
+
+		try {
+	        chain.doFilter(request, response);
+	    } catch (IOException | ServletException e) {
+	        // Handle the exception appropriately
+	        e.printStackTrace();
+	    };
 	}
 
 }
