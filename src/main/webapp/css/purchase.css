@@ -1,1 +1,23 @@
-@charset "UTF-8";
+@charset "ISO-8859-1";
+body {
+  /* Loads the image stored locally */
+  background: url("../img/acquisto.jpg");
+  /* The image won't be repeated(showed only once) */
+  background-repeat: no-repeat;
+  /* centers the image */
+  background-position: center;
+  /* the image will be scaled to occupy just the needed space */
+  background-size: cover;
+}
+
+.form {
+  margin-top: 70px;
+  margin-bottom: 70px;
+  padding-bottom: 60px;
+  /* This sets the green, red, blue and opacity values (alpha) */
+  background: rgba(32, 32, 32, 0.9);
+  border: 1px solid #333333;
+  /* Smooths the angles */
+  border-radius: 5px;
+  color: #B3B3B3;
+}

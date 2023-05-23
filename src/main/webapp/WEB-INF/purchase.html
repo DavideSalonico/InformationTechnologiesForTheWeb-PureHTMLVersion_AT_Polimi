@@ -1,10 +1,87 @@
 <!DOCTYPE html>
-<html>
+<html lang="it" dir="ltr" xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+    <title>Acquisto</title>
+    <link rel="icon" th:href="@{${pageContext.request.contextPath}/img/icon.png}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/auctionOffer.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/purchase.css}">
 </head>
 <body>
-
+    <div class="col lft-col">
+        <div class="quick-nav">
+            <h3>Navigazione Rapida</h3>
+            <ul>
+                <li><a href="#filter-auc">Ricerca Asta</a></li>
+                <li><a href="#available-auc">Aste Disponibili</a></li>
+                <li><a href="#awarded-art">Aste Aggiudicate</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="col mid-col">
+        <div class="row first-row form" th:if="${sessionScope.currUser == null}">
+            <h2 id="filter-auc">Ricerca tramite parola chiave</h2>
+            <form action="GoToAcquisto" method="post">
+                <div>
+                    <label for="key">Chiave:</label>
+                    <input type="text" name="key" id="key" required>
+                </div>
+                <button name="keyword-submit" type="submit">Cerca</button>
+            </form>
+        </div>
+        <div class="row second-row auc-list" th:if="${auctions != null and not #lists.isEmpty(auctions)}">
+            <h2 id="available-auc">Aste disponibili per: "${key}"</h2>
+            <section class="scrollable">
+                <c:forEach var="entry" items="${auctions}" varStatus="row">
+                    <div th:class="${row.count % 2 == 0} ? 'odd' : 'even'">
+                        <a th:href="@{GetAuctionDetails(auctionId=${entry.key.id}, page='offerta.html')}">
+                            <article>
+                                <h3 th:text="${entry.value.name}"></h3>
+                                <h4>Codice: <span th:text="${entry.value.code}"></span></h4>
+                                <p>Tempo rimanente: <span
+                                        th:text="${remainingTimes.get(entry.key.id).days} + ' giorni, ' + ${remainingTimes.get(entry.key.id).hours} + ' ore e ' + ${remainingTimes.get(entry.key.id).minutes} + ' minuti'"></span>
+                                </p>
+                            </article>
+                        </a>
+                    </div>
+                </c:forEach>
+            </section>
+        </div>
+        <div class="row third-row offers-list">
+            <h2 id="awarded-art">Aste aggiudicate</h2>
+            <section class="scrollable scrll-table" th:if="${not #lists.isEmpty(awardedArticles)}">
+                <table>
+                    <thead>
+                    <tr>
+                        <th class="tbl-name">Nome Articolo</th>
+                        <th class="tbl-code">Codice</th>
+                        <th class="tbl-price">Prezzo (&euro;)</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <c:forEach var="awarded" items="${awardedArticles}" varStatus="row">
+                        <tr th:class="${row.count % 2 == 0} ? 'odd' : 'even'">
+                            <td th:text="${awarded.key.name}"></td>
+                            <td th:text="${awarded.key.code}"></td>
+                            <td><span th:text="${#numbers.formatDecimal(awarded.value.value, 0)}"></span></td>
+                        </tr>
+                    </c:forEach>
+                    </tbody>
+                </table>
+            </section>
+        </div>
+    </div>
+    <div class="col rgt-col">
+        <div class="quick-nav menu">
+            <h3>Menu</h3>
+            <ul>
+                <li><a th:href="@{${pageContext.request.contextPath}/home.jsp}">Home</a></li>
+                <li><a th:href="@{${pageContext.request.contextPath}/GoToAcquisto}">Acquista</a></li>
+                <li><a th:href="@{${pageContext.request.contextPath}/GoToVendo}">Vendi</a></li>
+                <li><a th:href="@{${pageContext.request.contextPath}/Logout}">Esci</a></li>
+            </ul>
+        </div>
+    </div>
 </body>
 </html>

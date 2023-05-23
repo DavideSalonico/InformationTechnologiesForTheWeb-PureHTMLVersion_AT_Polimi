@@ -9,11 +9,13 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-@WebFilter(servletNames = {"/CloseAuction", "/CreateAuction", "/GoToAuctionDetails", "/GoToHomePage", "/GoToOffer", "/GoToPurchase", "/GoToSell", "/MakeOffer"})
+@WebServlet("/LoginChecker")
+@WebFilter(servletNames = {"/CloseAuction", "/CreateAuction", "/GoToAuctionDetails", "/GoToHome", "/GoToOffer", "/Purchase", "/GoToSell", "/MakeOffer"})
 public class LoginChecker implements Filter{
 
 	public LoginChecker() {

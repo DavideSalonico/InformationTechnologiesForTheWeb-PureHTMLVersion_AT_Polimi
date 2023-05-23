@@ -1,0 +1,117 @@
+@charset "ISO-8859-1";
+/* This makes the divs scrollable if the content doesn't fit */
+.scrollable {
+    /* If the content doesn't fit the div's size, the div
+    becomes scrollable */
+    overflow-y: auto;
+    /* I don't want an horizontal scrollbar */
+    overflow-x: hidden;
+    max-height: 400px;
+    margin-bottom: 0;
+    padding-bottom: 0;
+    width: auto;
+	
+}
+
+/* .scrll-table {
+ 	overflow-x: auto;
+} */
+
+table {
+	table-layout: fixed;
+	/* This makes all borders collapse on top of each others */
+	border-collapse: collapse;
+	/* Setting the padding and the margin of the table to auto, 
+	automatically centers it inside it's container */
+	margin: auto;
+	padding: auto;
+}
+
+/* Changes the padding and margin for all children of the table */
+table * {
+	margin: 0;
+	padding: 0;
+}
+
+th, td {
+ 	border: 1px solid #666666;
+	/* The text remains inline, there is no wrapping on a new line */
+	white-space: nowrap;
+	/* Avoids to show an horizontal scrollbar if the text doesn't fit the td container */
+  	overflow: hidden;
+  	/* If the text doesn't fit, shows a few dots, indicating that the string is not finished */
+  	text-overflow: ellipsis;
+}
+
+th {
+	text-align: center;
+	width: 20%;
+ 	background-color: rgba(52, 52, 52, 1);
+}
+
+/* This is the first th inside thead ( the first column) */
+th:nth-child(1) {
+	width: 60%;
+}
+
+td {
+   	text-align: left;
+}
+
+/* This sets the background for the table's rows of class even */
+tr.even {
+	  background-color: rgba(32, 32, 32, 1);
+}
+
+/* This sets the background for the table's rows of class even */
+tr.odd {
+	  background-color: rgba(38, 38, 38, 1);
+}
+
+.scrollable a {
+	/* Useful to correctly resize the links and to center them */
+ 	display: inline-block;
+}
+
+.scrollable a, table{
+  background-color: rgba(42, 42, 42, 1);
+  color: #838383;
+  width: 80%;
+  margin-bottom: 10px;
+  }
+
+
+.scrollable a {
+  /* Removes the links' style */
+  text-decoration: none;
+  padding: 1px;
+}
+
+/* Adds a small padding to all the children 
+except articles */
+.scrollable a article * {
+    padding: 1px;
+}
+
+.scrollable a:hover {
+    background-color: rgba(52, 52, 52, 0.7);
+}
+/* Sets the padding and margin to 0 for all
+ the article's children */
+.scrollable article * {
+  padding: 0;
+  margin: 0;
+}
+
+.scrollable a article {
+  text-align: left;
+  border: 2px solid #666666;
+  border-radius: 3px;
+  width: 100%;
+  left: 15%;
+}
+
+/* Changes the color of each article's and table's names and columns*/
+.scrollable a article h3, .scrollable table th{
+  color: #939393;
+}

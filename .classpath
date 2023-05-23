@@ -32,7 +32,5 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/TIW-BOM/src/main/webapp/WEB-INF/lib/apache-commons-lang.jar"/>
-	<classpathentry kind="lib" path="/TIW-MissionExpensesManagement/src/main/webapp/WEB-INF/lib/apache-commons-lang.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

@@ -5,7 +5,7 @@
 	version="3.1">
 	<context-param>
 		<param-name>dbUrl</param-name>
-		<param-value>jdbc:mysql://localhost:3306/aste_online?serverTimezone=UTC</param-value>
+		<param-value>jdbc:mysql://localhost:3306/sys?serverTimezone=UTC</param-value>
 	</context-param>
 	<context-param>
 		<param-name>dbUser</param-name>
@@ -13,13 +13,13 @@
 	</context-param>
 	<context-param>
 		<param-name>dbPassword</param-name>
-		<param-value>P13r0Fr4t3rn4l1!</param-value>
+		<param-value>Jaskaran06</param-value>
 	</context-param>
 	<context-param>
 		<param-name>dbDriver</param-name>
 		<param-value>com.mysql.cj.jdbc.Driver</param-value>
 	</context-param>
 	<welcome-file-list>
-		<welcome-file>CheckLogin</welcome-file>
+		<welcome-file>GoToHome</welcome-file>
 	</welcome-file-list>
 </web-app>
