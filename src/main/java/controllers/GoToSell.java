@@ -3,26 +3,33 @@ package controllers;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
+import DAO.ArticleDAO;
 import DAO.AuctionDAO;
+import DAO.OfferDAO;
+import beans.Article;
 import beans.Auction;
+import beans.Offer;
 import beans.User;
 import utils.ConnectionHandler;
+import utils.DiffTime;
 
 @WebServlet("/GoToSell")
 public class GoToSell extends HttpServlet {
@@ -31,6 +38,8 @@ public class GoToSell extends HttpServlet {
 	private TemplateEngine templateEngine;
     
 	private AuctionDAO auctionDAO;
+	private ArticleDAO articleDAO;
+	private OfferDAO offerDAO;
     
     public GoToSell() {
         super();
@@ -47,8 +56,10 @@ public class GoToSell extends HttpServlet {
 		connection = ConnectionHandler.getConnection(servletContext);
 		
 		auctionDAO = new AuctionDAO(connection);
+		articleDAO = new ArticleDAO(connection);
+		offerDAO = new OfferDAO(connection);
 	}
-
+	
 	public void destroy() {
 		try {
 			ConnectionHandler.closeConnection(connection);
@@ -57,29 +68,93 @@ public class GoToSell extends HttpServlet {
 		}
 	}
 
+	// Filter already check if the user is logged
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		setupPage(request, response);
+	}
 	
+	private void setupPage(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+    {
 		User user = (User) request.getSession().getAttribute("user");
-		List <Auction> openAuctions;
-		List <Auction> closedAuctions;
+		
+		// Variabili di appoggio 
+		List<Auction> openAuctions;
+		List<Auction> closedAuctions;
+		List<Article> articles;
+
+		Offer maxOffer = null;
+		
+		// The final result
+		LinkedHashMap<Auction,Article> userOpenAuctions = new LinkedHashMap<>();
+    	LinkedHashMap<Auction, Article> userClosedAuctions = new LinkedHashMap<>();
+    	HashMap<Integer, DiffTime> remainingTimes = new HashMap<>();
+    	HashMap<Integer, Offer> maxOffers = new HashMap<>();
+    	
 		
 		try {
+			//CONTROLLA SE SONO IN ORDINE CRESCENTE DI DATA+ORA
 			openAuctions = auctionDAO.getOpenAuctions(user.getUser_id());
 			closedAuctions = auctionDAO.getClosedAuctions(user.getUser_id());
+			
+			//Manage all the user's open auction
+			for (Auction auction : openAuctions ) {
+				articles = articleDAO.getAuctionArticles(auction.getAuction_id());
+				maxOffer = offerDAO.getWinningOffer(auction.getAuction_id());
+				
+				for(Article article : articles) {
+					userOpenAuctions.put(auction, article);
+				}
+				
+				LocalDateTime logLdt = (LocalDateTime) request.getSession(false).getAttribute("creationTime");
+				DiffTime diff = DiffTime.getRemainingTime(logLdt, auction.getExpiring_time());
+				remainingTimes.put(auction.getAuction_id(), diff);
+				if(maxOffer != null)
+					maxOffers.put(auction.getAuction_id(), maxOffer);
+			}
+			
+			//Manage all the user's closed auction
+			for (Auction auction : closedAuctions ) {
+				articles = articleDAO.getAuctionArticles(auction.getAuction_id());
+				maxOffer = offerDAO.getWinningOffer(auction.getAuction_id());
+				
+				for(Article article : articles) {
+					userOpenAuctions.put(auction, article);
+				}
+				
+				LocalDateTime logLdt = (LocalDateTime) request.getSession(false).getAttribute("creationTime");
+				DiffTime diff = DiffTime.getRemainingTime(logLdt, auction.getExpiring_time());
+				remainingTimes.put(auction.getAuction_id(), diff);
+				if(maxOffer != null)
+					maxOffers.put(auction.getAuction_id(), maxOffer);
+			}
+			
 		}catch(SQLException e){
 			e.printStackTrace();
+			response.sendError(500, "Errore col caricamento della pagina!");
 			return;
 		}
 
+		// Get the current LocalDateTime and creates the ldt variable
+		// It is used as initial value for the datetime-local tag in sell.html
+		LocalDateTime ldt = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
+					
 		String path = "/WEB-INF/sell.html";
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 		// PASSO VALORI ALLA PAGINA DI RITORNO 
-		ctx.setVariable("openAuctions", openAuctions);
-		ctx.setVariable("closedAuctions", closedAuctions);
-		templateEngine.process(path, ctx, response.getWriter());
-
-	}
+		ctx.setVariable("userOpenAuctions", userOpenAuctions);
+		ctx.setVariable("userClosedAuctions", userClosedAuctions);
+		ctx.setVariable("remainingTimes", remainingTimes);
+		ctx.setVariable("maxOffers", maxOffers);
+		ctx.setVariable("ldt", ldt);
+		
+		// QUESTO TRY and CATCH è messo solo per debuggare
+		try {
+			templateEngine.process(path, ctx, response.getWriter());
+		}catch(Exception e) {
+			response.sendError(500,e.getMessage());
+		}
+    }
 
 	//DEFAULT
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

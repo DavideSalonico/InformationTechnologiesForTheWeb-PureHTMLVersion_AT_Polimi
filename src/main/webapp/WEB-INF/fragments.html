@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="ISO-8859-1">
+		<title>Insert title here</title>
+	</head>
+	<body>
+		<!--/* 1° FRAGMENT:
+		This is a parameterized fragment, "auctions" is the HashMap passed as parameter by "vendo.html"
+		"open" is used to distinguish between the user's open and closed auctions */-->
+		<section class="scrollable" th:fragment="showAuctions(auctions, open)">
+			        	
+      		<!--/* The following lines iterate over the LinkedHashMap and dynamically create the elements
+      		(1) th:if="${not auctions.isEmpty()}" is used to ensure the HashMap is not empty
+      		(2) th:each="entry, stats : ${auctions}" is used to iterate over the HashMap
+      		(3) th:with="article=${entry.value}, auction=${entry.key}" creates 2 variables that contain each Article and each Auction object
+      		(4) th:class="${stats.odd}? 'odd' : even" checks if the current iteration is even or odd and assigns the correct value as class */-->
+
+      		<!--/* th:href="@{GetAuctionDetails(auctionId= ${auction.id}, page='dettagli.html')} creates a relative url with 2 parameters
+      		(1) auctionId is used to specify which is the auction in order to get it's details
+      		(2) page is used to distinguish between dettagli.html and offerta.html, because the controller manages both template pages */-->
+      		
+      		<!--/* "auctions" is the hashmap passed as parameter by vendo.html */-->
+   			<a href="#" th:if="${not auctions.isEmpty()}" th:href="@{GoToAuctionDetails(auction_id= ${auction.id}, page='dettagli.html')}" th:each="entry, stats : ${auctions}" th:with="article=${entry.value}, auction=${entry.key}">      				
+	   			<article th:class="${stats.odd}? 'odd' : even">
+	   				<!--/* This calls the Article's getName() function */-->
+	   				<h3 th:text="${article.name}">Nome 1</h3>
+	   				<!--/* Calls article.getCode() and returns a string*/-->
+	   				<h4 th:text="${'Codice: ' + article.code}">Codice: Cod. 1</h4>
+	   				<!--/* The text of the paragraph is set by checking if maxOffers is null or empty
+	   				and if the current auction has a maxOffer
+	   				if the condition is valid, takes the max offer for the current auction if present
+	   				otherwise it writes that there is no MaxOffer */-->
+	   				
+	   				<!--/* "#numbers.formatInteger(num, 1, 'POINT')" : formats the offer's value
+	   				 in order to display it properly. Accepts as parameters the value, the minimum
+	   				 number of integer digits and the thousands separator */-->
+	   				 
+	   				<!--/* Here two if statements are used instead of an inline if-else because the
+	   				euro symbol's html code is not rendered correctly if processed by the thymeleaf engine
+	   				So, in order to display it, it's necessary to keep it static. That's why span is used in the first case */-->
+	   				<p th:if="${maxOffers != null and maxOffers.get(auction.id) != null}"><span th:text="${'Offerta massima: ' + #numbers.formatInteger(maxOffers.get(auction.id).value,1,'POINT')}"></span> &euro;</p>
+					<p th:if="${maxOffers == null or maxOffers.get(auction.id) == null}">Offerta massima: Nessuna</p>
+	   				<!--/*
+	   				(1) th:with="currTimeLeft=${remainingTimes.get(entry.key)}" creates a variable currTimeLeft and assigns
+	   				to it the current DiffTime object, related to the remaining time left before the expiration date of the current auction
+	   				(2) th:text calls the getDays(), getHours() and getMinutes() functions of the currTimeLeft object and returns the string */-->
+	   				
+	   				<!--/* "open" is a parameter passed by vendo.html, the deadline is showed only if open is equal to 1,
+	   				it means that the fragment will be used to show the user's open auctions */-->
+	   				<p th:if="${open == 1}" th:with="currTimeLeft=${remainingTimes.get(auction.id)}" th:text="${'Tempo rimanente: ' + currTimeLeft.days + ' giorni, ' + currTimeLeft.hours + ' ore e ' + currTimeLeft.minutes + ' minuti'}">Tempo rimanente: x giorni, y ore e z minuti</p>
+	   			</article>
+      		</a>
+		</section>
+		
+		
+		
+		
+		<!--/* 2° FRAGMENT:
+		This is a fragment, it is requested by "offerta.html" and "dettagli.html"
+		in order to show the auction's and article's details */-->
+		<div th:fragment="showDetails">
+	        <!--/* This calls the Article's getName() function */-->
+	        <h2 id="dtl-art" th:text="${article.name}">Nome 1</h2>
+	        <!--/* Calls article.getCode() and returns a string */-->
+	        <h4 th:text="${'Codice: ' + article.code}">Codice: Cod. 1</h4>
+	        <!--/* The following line takes a base64 encoded string representing an image and displays it
+	        the image is clickable and if clicked, it's showed at its original size */-->
+	        <a href="#" th:href="${'data:image/jpeg;base64,' + article.image}"><img src="http://classifieds.usatoday.com/wp-content/uploads/2018/06/Auction-Bidding.jpeg" th:src="${'data:image/jpeg;base64,' + article.image}" alt="Article picture"/></a>
+	        <!--/* Takes the article's description */-->
+	        <p class="description" th:text="${article.description}">Descrizione 1</p>
+	        <!--/* "#numbers.formatInteger(num, 1, 'POINT')" : formats the number
+			in order to display it properly. Accepts as parameters the value, the minimum
+			number of integer digits and the thousands separator */-->
+		
+			<!--/* The euro symbol's html code is not rendered correctly if processed by the thymeleaf engine
+			So, in order to display it, it's necessary to keep it static. That's why span is used.
+			Span is also used to make the first word bold */-->
+	        <p><strong>Prezzo iniziale: </strong><span th:text="${#numbers.formatInteger(auction.initialPrice,1,'POINT')}">x</span> &euro;</p>
+	        <p><strong>Rialzo minimo: </strong><span th:text="${#numbers.formatInteger(auction.minUpsideOffer,1,'POINT')}">y</span> &euro;</p>
+	        <!--/* Takes the expiration date of the auction */-->
+	        <p><strong>Scadenza: </strong><span th:text="${frmtDeadline}">gg MMM yyyy HH:mm</span></p>
+		</div>
+		
+		
+		
+		<!--/* 3° FRAGMENT:
+		This is a parameterized fragment, requested by "offerta.html" and "dettagli.html"
+		in order to display all the offers for the relative auction inside a table.
+		The parameter "details" is necessary to be able to distinguish between the 2 pages. */-->
+		<section class="mid-col scrollable" th:fragment="showOffers(details)">
+			<h2 id="dtl-offers">Offerte pervenute</h2>
+			<!--/* The paragraph exists only if there are no offers */-->
+			<p th:if="${offers == null or offers.isEmpty()}">Non esiste alcuna offerta al momento!</p>
+			<!--/* The entire table is removed if there are no offers */-->
+			<table th:remove="${offers == null or offers.isEmpty()} ? all">
+				<thead>
+					<tr>
+						<th class="tbl-val tbl-name">Nome</th>
+						<th class="tbl-val tbl-offer">Offerta (&euro;)</th>
+						<th class="tbl-val tbl-date">Data</th>
+					</tr>
+				</thead>
+				<tbody>
+					<!--/* There is no need to check if offers is empty here
+					if it is, the table is entirely deleted (container div's condition)*/-->
+					<tr th:class="${stats.odd}? 'odd' : even" th:each="entry, stats : ${offers}" th:with="offer=${entry.key}, frmtTime=${entry.value}">
+						<td th:text="${offer.user}">Utente 1</td>
+						<!--/* "#numbers.formatInteger(num, 1, 'POINT')" : formats the number
+      					in order to display it properly. Accepts as parameters the value, the minimum
+      					number of integer digits and the thousands separator */-->
+						<td th:text="${#numbers.formatInteger(offer.value,1,'POINT')}">Valore 1</td>
+						<!--/* The following line replaces the T character with a space and
+						shows the date and time of each offer */-->
+						<td th:text="${frmtTime}">dd MMM yyyy HH:mm</td>
+					</tr>
+				</tbody>
+			</table>
+			<!--/* It is possible to close the auction only if it is expired */-->
+			<!--/* "details" is the parameter passed by offerta.html or dettagli.html
+			it is used to distinguish between the 2 pages */-->
+			<a href="#" th:if="${details == 1 and isExpired}" th:href="@{CloseAuction(auctionId= ${auction.id})}">
+				<button>Chiudi asta</button>
+			</a>
+		</section>
+		
+	</body>
+</html>

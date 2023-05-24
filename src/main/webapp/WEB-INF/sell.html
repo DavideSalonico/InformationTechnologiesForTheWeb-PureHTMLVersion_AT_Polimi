@@ -42,22 +42,18 @@
                     <textarea name="description" id="description" rows="4" cols="50" minlength="20" maxlength="3000" placeholder=" ..." spellcheck="false" required></textarea>
                 </div>
                 <div>
-                    <label for="image">Immagine:</label>
-                    <input type="file" name="image" id="image" accept="image/*"  required>
-                </div>
-                <div>
-                    <label for="initialPrice">Prezzo Iniziale:</label>
-                    <input type="number" name="initialPrice" id="initialPrice" min="1" step="1" max="700000000" required>
+                    <label for="initial_price">Prezzo Iniziale:</label>
+                    <input type="number" name="initial_price" id="initial_price" min="1" step="1" max="700000000" required>
                     <span> &euro;</span>
                 </div>
                 <div>
-                    <label for="minUpsideOffer">Rialzo Minimo:</label>
-                    <input type="number" name="minUpsideOffer" id="minUpsideOffer" min="50" step="1" max="100000" required>
+                    <label for="minimum_rise">Rialzo Minimo:</label>
+                    <input type="number" name="minimum_rise" id="minimum_rise" min="50" step="1" max="100000" required>
                     <span> &euro;</span>
                 </div>
                 <div>
-                    <label for="deadline">Scadenza (futura): </label>
-                    <input type="datetime-local" name="deadline" id="deadline" th:min="${ldt}" placeholder="yyyy-MM-ddTHH:mm" th:value="${ldt}" required>
+                    <label for="expiring_date">Scadenza (futura): </label>
+                    <input type="datetime-local" name="expiring_date" id="expiring_date" th:min="${ldt}" placeholder="yyyy-MM-ddTHH:mm" th:value="${ldt}" required>
                 </div>
                 <button name="auction-submit" type="submit">Crea Asta</button>
             </form>
@@ -67,10 +63,10 @@
         <div class="quick-nav menu">
             <h3>Menu</h3>
             <ul>
-                <li><a href= "index.html">Home</a></li>
-                <li><a th:href="@{/GoToAcquisto}">Acquista</a></li>
-                <li><a th:href="@{/GoToVendo}">Vendi</a></li>
-                <li><a th:href="@{/Logout}">Esci</a></li>
+                <li><a th:href= "@{/GoToHome}">Home</a></li>
+                <li><a th:href="@{/GoToPurchase}">Acquista</a></li>
+                <li><a th:href="@{/GoToSell}">Vendi</a></li>
+                <li><a th:href= "index.html">Esci</a></li>
             </ul>
         </div>
     </div>
