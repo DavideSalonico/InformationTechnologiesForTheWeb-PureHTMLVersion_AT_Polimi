@@ -3,6 +3,7 @@ package controllers;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -104,6 +105,7 @@ public class CheckLogin extends HttpServlet {
 			templateEngine.process(path, ctx, response.getWriter());
 		} else {
 			request.getSession().setAttribute("user", user);
+			request.getSession().setAttribute("creationTime", LocalDateTime.now());
 			path = getServletContext().getContextPath() + "/GoToHome";
 			response.sendRedirect(path);
 		}                                                                                                       
@@ -116,7 +118,6 @@ public class CheckLogin extends HttpServlet {
 			e.printStackTrace();
 		}
 	}
-
-	//TODO: Far funzionare il filtro
+	
 	//TODO: Non mettere link a pagine ma chiamare servlet
 }

@@ -86,21 +86,24 @@ public class OfferDAO {
 		Offer off = new Offer();
 		try {
 			//Assumo che l'ultima offerta in ordine di data con il corretto auction_id sia effettivamente la vincente
-			pstatement = connection.prepareStatement("SELECT * FROM offer WHERE time = MIN(SELECT time FROM offer WHERE auction_id = ?)");
+			pstatement = connection.prepareStatement("SELECT * FROM offer WHERE time = (SELECT MIN(time) FROM offer WHERE auction = ?)");
 			pstatement.setInt(1, auction_id);
 			result = pstatement.executeQuery();
-			result.next();   //NECESSARIO, dovremmo fare un controllo 
-			off.setOffer_id(result.getInt("offer_id"));
-			off.setPrice(result.getInt("price"));
-			off.setTime(result.getTimestamp("time").toLocalDateTime());
-			off.setUser(result.getInt("user"));
-			off.setAuction(result.getInt("auction"));
+			if(result.next()) {
+				off.setOffer_id(result.getInt("offer_id"));
+				off.setPrice(result.getInt("price"));
+				off.setTime(result.getTimestamp("time").toLocalDateTime());
+				off.setUser(result.getInt("user"));
+				off.setAuction(result.getInt("auction"));	
+			};
 		} catch(SQLException e) {
 			e.printStackTrace();
 			throw new SQLException(e);
 		} finally {
 			try {
-				result.close();
+				if(result == null) {
+					result.close();
+				}
 			} catch(Exception e1) {
 				throw new SQLException(e1);
 			}

@@ -130,7 +130,7 @@ public class GoToSell extends HttpServlet {
 			
 		}catch(SQLException e){
 			e.printStackTrace();
-			response.sendError(500, e.getMessage() + " SONO QUA RIGA 133 GoToSell");
+			response.sendError(500, e.getMessage());
 			return;
 		}
 
