@@ -106,7 +106,7 @@ public class GoToSell extends HttpServlet {
 				}
 				
 				LocalDateTime logLdt = (LocalDateTime) request.getSession(false).getAttribute("creationTime");
-				DiffTime diff = DiffTime.getRemainingTime(logLdt, auction.getExpiring_time());
+				DiffTime diff = DiffTime.getRemainingTime(logLdt, auction.getExpiring_date());
 				remainingTimes.put(auction.getAuction_id(), diff);
 				if(maxOffer != null)
 					maxOffers.put(auction.getAuction_id(), maxOffer);
@@ -122,7 +122,7 @@ public class GoToSell extends HttpServlet {
 				}
 				
 				LocalDateTime logLdt = (LocalDateTime) request.getSession(false).getAttribute("creationTime");
-				DiffTime diff = DiffTime.getRemainingTime(logLdt, auction.getExpiring_time());
+				DiffTime diff = DiffTime.getRemainingTime(logLdt, auction.getExpiring_date());
 				remainingTimes.put(auction.getAuction_id(), diff);
 				if(maxOffer != null)
 					maxOffers.put(auction.getAuction_id(), maxOffer);
@@ -130,7 +130,7 @@ public class GoToSell extends HttpServlet {
 			
 		}catch(SQLException e){
 			e.printStackTrace();
-			response.sendError(500, "Errore col caricamento della pagina!");
+			response.sendError(500, e.getMessage() + " SONO QUA RIGA 133 GoToSell");
 			return;
 		}
 

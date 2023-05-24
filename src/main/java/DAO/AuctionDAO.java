@@ -45,11 +45,11 @@ public class AuctionDAO {
 		}	
 	}
 	
-	public void insertAuction(int initial_price, LocalDateTime expiring_time, int minimum_raise, int creator) throws SQLException{
+	public void insertAuction(int initial_price, LocalDateTime expiring_date, int minimum_raise, int creator) throws SQLException{
 		try {
-			pstatement = connection.prepareStatement("INSERT INTO auction (initia_price, expiring_time, minimum_raise, creator) VALUES(?, ?, ?, ?)");
+			pstatement = connection.prepareStatement("INSERT INTO auction (initia_price, expiring_date, minimum_raise, creator) VALUES(?, ?, ?, ?)");
 			pstatement.setInt(1, initial_price);
-			pstatement.setObject(2, expiring_time);
+			pstatement.setObject(2, expiring_date);
 			pstatement.setInt(3, minimum_raise);
 			pstatement.setInt(4, creator);
 			pstatement.executeQuery();
@@ -110,7 +110,7 @@ public class AuctionDAO {
 
 		} finally {
 			try {
-				result.close();
+				//result.close();
 			} catch (Exception e1) {
 				throw new SQLException(e1);
 			}
@@ -138,7 +138,7 @@ public class AuctionDAO {
 
 		} finally {
 			try {
-				result.close();
+				//result.close();
 			} catch (Exception e1) {
 				throw new SQLException(e1);
 			}
@@ -180,10 +180,10 @@ public class AuctionDAO {
 	public LocalDateTime getExpiringTime(int auction_id) throws SQLException{
 		LocalDateTime exp_time;
 		try {
-			pstatement = connection.prepareStatement("SELECT expiring_time FROM auction WHERE auction_id = ?");
+			pstatement = connection.prepareStatement("SELECT expiring_date FROM auction WHERE auction_id = ?");
 			pstatement.setInt(1, auction_id);
 			result = pstatement.executeQuery();
-			exp_time = result.getTimestamp("expiring_time").toLocalDateTime();
+			exp_time = result.getTimestamp("expiring_date").toLocalDateTime();
 		} catch (SQLException e) {
 		    e.printStackTrace();
 			throw new SQLException(e);
@@ -258,7 +258,7 @@ public class AuctionDAO {
 		auction.setCreator(result.getInt("creator"));
 		auction.setInitial_price(result.getInt("initial_price"));
 		auction.setMinimum_raise(result.getInt("minimum_raise"));
-		auction.setExpiring_time(result.getTimestamp("expiring_time").toLocalDateTime());
+		auction.setExpiring_date(result.getTimestamp("expiring_date").toLocalDateTime());
 		return auction;
 	}
 }

@@ -12,6 +12,7 @@ import java.time.temporal.ChronoUnit;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -22,14 +23,21 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
+import DAO.ArticleDAO;
 import DAO.AuctionDAO;
 import utils.ConnectionHandler;
 
 @WebServlet("/CreateAuction")
+
+//@MultipartConfig is needed otherwise it will be impossible to parse the parameters as parts from a multipart form
+@MultipartConfig
+
 public class CreateAuction extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
 	private TemplateEngine templateEngine;
+	private ArticleDAO articleDAO;
+	private AuctionDAO auctionDAO;
        
     public CreateAuction() {
         super();
@@ -42,8 +50,10 @@ public class CreateAuction extends HttpServlet {
 		this.templateEngine = new TemplateEngine();
 		this.templateEngine.setTemplateResolver(templateResolver);
 		templateResolver.setSuffix(".html");
-	
 		connection = ConnectionHandler.getConnection(getServletContext());
+		
+		articleDAO = new ArticleDAO(connection);
+		auctionDAO = new AuctionDAO(connection);
 	}
 
 	public void destroy() {
@@ -54,11 +64,7 @@ public class CreateAuction extends HttpServlet {
 		}
 	}
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-		
-	}
-	
+
 	private void createAuction(int auction_id, int initial_price, LocalDateTime expiring_date, int minimum_raise,
 			int creator) throws SQLException {
 		
@@ -89,8 +95,6 @@ public class CreateAuction extends HttpServlet {
     		return true;
     	return false;
     }
-    
-   
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		int auction_id;
@@ -118,5 +122,10 @@ public class CreateAuction extends HttpServlet {
 			e.printStackTrace();
 		}
 	}
+	
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// No needed
+	}
+	
 
 }

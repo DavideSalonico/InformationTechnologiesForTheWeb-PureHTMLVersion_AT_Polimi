@@ -7,7 +7,7 @@ public class Auction {
 	private boolean open;
 	private int initial_price;
 	private int minimum_raise;
-	private LocalDateTime expiring_time;
+	private LocalDateTime expiring_date;
 	private int creator;
 	
 	public int getAuction_id() {
@@ -28,11 +28,11 @@ public class Auction {
 	public void setInitial_price(int initial_price) {
 		this.initial_price = initial_price;
 	}
-	public LocalDateTime getExpiring_time() {
-		return expiring_time;
+	public LocalDateTime getExpiring_date() {
+		return expiring_date;
 	}
-	public void setExpiring_time(LocalDateTime expiring_time) {
-		this.expiring_time = expiring_time;
+	public void setExpiring_date(LocalDateTime expiring_date) {
+		this.expiring_date = expiring_date;
 	}
 	public int getCreator() {
 		return creator;

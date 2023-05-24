@@ -183,7 +183,7 @@ public class ArticleDAO {
 		article.setName(result.getString("name"));
 		article.setDescription(result.getString("description"));
 		article.setImage(result.getBlob("image"));
-		article.setArticle_creator(result.getInt("articleCreator"));
+		article.setArticle_creator(result.getInt("article_creator"));
 		article.setAuction_id(result.getInt("auction_id"));
 		article.setPrice(result.getInt("price"));
 		article.setSold(result.getBoolean("sold"));
