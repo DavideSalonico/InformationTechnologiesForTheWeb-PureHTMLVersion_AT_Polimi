@@ -1,5 +1,22 @@
 package controllers;
 
+import DAO.ArticleDAO;
+import DAO.AuctionDAO;
+import beans.Article;
+import beans.Auction;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.WebContext;
+import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
+import utils.ConnectionHandler;
+import utils.DiffTime;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -9,25 +26,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.WebContext;
-import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
-
-import DAO.ArticleDAO;
-import DAO.AuctionDAO;
-import beans.Article;
-import beans.Auction;
-import utils.ConnectionHandler;
-import utils.DiffTime;
 
 @WebServlet("/GoToPurchase")
 public class GoToPurchase extends HttpServlet {
@@ -53,8 +51,8 @@ public class GoToPurchase extends HttpServlet {
 		connection = ConnectionHandler.getConnection(getServletContext());
 		
 		// Here the AuctionDAO is initialized, try catch statement don't needed, ConnectionHandler manage already the connection 
-		auc = new AuctionDAO(connection);
-		art = new ArticleDAO(connection);
+		auctionDAO = new AuctionDAO(connection);
+		articleDAO = new ArticleDAO(connection);
 	}
 
 	public void destroy() {
@@ -68,8 +66,7 @@ public class GoToPurchase extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 				if(request.getParameter("key") != null){
-					if(filterAuctions(request, response))
-						setupPage(request, response);
+					filterAuctions(request, response);
 				}	
 	}
 		
@@ -82,7 +79,7 @@ public class GoToPurchase extends HttpServlet {
 	
 	// This method filters all auctions by looking inside the relative articles' names and descriptions and checking if the keyword is present
 	// TODO: This method can be optimized with better queries to database
-    private boolean filterAuctions(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+    private void filterAuctions(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
     	List<Auction> auctions = new ArrayList<>();
     	List <Article> articles = null;
@@ -102,7 +99,7 @@ public class GoToPurchase extends HttpServlet {
     	if(!validateKey(key)){
     		response.sendError(400, "Errore, la chiave pu� contenere solo lettere non accentate!"
     				+ " Inoltre deve avere una lunghezza compresa tra i 3 e 20 caratteri.");
-    		return false;
+    		return;
     	}
     	// Proceeds only if the key is valid
     	else{
@@ -112,7 +109,7 @@ public class GoToPurchase extends HttpServlet {
     		} catch (SQLException e) {
     			e.printStackTrace();
     			response.sendError(500, "Errore, accesso al database fallito!");
-   				return false;
+   				return;
    			}
         		
        		// This means that the there is at least one auction for the given keyword
@@ -133,7 +130,7 @@ public class GoToPurchase extends HttpServlet {
    						} catch (SQLException e) {
    							e.printStackTrace();
    							response.sendError(500, "Errore, accesso al database fallito!");
-   							return false;
+   							return;
    						}
    			    		// Adds the auction to the LinkedHashMap along with it's article
    						filteredOpenAuctions.put(auction, articles);
@@ -160,7 +157,7 @@ public class GoToPurchase extends HttpServlet {
     	}
     	// Every time there is an error, the method returns false
     	// so it's possible to execute this line only if there are no errors
-    	return true;
+    	return;
     }
 
 	

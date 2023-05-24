@@ -1,8 +1,12 @@
 package controllers;
 
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
+import DAO.ArticleDAO;
+import beans.Article;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.WebContext;
+import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
+import utils.ConnectionHandler;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -10,15 +14,9 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.WebContext;
-import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
-
-import DAO.ArticleDAO;
-import beans.Article;
-import utils.ConnectionHandler;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * Servlet implementation class CreateArticle
@@ -100,7 +98,7 @@ public class CreateArticle extends HttpServlet {
 		
 		Article article = null;
 		try {
-			articleDAO.insertArticle(name, description, image, price, article_creator);
+			articleDAO.insertArticle(name, description,  image, price, article_creator);
 		}
 		catch(SQLException e){
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Unable to insert a new articole into database"); 

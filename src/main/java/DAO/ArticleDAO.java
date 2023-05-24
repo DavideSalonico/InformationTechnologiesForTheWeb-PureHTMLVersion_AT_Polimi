@@ -1,14 +1,10 @@
 package DAO;
 
-import java.sql.Blob;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import beans.Article;
+
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-
-import beans.Article;
 
 public class ArticleDAO {
 	private Connection connection;
@@ -47,16 +43,15 @@ public class ArticleDAO {
 		return isSold;
 	}
 	
-	public void insertArticle(String name, String description, Blob image, int price, boolean sold, int user_id) throws SQLException{
-		String query = "INSERT into article (name, description, image, price, sold, user_id) VALUES (?,?,?,?,?,?)";
+	public void insertArticle(String name, String description, String image, int price, int user_id) throws SQLException{
+		String query = "INSERT into article (name, description, image, price, sold, user_id) VALUES (?,?,?,?,false,?)";
 		try{
 			pstatement  = connection.prepareStatement(query);
 			pstatement.setString(1,name);
 			pstatement.setString(2,description);
-			pstatement.setBlob(user_id, image);
+			pstatement.setString(user_id, image);
 			pstatement.setInt(4, price);
-			pstatement.setBoolean(5,sold);
-			pstatement.setInt(6, user_id);
+			pstatement.setInt(5, user_id);
 			pstatement.executeUpdate();
 		}catch(SQLException e) {
 			e.printStackTrace();
