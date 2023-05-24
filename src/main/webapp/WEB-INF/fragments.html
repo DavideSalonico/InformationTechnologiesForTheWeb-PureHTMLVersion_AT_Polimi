@@ -61,14 +61,14 @@
 		in order to show the auction's and article's details */-->
 		<div th:fragment="showDetails">
 	        <!--/* This calls the Article's getName() function */-->
-	        <h2 id="dtl-art" th:text="${article.name}">Nome 1</h2>
+	        <h2 id="dtl-art" th:text="${article.get(0).name}">Nome 1</h2>
 	        <!--/* Calls article.getCode() and returns a string */-->
-	        <h4 th:text="${'Codice: ' + article.article_id}">Codice: Cod. 1</h4>
+	        <h4 th:text="${'Codice: ' + article.get(0).article_id}">Codice: Cod. 1</h4>
 	        <!--/* The following line takes a base64 encoded string representing an image and displays it
 	        the image is clickable and if clicked, it's showed at its original size */-->
-	        <a href="#" th:href="${'data:image/jpeg;base64,' + article.image}"><img src="http://classifieds.usatoday.com/wp-content/uploads/2018/06/Auction-Bidding.jpeg" th:src="${'data:image/jpeg;base64,' + article.image}" alt="Article picture"/></a>
+	        <a href="#" th:href="${'data:image/jpeg;base64,' + article.get(0).image}"><img src="http://classifieds.usatoday.com/wp-content/uploads/2018/06/Auction-Bidding.jpeg" th:src="${'data:image/jpeg;base64,' + article.get(0).image}" alt="Article picture"/></a>
 	        <!--/* Takes the article's description */-->
-	        <p class="description" th:text="${article.description}">Descrizione 1</p>
+	        <p class="description" th:text="${article.get(0).description}">Descrizione 1</p>
 	        <!--/* "#numbers.formatInteger(num, 1, 'POINT')" : formats the number
 			in order to display it properly. Accepts as parameters the value, the minimum
 			number of integer digits and the thousands separator */-->
@@ -109,7 +109,7 @@
 						<!--/* "#numbers.formatInteger(num, 1, 'POINT')" : formats the number
       					in order to display it properly. Accepts as parameters the value, the minimum
       					number of integer digits and the thousands separator */-->
-						<td th:text="${#numbers.formatInteger(offer.value,1,'POINT')}">Valore 1</td>
+						<td th:text="${#numbers.formatInteger(offer.price,1,'POINT')}">Valore 1</td>
 						<!--/* The following line replaces the T character with a space and
 						shows the date and time of each offer */-->
 						<td th:text="${frmtTime}">dd MMM yyyy HH:mm</td>
@@ -119,7 +119,7 @@
 			<!--/* It is possible to close the auction only if it is expired */-->
 			<!--/* "details" is the parameter passed by offerta.html or dettagli.html
 			it is used to distinguish between the 2 pages */-->
-			<a href="#" th:if="${details == 1 and isExpired}" th:href="@{CloseAuction(auctionId= ${auction.id})}">
+			<a href="#" th:if="${details == 1 and isExpired}" th:href="@{CloseAuction(auctionId= ${auction.auction_id})}">
 				<button>Chiudi asta</button>
 			</a>
 		</section>

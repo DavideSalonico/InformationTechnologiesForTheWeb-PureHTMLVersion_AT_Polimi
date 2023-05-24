@@ -152,7 +152,7 @@ public class AuctionDAO {
 	}
 	
 	public Auction getAuction(int auction_id) throws SQLException{
-		Auction auction;
+		Auction auction = null;
 		try {
 			pstatement = connection.prepareStatement("SELECT * FROM auction WHERE auction_id = ?");
 			pstatement.setInt(1, auction_id);

@@ -5,8 +5,8 @@
     <title>Offerte</title>
     <link rel="icon" th:href="@{/img/icon.png}">
     <link rel="stylesheet" type="text/css" href = "css/main.css">
-    <link rel="stylesheet" type="text/css" href="css/auctions-offers.css">
-    <link rel="stylesheet" type="text/css" href="css/auction-details.css">
+    <link rel="stylesheet" type="text/css" href="css/auctionOffer.css">
+    <link rel="stylesheet" type="text/css" href="css/auctionDetails.css">
     <link rel="stylesheet" type="text/css" href="css/offer.css">
 </head>
 <body>
@@ -38,9 +38,9 @@
         <form action="#" th:action="@{/MakeOffer}" method="post">
             <div>
                 <label for="offer">Valore:</label>
-                <input type="number" name="offer" id="offer" min="1" max="2000000000" step="1" th:min="${min}" th:value="${min}" th:with="min=${not offers.isEmpty()} ? ${maxAuctionOffer.value + auction.minUpsideOffer} : ${auction.initialPrice}" required>
+                <input type="number" name="offer" id="offer" min="1" max="2000000000" step="1" th:min="${min}" th:value="${min}" th:with="min=${not offers.isEmpty()} ? ${maxAuctionOffer.price + auction.minimum_raise} : ${auction.initial_price}" required>
                 <span>&euro;</span>
-                <input type="hidden" name="auctionId" th:value="${auction.id}">
+                <input type="hidden" name="auctionId" th:value="${auction.auction_id}">
             </div>
             <button name="offer-submit" type="submit">Conferma</button>
         </form>
@@ -50,10 +50,10 @@
     <div class="quick-nav menu">
         <h3>Menu</h3>
         <ul>
-            <a href="#" th:href="@{/home.jsp}"><li>Home</li></a>
-            <a href="#" th:href="@{/GoToAcquisto}"><li>Acquista</li></a>
-            <a href="#" th:href="@{/GoToVendo}"><li>Vendi</li></a>
-            <a href="#" th:href="@{/Logout}"><li>Esci</li></a>
+            <a href="#" th:href="@{/GoToHome}"><li>Home</li></a>
+            <a href="#" th:href="@{/GoToPurchase}"><li>Acquista</li></a>
+            <a href="#" th:href="@{/GoToSell}"><li>Vendi</li></a>
+            <a href="#" th:href="index.html"><li>Esci</li></a>
         </ul>
     </div>
 </div>

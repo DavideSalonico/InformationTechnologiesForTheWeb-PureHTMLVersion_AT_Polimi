@@ -24,7 +24,7 @@
           <!--/* Shows this element only if the auction exists and it's closed */-->
           <a th:if="${auction != null and !auction.isOpen()}" href="#dtl-info"><li>Informazioni</li></a>
            <!--/* Shows this element only if the auction exists and it's not closed */-->
-          <a th:if="${auction != null and not !auction.isOpen()}" href="#dtl-offers"><li>Offerte</li></a>
+          <a th:if="${auction != null and  auction.isOpen()}" href="#dtl-offers"><li>Offerte</li></a>
         </ul>
       </div>
     </div>
@@ -65,7 +65,7 @@
       			<!--/* The euro symbol's html code is not rendered correctly if processed by the thymeleaf engine
       			So, in order to display it, it's necessary to keep it static. That's why span is used.
       			Span is also used to make the first word bold */-->
-                <p><strong>Offerta: </strong><span th:text="${#numbers.formatInteger(maxAuctionOffer.value,1,'POINT')}">Offerta: offerta 1</span> &euro;</p>
+                <p><strong>Offerta: </strong><span th:text="${#numbers.formatInteger(maxAuctionOffer.price,1,'POINT')}">Offerta: offerta 1</span> &euro;</p>
                 <p><strong>Indirizzo: </strong><span th:text="${awardedUser.address}">indirizzo 1</span></p>
             </div>
         </section>

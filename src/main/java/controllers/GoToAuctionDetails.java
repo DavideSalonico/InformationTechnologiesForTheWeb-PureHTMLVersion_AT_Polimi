@@ -142,7 +142,7 @@ public class GoToAuctionDetails extends HttpServlet {private static final long s
 			
 		}catch(SQLException e) {
 			e.printStackTrace();
-			response.sendError(500, "Errore, accesso al database fallito!");
+			response.sendError(500, "Errore, quando cerco le offerte!");
 			return;
 		}
 		
@@ -178,7 +178,12 @@ public class GoToAuctionDetails extends HttpServlet {private static final long s
 		ctx.setVariable("maxAuctionOffer", maxAuctionOffer);
 		ctx.setVariable("awardedUser", awardedUser);
 		// This actually processes the template page
-		templateEngine.process(path, ctx, response.getWriter()); 
+		// QUESTO TRY and CATCH è messo solo per debuggare
+		try {
+			templateEngine.process(path, ctx, response.getWriter());
+		}catch(Exception e) {
+			response.sendError(500,e.getMessage());
+		}
 		
     }
 	

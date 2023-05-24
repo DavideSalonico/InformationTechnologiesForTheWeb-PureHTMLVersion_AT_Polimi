@@ -22,7 +22,7 @@ public class OfferDAO {
 	public List<Offer> getOffers(int auction_id) throws SQLException{
 		List<Offer> offers = new ArrayList<Offer>();
 		try {
-			pstatement = connection.prepareStatement("SELECT * FROM offer WHERE auction_id = ?");
+			pstatement = connection.prepareStatement("SELECT * FROM offer WHERE auction = ?");
 			pstatement.setInt(1, auction_id);
 			result = pstatement.executeQuery();
 			while(result.next()) {
@@ -32,6 +32,7 @@ public class OfferDAO {
 				off.setTime(result.getTimestamp("time").toLocalDateTime());
 				off.setUser(result.getInt("user"));
 				off.setAuction(result.getInt("auction"));
+				offers.add(off);
 			}	
 		} catch(SQLException e) {
 			e.printStackTrace();
