@@ -11,62 +11,57 @@
 <body>
     <div class="col lft-col">
         <div class="quick-nav">
-            <h3>Navigazione Rapida</h3>
+            <h3>Rapid Navigation</h3>
             <ul>
-                <li><a href="#filter-auc">Ricerca Asta</a></li>
-                <li><a href="#available-auc">Aste Disponibili</a></li>
-                <li><a href="#awarded-art">Aste Aggiudicate</a></li>
+                <li><a href="#filter-auc">Research Auction</a></li>
+                <li><a href="#available-auc">Available Auctions</a></li>
+                <li><a href="#awarded-art">Won Auctions</a></li>
             </ul>
         </div>
     </div>
     <div class="col mid-col">
         <div class="row first-row form" th:if="${sessionScope.currUser == null}">
-            <h2 id="filter-auc">Ricerca tramite parola chiave</h2>
-            <form action="GoToAcquisto" method="post">
+            <h2 id="filter-auc">Search with a keyword</h2>
+            <form action="GoToSell" method="post">
                 <div>
-                    <label for="key">Chiave:</label>
+                    <label for="key">Key:</label>
                     <input type="text" name="key" id="key" required>
                 </div>
-                <button name="keyword-submit" type="submit">Cerca</button>
+                <button name="keyword-submit" type="submit">Search</button>
             </form>
         </div>
         <div class="row second-row auc-list" th:if="${auctions != null and not #lists.isEmpty(auctions)}">
-            <h2 id="available-auc">Aste disponibili per: "${key}"</h2>
+            <h2 id="available-auc" th:text="'Available auction for: \'' + ${key} + '\'"></h2>
             <section class="scrollable">
-                <c:forEach var="entry" items="${auctions}" varStatus="row">
-                    <div th:class="${row.count % 2 == 0} ? 'odd' : 'even'">
-                        <a th:href="@{GetAuctionDetails(auctionId=${entry.key.id}, page='offerta.html')}">
-                            <article>
-                                <h3 th:text="${entry.value.name}"></h3>
-                                <h4>Codice: <span th:text="${entry.value.code}"></span></h4>
-                                <p>Tempo rimanente: <span
-                                        th:text="${remainingTimes.get(entry.key.id).days} + ' giorni, ' + ${remainingTimes.get(entry.key.id).hours} + ' ore e ' + ${remainingTimes.get(entry.key.id).minutes} + ' minuti'"></span>
-                                </p>
-                            </article>
-                        </a>
-                    </div>
-                </c:forEach>
+                <div th:each="entry, rowStat : ${auctions}" th:class="${rowStat.count % 2 == 0} ? 'odd' : 'even'">
+                    <a th:href="@{GetAuctionDetails(auctionId=${entry.key.id}, page='offer.html')}">
+                        <article>
+                            <h3 th:text="${entry.value.name}"></h3>
+                            <h4>Code: <span th:text="${entry.value.code}"></span></h4>
+                            <p>Remaining time: <span th:text="${remainingTimes.get(entry.key.id).days} + ' days ' + ${remainingTimes.get(entry.key.id).hours} + ' hours and ' + ${remainingTimes.get(entry.key.id).minutes} + ' minutes'"></span>
+                            </p>
+                        </article>
+                    </a>
+                </div>
             </section>
         </div>
         <div class="row third-row offers-list">
-            <h2 id="awarded-art">Aste aggiudicate</h2>
+            <h2 id="awarded-art">Won Auctions</h2>
             <section class="scrollable scrll-table" th:if="${not #lists.isEmpty(awardedArticles)}">
                 <table>
                     <thead>
                     <tr>
-                        <th class="tbl-name">Nome Articolo</th>
-                        <th class="tbl-code">Codice</th>
-                        <th class="tbl-price">Prezzo (&euro;)</th>
+                        <th class="tbl-name">Article name</th>
+                        <th class="tbl-code">Code</th>
+                        <th class="tbl-price">Price (&euro;)</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <c:forEach var="awarded" items="${awardedArticles}" varStatus="row">
-                        <tr th:class="${row.count % 2 == 0} ? 'odd' : 'even'">
-                            <td th:text="${awarded.key.name}"></td>
-                            <td th:text="${awarded.key.code}"></td>
-                            <td><span th:text="${#numbers.formatDecimal(awarded.value.value, 0)}"></span></td>
-                        </tr>
-                    </c:forEach>
+                    <tr th:each="awarded, rowStat : ${awardedArticles}" th:class="${rowStat.count % 2 == 0} ? 'odd' : 'even'">
+                        <td th:text="${awarded.key.name}"></td>
+                        <td th:text="${awarded.key.code}"></td>
+                        <td><span th:text="${#numbers.formatDecimal(awarded.value.value, 0)}"></span></td>
+                    </tr>
                     </tbody>
                 </table>
             </section>
@@ -76,10 +71,10 @@
         <div class="quick-nav menu">
             <h3>Menu</h3>
             <ul>
-                <li><a th:href="@{${pageContext.request.contextPath}/home.jsp}">Home</a></li>
-                <li><a th:href="@{${pageContext.request.contextPath}/GoToAcquisto}">Acquista</a></li>
-                <li><a th:href="@{${pageContext.request.contextPath}/GoToVendo}">Vendi</a></li>
-                <li><a th:href="@{${pageContext.request.contextPath}/Logout}">Esci</a></li>
+                <li><a th:href="@{${pageContext.request.contextPath}/GoToHome}">Home</a></li>
+                <li><a th:href="@{${pageContext.request.contextPath}/GoToSell}">Sell</a></li>
+                <li><a th:href="@{${pageContext.request.contextPath}/GoToPurchase}">Purchase</a></li>
+                <li><a th:href="@{${pageContext.request.contextPath}/Logout}">Logout</a></li>
             </ul>
         </div>
     </div>

@@ -10,14 +10,12 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
@@ -28,9 +26,8 @@ import DAO.ArticleDAO;
 import DAO.AuctionDAO;
 import beans.Article;
 import beans.Auction;
-import beans.User;
-import utils.DiffTime;
 import utils.ConnectionHandler;
+import utils.DiffTime;
 
 @WebServlet("/GoToPurchase")
 public class GoToPurchase extends HttpServlet {
@@ -38,8 +35,8 @@ public class GoToPurchase extends HttpServlet {
 	private Connection connection = null;
 	private TemplateEngine templateEngine;
 	
-	AuctionDAO auc;
-	ArticleDAO art;
+	AuctionDAO auctionDAO;
+	ArticleDAO articleDAO;
        
     public GoToPurchase() {
         super();
@@ -73,24 +70,10 @@ public class GoToPurchase extends HttpServlet {
 				if(request.getParameter("key") != null){
 					if(filterAuctions(request, response))
 						setupPage(request, response);
-				}else if(request.getParameter("js") != null && request.getParameter("js").equals("visited")){
-					// This method is executed only for the javascript version
-					getVisitedAuctions(request, response);
-					}
-				// If there is no key parameter, proceeds only whit the setup
-				else{
-					setupPage(request, response);
-				}		
+				}	
 	}
-	
-	// Method required for the javascript version
-    private void getVisitedAuctions(HttpServletRequest request, HttpServletResponse response) throws IOException{}
-    private void setupPage(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{}
-   
-	
-	
-	private boolean validateKey(String key)
-    {
+		
+	private boolean validateKey(String key){
     	// Checks if the key contains only letters and is longer than 2 characters, but less than 21
     	if(key.matches("[a-zA-Z]+") && key.length() > 2 && key.length() < 21)
     		return true;
@@ -98,6 +81,7 @@ public class GoToPurchase extends HttpServlet {
     }
 	
 	// This method filters all auctions by looking inside the relative articles' names and descriptions and checking if the keyword is present
+	// TODO: This method can be optimized with better queries to database
     private boolean filterAuctions(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
     	List<Auction> auctions = new ArrayList<>();
@@ -115,18 +99,16 @@ public class GoToPurchase extends HttpServlet {
     	
     	String key = request.getParameter("key");
     	
-    	if(!validateKey(key))
-    	{
+    	if(!validateKey(key)){
     		response.sendError(400, "Errore, la chiave pu� contenere solo lettere non accentate!"
     				+ " Inoltre deve avere una lunghezza compresa tra i 3 e 20 caratteri.");
     		return false;
     	}
     	// Proceeds only if the key is valid
-    	else
-    	{
+    	else{
     		try {
         		// This returns all the auctions related to the articles that contain the specified keyword
-    			auctions = auc.search(key);
+    			auctions = auctionDAO.search(key);
     		} catch (SQLException e) {
     			e.printStackTrace();
     			response.sendError(500, "Errore, accesso al database fallito!");
@@ -134,21 +116,20 @@ public class GoToPurchase extends HttpServlet {
    			}
         		
        		// This means that the there is at least one auction for the given keyword
-       		if(auctions != null)
-       		{
+       		if(auctions != null){
    				// Iterates over the list of auctions
    				for(Auction auction : auctions)
    				{
    					// This filters the auctions by their current state and checks if their deadlines are after the datetime related
    					// to the submit of the keyword. After that it adds the auctions to the LinkedHashMap, along with their articles.
-   					if(auction.isOpen() && auction.getExpiring_time().isAfter(currLdt))
+   					if(auction.isOpen() && auction.getExpiring_date().isAfter(currLdt))
    					{
    			    		try {
    							// This is used to retrieve the articles related to each auction
    			    			// There is no reason to check if the article is null, because auctions and articles are created together
    			    			// See CreateAuction, all changes to the db are committed only if there are no errors
    			    			// So, if the auction exists, the article exists too
-   							articles = art.getAuctionArticles(auction.getAuction_id());
+   							articles = articleDAO.getAuctionArticles(auction.getAuction_id());
    						} catch (SQLException e) {
    							e.printStackTrace();
    							response.sendError(500, "Errore, accesso al database fallito!");
@@ -158,21 +139,24 @@ public class GoToPurchase extends HttpServlet {
    						filteredOpenAuctions.put(auction, articles);
    						//Get the remaining time before the expiration date of the auction
    						//Calculated from the creation time of the session
-   						DiffTime diff = DiffTime.getRemainingTime(logLdt, auction.getExpiring_time());
+   						DiffTime diff = DiffTime.getRemainingTime(logLdt, auction.getExpiring_date());
    						remainingTimes.put(auction.getAuction_id(), diff);
    					}
    	    		}
        		}
+
+			//TODO: It doesn't have to load the page here
+			String path = "/WEB-INF/purchase.html";
+			final WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
        		// Here some attributes are set, but the request is always forwarded by setupPage.
-       		
-       		// Sets the LinkedHashMap, containing the auctions and the articles as an attribute of the request
-       		request.setAttribute("auctions", filteredOpenAuctions);
+       		// Sets the LinkedHashMap, containing the auctions and the articles as an attribute of the context
+			ctx.setVariable("auctions", filteredOpenAuctions);
        		// Sets the HashMap, containing the auctions and the remaing time till the expiration for each of them
        		request.setAttribute("remainingTimes", remainingTimes);
+			ctx.setVariable("remainingTimes", remainingTimes);
        		// Sets the key as attribute in order to use it inside the jsp page
-       		request.setAttribute("key", key);
-       	
-       	
+			ctx.setVariable("key", key);
+			templateEngine.process(path, ctx, response.getWriter());
     	}
     	// Every time there is an error, the method returns false
     	// so it's possible to execute this line only if there are no errors

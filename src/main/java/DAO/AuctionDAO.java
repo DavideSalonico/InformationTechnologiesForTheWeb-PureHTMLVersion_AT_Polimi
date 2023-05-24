@@ -157,7 +157,8 @@ public class AuctionDAO {
 			pstatement = connection.prepareStatement("SELECT * FROM auction WHERE auction_id = ?");
 			pstatement.setInt(1, auction_id);
 			result = pstatement.executeQuery();
-			auction = resultToAuction(result);
+			if(result.next())
+				auction = resultToAuction(result);
 		} catch (SQLException e) {
 		    e.printStackTrace();
 			throw new SQLException(e);
@@ -183,7 +184,10 @@ public class AuctionDAO {
 			pstatement = connection.prepareStatement("SELECT expiring_date FROM auction WHERE auction_id = ?");
 			pstatement.setInt(1, auction_id);
 			result = pstatement.executeQuery();
-			exp_time = result.getTimestamp("expiring_date").toLocalDateTime();
+			if(result.next())
+				exp_time = result.getTimestamp("expiring_date").toLocalDateTime();
+			else
+				exp_time = null;
 		} catch (SQLException e) {
 		    e.printStackTrace();
 			throw new SQLException(e);

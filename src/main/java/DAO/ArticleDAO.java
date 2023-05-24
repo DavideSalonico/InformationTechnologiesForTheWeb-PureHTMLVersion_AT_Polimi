@@ -26,8 +26,8 @@ public class ArticleDAO {
 			pstatement = connection.prepareStatement(query);
 			pstatement.setInt(1, article_id);
 			ResultSet result = pstatement.executeQuery();
-			result.next();
-			isSold = result.getBoolean("sold");  //BIT type automatically converted to boolean
+			if(result.next())
+				isSold = result.getBoolean("sold");  //BIT type automatically converted to boolean
 		}catch(SQLException e) {
 			e.printStackTrace();
 			throw new SQLException(e);
