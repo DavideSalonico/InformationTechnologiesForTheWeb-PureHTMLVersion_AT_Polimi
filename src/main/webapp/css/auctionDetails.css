@@ -1,1 +1,43 @@
-@charset "UTF-8";
+@charset "ISO-8859-1";
+
+th {
+	width: 25% !important;
+}
+
+th:nth-child(3) {
+	width: 50% !important;
+}
+
+td {
+	text-align: center;
+}
+
+.details img{
+	max-width: 95%;
+	/* max-height: 20%; */
+	/* This creates a rounded image */
+	border-radius: 3px;
+}
+
+a, .scrollable a, .scrollable a:hover {
+	margin: 0;
+	padding: 0;
+	width: auto;
+	height: auto;
+	background-color: inherit;
+}
+
+.description {
+	/* Justify the description and doesn't cut words */
+	text-align: justify;
+  	text-justify: inter-word;
+  	margin: auto;
+  	width: 95%;
+  	/* Already set inside main.css (.col) */
+  	/* When the width of the paragraph is too high, automatically goes to a new line */
+  	/* word-wrap: break-word; */
+}
+
+hr {
+	width: 95%;
+}

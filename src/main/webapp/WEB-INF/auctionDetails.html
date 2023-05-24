@@ -1,10 +1,101 @@
 <!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
-</head>
-<body>
+<!--/* Specify the language of the page and the direction, left-to-right */-->
+<html lang="it" dir="ltr" xmlns:th="http://www.thymeleaf.org">
+  <head>
+  	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 
-</body>
+    <title>Dettagli</title>
+
+	<link rel="icon" href="#" th:href="@{/img/icon.png}">
+    <link rel="stylesheet" type="text/css" href="#" th:href="@{/css/main.css}">
+    <link rel="stylesheet" type="text/css" href="#" th:href="@{/css/auctionOffer.css}">
+    <link rel="stylesheet" type="text/css" href="#" th:href="@{/css/auctionDetails.css}">
+    <link rel="stylesheet" type="text/css" href="#" th:href="@{/css/dettagli.css}">
+  </head>
+  <body>
+	<!--/* th:remove="tag" removes only the containing tag, but not the text */-->
+	<!--/* th:remove="all" removes both the tag and the children, text included */-->
+	<p th:remove="all">Questa è una pagina dinamica, viene generata a runtime, non è previsto un accesso diretto!</p>
+    <div class="col lft-col">
+      <div class="quick-nav">
+        <h3>Navigazione Rapida</h3>
+        <ul>
+          <a href="#dtl-art"><li>Dettagli</li></a>
+          <!--/* Shows this element only if the auction exists and it's closed */-->
+          <a th:if="${auction != null and !auction.isOpen()}" href="#dtl-info"><li>Informazioni</li></a>
+           <!--/* Shows this element only if the auction exists and it's not closed */-->
+          <a th:if="${auction != null and not !auction.isOpen()}" href="#dtl-offers"><li>Offerte</li></a>
+        </ul>
+      </div>
+    </div>
+    <div class="col mid-col">
+      <div class="row first-row details">
+        <h2 th:if="${auction == null}">Informazioni</h2>
+        <!--/* The paragraph exists only if the auction is null */-->
+        <p th:if="${auction == null}">L' utente non ha creato l' asta oppure l' asta selezionata non esiste!</p>
+        <!--/* th:if="${auction != null}" is used to ensure that the auction exists 
+        the section is created along with it's children only if the condition
+        is true */-->
+        <section th:if="${auction != null}">
+            <div th:replace="@{WEB-INF/fragments.html} :: showDetails">
+
+			<!--/* Here a fragment is used, since this piece of markup is identical to 
+			the one used inside offerta.html, it is written once and used twice.
+			The div is replaced by the fragment's one, along with it's children */-->
+
+            </div>
+            <!--/* If the auction is closed but there isn't a maximum offer, it means
+            that there are no offers for this auction */-->
+            <div th:if="${!auction.isOpen() and awardedUser == null}">
+            	<hr>
+                <h2 id="dtl-info">Informazioni:</h2>
+                <p>Purtroppo non è stata fatta alcuna offerta per questo articolo.</p>
+            </div>
+
+            <!--/* If the auction is closed and there is a maximum offer,
+            shows the name of the user who has won the auction, his address and his offer's value */-->
+            <div th:if="${!auction.isOpen() and awardedUser != null}">
+            	<hr>
+                <h2 id="dtl-info">Informazioni aggiudicatario</h2>
+                <p><strong>Nome: </strong><span th:text="${awardedUser.username}">nome 1</span></p>
+                <!--/* "#numbers.formatInteger(num, 1, 'POINT')" : formats the number
+      			in order to display it properly. Accepts as parameters the value, the minimum
+      			number of integer digits and the thousands separator */-->
+      			
+      			<!--/* The euro symbol's html code is not rendered correctly if processed by the thymeleaf engine
+      			So, in order to display it, it's necessary to keep it static. That's why span is used.
+      			Span is also used to make the first word bold */-->
+                <p><strong>Offerta: </strong><span th:text="${#numbers.formatInteger(maxAuctionOffer.value,1,'POINT')}">Offerta: offerta 1</span> &euro;</p>
+                <p><strong>Indirizzo: </strong><span th:text="${awardedUser.address}">indirizzo 1</span></p>
+            </div>
+        </section>
+      </div>
+      <!--/* th:remove="${auction == null or auction.isClosed} ? all" removes the entire div along with it's children
+	  if the auction is null or closed. Otherwise it doesn't remove anything */-->
+      <div class="row second-row offers-list" th:remove="${auction == null or !auction.isOpen()} ? all">
+		<section th:replace="@{WEB-INF/fragments.html} :: showOffers(1)">
+
+			<!--/* Here a parameterized fragment is used, since this piece of markup is identical to 
+			the one used inside offerta.html, it is written once and used twice.
+			The parameter is required by the fragment in order to distinguish between the 2 pages.
+			The section is replaced by the fragment's one, along with it's children. */-->
+
+		</section>
+      </div>
+      <!-- <div class="row third-row">
+
+      </div> -->
+    </div>
+    <div class="col rgt-col">
+      <div class="quick-nav menu">
+        <h3>Menu</h3>
+        <ul>
+          <a th:href="@{/GoToHome}"><li>Home</li></a>
+          <a th:href="@{/Purchase}"><li>Acquista</li></a>
+          <a th:href="@{/GoToSell}"><li>Vendi</li></a>
+          <a th:href="index.html"><li>Esci</li></a>
+        </ul>
+      </div>
+    </div>
+  </body>
 </html>

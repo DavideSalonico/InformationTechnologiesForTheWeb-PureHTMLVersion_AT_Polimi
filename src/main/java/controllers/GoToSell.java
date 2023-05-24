@@ -78,9 +78,9 @@ public class GoToSell extends HttpServlet {
 		User user = (User) request.getSession().getAttribute("user");
 		
 		// Variabili di appoggio 
-		List<Auction> openAuctions;
-		List<Auction> closedAuctions;
-		List<Article> articles;
+		List<Auction> openAuctions= null;
+		List<Auction> closedAuctions = null;
+		List<Article> articles = null;
 
 		Offer maxOffer = null;
 		

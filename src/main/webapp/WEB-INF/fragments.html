@@ -21,12 +21,12 @@
       		(2) page is used to distinguish between dettagli.html and offerta.html, because the controller manages both template pages */-->
       		
       		<!--/* "auctions" is the hashmap passed as parameter by vendo.html */-->
-   			<a href="#" th:if="${not auctions.isEmpty()}" th:href="@{GoToAuctionDetails(auction_id= ${auction.id}, page='dettagli.html')}" th:each="entry, stats : ${auctions}" th:with="article=${entry.value}, auction=${entry.key}">      				
+   			<a href="#" th:if="${not auctions.isEmpty()}" th:href="@{GoToAuctionDetails(auction_id= ${auction.auction_id}, page='auctionDetails.html')}" th:each="entry, stats : ${auctions}" th:with="article=${entry.value}, auction=${entry.key}">      				
 	   			<article th:class="${stats.odd}? 'odd' : even">
 	   				<!--/* This calls the Article's getName() function */-->
 	   				<h3 th:text="${article.name}">Nome 1</h3>
 	   				<!--/* Calls article.getCode() and returns a string*/-->
-	   				<h4 th:text="${'Codice: ' + article.code}">Codice: Cod. 1</h4>
+	   				<h4 th:text="${'Codice: ' + article.article_id}">Codice: Cod. 1</h4>
 	   				<!--/* The text of the paragraph is set by checking if maxOffers is null or empty
 	   				and if the current auction has a maxOffer
 	   				if the condition is valid, takes the max offer for the current auction if present
@@ -39,8 +39,8 @@
 	   				<!--/* Here two if statements are used instead of an inline if-else because the
 	   				euro symbol's html code is not rendered correctly if processed by the thymeleaf engine
 	   				So, in order to display it, it's necessary to keep it static. That's why span is used in the first case */-->
-	   				<p th:if="${maxOffers != null and maxOffers.get(auction.id) != null}"><span th:text="${'Offerta massima: ' + #numbers.formatInteger(maxOffers.get(auction.id).value,1,'POINT')}"></span> &euro;</p>
-					<p th:if="${maxOffers == null or maxOffers.get(auction.id) == null}">Offerta massima: Nessuna</p>
+	   				<p th:if="${maxOffers != null and maxOffers.containsKey(auction.auction_id)}"><span th:text="ciao"></span> &euro;</p>
+					<p th:if="${maxOffers == null or maxOffers.get(auction.auction_id) == null}">Offerta massima: Nessuna</p>
 	   				<!--/*
 	   				(1) th:with="currTimeLeft=${remainingTimes.get(entry.key)}" creates a variable currTimeLeft and assigns
 	   				to it the current DiffTime object, related to the remaining time left before the expiration date of the current auction
@@ -48,7 +48,7 @@
 	   				
 	   				<!--/* "open" is a parameter passed by vendo.html, the deadline is showed only if open is equal to 1,
 	   				it means that the fragment will be used to show the user's open auctions */-->
-	   				<p th:if="${open == 1}" th:with="currTimeLeft=${remainingTimes.get(auction.id)}" th:text="${'Tempo rimanente: ' + currTimeLeft.days + ' giorni, ' + currTimeLeft.hours + ' ore e ' + currTimeLeft.minutes + ' minuti'}">Tempo rimanente: x giorni, y ore e z minuti</p>
+	   				<p th:if="${open == 1}" th:with="currTimeLeft=${remainingTimes.get(auction.auction_id)}" th:text="${'Tempo rimanente: ' + currTimeLeft.days + ' giorni, ' + currTimeLeft.hours + ' ore e ' + currTimeLeft.minutes + ' minuti'}">Tempo rimanente: x giorni, y ore e z minuti</p>
 	   			</article>
       		</a>
 		</section>
@@ -63,7 +63,7 @@
 	        <!--/* This calls the Article's getName() function */-->
 	        <h2 id="dtl-art" th:text="${article.name}">Nome 1</h2>
 	        <!--/* Calls article.getCode() and returns a string */-->
-	        <h4 th:text="${'Codice: ' + article.code}">Codice: Cod. 1</h4>
+	        <h4 th:text="${'Codice: ' + article.article_id}">Codice: Cod. 1</h4>
 	        <!--/* The following line takes a base64 encoded string representing an image and displays it
 	        the image is clickable and if clicked, it's showed at its original size */-->
 	        <a href="#" th:href="${'data:image/jpeg;base64,' + article.image}"><img src="http://classifieds.usatoday.com/wp-content/uploads/2018/06/Auction-Bidding.jpeg" th:src="${'data:image/jpeg;base64,' + article.image}" alt="Article picture"/></a>
@@ -76,8 +76,8 @@
 			<!--/* The euro symbol's html code is not rendered correctly if processed by the thymeleaf engine
 			So, in order to display it, it's necessary to keep it static. That's why span is used.
 			Span is also used to make the first word bold */-->
-	        <p><strong>Prezzo iniziale: </strong><span th:text="${#numbers.formatInteger(auction.initialPrice,1,'POINT')}">x</span> &euro;</p>
-	        <p><strong>Rialzo minimo: </strong><span th:text="${#numbers.formatInteger(auction.minUpsideOffer,1,'POINT')}">y</span> &euro;</p>
+	        <p><strong>Prezzo iniziale: </strong><span th:text="${#numbers.formatInteger(auction.initial_price,1,'POINT')}">x</span> &euro;</p>
+	        <p><strong>Rialzo minimo: </strong><span th:text="${#numbers.formatInteger(auction.minimum_raise,1,'POINT')}">y</span> &euro;</p>
 	        <!--/* Takes the expiration date of the auction */-->
 	        <p><strong>Scadenza: </strong><span th:text="${frmtDeadline}">gg MMM yyyy HH:mm</span></p>
 		</div>
