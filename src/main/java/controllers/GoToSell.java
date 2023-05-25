@@ -1,26 +1,5 @@
 package controllers;
 
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.WebContext;
-import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
-
 import DAO.ArticleDAO;
 import DAO.AuctionDAO;
 import DAO.OfferDAO;
@@ -28,8 +7,25 @@ import beans.Article;
 import beans.Auction;
 import beans.Offer;
 import beans.User;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.WebContext;
+import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 import utils.ConnectionHandler;
 import utils.DiffTime;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 
 @WebServlet("/GoToSell")
 public class GoToSell extends HttpServlet {
@@ -89,7 +85,24 @@ public class GoToSell extends HttpServlet {
     	LinkedHashMap<Auction, Article> userClosedAuctions = new LinkedHashMap<>();
     	HashMap<Integer, DiffTime> remainingTimes = new HashMap<>();
     	HashMap<Integer, Offer> maxOffers = new HashMap<>();
-    	
+
+		String[] selectedArticles = request.getParameterValues("selectedArticles");
+		String newSelected = request.getParameter("newSelected");
+
+
+
+		Set<Integer> selectedArticlesSet = new HashSet<>();
+		try{
+			if(newSelected !=null && !newSelected.isEmpty())
+				selectedArticlesSet.add(Integer.parseInt(newSelected));
+			for(int i=0;selectedArticles!= null && i<selectedArticles.length;i++) {
+				selectedArticlesSet.add(Integer.parseInt(selectedArticles[i]));
+			}
+		}catch(NumberFormatException ex){
+			response.sendError(500, "Invalid selected article id");
+			return;
+		}
+
 		
 		try {
 			//CONTROLLA SE SONO IN ORDINE CRESCENTE DI DATA+ORA
@@ -147,6 +160,7 @@ public class GoToSell extends HttpServlet {
 		ctx.setVariable("remainingTimes", remainingTimes);
 		ctx.setVariable("maxOffers", maxOffers);
 		ctx.setVariable("ldt", ldt);
+		ctx.setVariable("selectedArticles", selectedArticlesSet);
 		
 		// QUESTO TRY and CATCH è messo solo per debuggare
 		try {

@@ -3,7 +3,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
     <title>Acquisto</title>
-    <link rel="icon" th:href="@{${pageContext.request.contextPath}/img/icon.png}">
+    <link rel="icon" th:href="@{/img/icon.png}">
     <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}">
     <link rel="stylesheet" type="text/css" th:href="@{/css/auctionOffer.css}">
     <link rel="stylesheet" type="text/css" th:href="@{/css/purchase.css}">
@@ -20,9 +20,9 @@
         </div>
     </div>
     <div class="col mid-col">
-        <div class="row first-row form" th:if="${sessionScope.currUser == null}">
+        <div class="row first-row form">
             <h2 id="filter-auc">Search with a keyword</h2>
-            <form action="GoToSell" method="post">
+            <form action="GoToPurchase" method="post">
                 <div>
                     <label for="key">Key:</label>
                     <input type="text" name="key" id="key" required>
@@ -30,15 +30,15 @@
                 <button name="keyword-submit" type="submit">Search</button>
             </form>
         </div>
-        <div class="row second-row auc-list" th:if="${auctions != null and not #lists.isEmpty(auctions)}">
+        <div class="row second-row auc-list" th:if="${auctions != null and not auctions.isEmpty()}">
             <h2 id="available-auc" th:text="'Available auction for: \'' + ${key} + '\'"></h2>
             <section class="scrollable">
                 <div th:each="entry, rowStat : ${auctions}" th:class="${rowStat.count % 2 == 0} ? 'odd' : 'even'">
-                    <a th:href="@{GetAuctionDetails(auctionId=${entry.key.id}, page='offer.html')}">
+                    <a th:href="@{GetAuctionDetails(auctionId=${entry.key.auction_id}, page='offer.html')}">
                         <article>
-                            <h3 th:text="${entry.value.name}"></h3>
-                            <h4>Code: <span th:text="${entry.value.code}"></span></h4>
-                            <p>Remaining time: <span th:text="${remainingTimes.get(entry.key.id).days} + ' days ' + ${remainingTimes.get(entry.key.id).hours} + ' hours and ' + ${remainingTimes.get(entry.key.id).minutes} + ' minutes'"></span>
+                            <h3 th:text="${entry.value}"></h3> <-- TODO: Check -->
+                            <h4>Code: <span th:text="${entry.value}"></span></h4> <-- TODO: Check -->
+                            <p>Remaining time: <span th:text="${remainingTimes.get(entry.key.auction_id)} + ' days ' + ${remainingTimes.get(entry.key.auction_id)} + ' hours and ' + ${remainingTimes.get(entry.key.auction_id)} + ' minutes'"></span> <-- TODO: Check -->
                             </p>
                         </article>
                     </a>
@@ -71,9 +71,9 @@
         <div class="quick-nav menu">
             <h3>Menu</h3>
             <ul>
-                <li><a th:href="@{${pageContext.request.contextPath}/GoToHome}">Home</a></li>
-                <li><a th:href="@{${pageContext.request.contextPath}/GoToSell}">Sell</a></li>
-                <li><a th:href="@{${pageContext.request.contextPath}/GoToPurchase}">Purchase</a></li>
+                <li><a th:href="@{/GoToHome}">Home</a></li>
+                <li><a th:href="@{/GoToSell}">Sell</a></li>
+                <li><a th:href="@{/GoToPurchase}">Purchase</a></li>
                 <li><a th:href="@{/Logout}">Logout</a></li>
             </ul>
         </div>

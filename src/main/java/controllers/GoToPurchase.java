@@ -64,10 +64,35 @@ public class GoToPurchase extends HttpServlet {
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-				if(request.getParameter("key") != null){
-					filterAuctions(request, response);
-				}	
+		List<Auction> auctions = new ArrayList<>();
+		List<Article> articles = null;
+		// The Linked Hash Maps is used because it preserves the order of the elements
+		// All auctions with their articles are stored inside them
+		LinkedHashMap<Auction,List<Article>> filteredOpenAuctions = new LinkedHashMap<>();
+		// The order here is not important
+		HashMap<Integer, DiffTime> remainingTimes = new HashMap<>();
+
+		String key = request.getParameter("key");
+		if(key != null){
+			filterAuctions(request, response, auctions, articles, filteredOpenAuctions, remainingTimes);
+		}
+
+		String path = "/WEB-INF/purchase.html";
+		final WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
+		// Here some attributes are set, but the request is always forwarded by setupPage.
+		// Sets the LinkedHashMap, containing the auctions and the articles as an attribute of the context
+		ctx.setVariable("auctions", filteredOpenAuctions);
+		// Sets the HashMap, containing the auctions and the remaing time till the expiration for each of them
+		request.setAttribute("remainingTimes", remainingTimes);
+		ctx.setVariable("remainingTimes", remainingTimes);
+		// Sets the key as attribute in order to use it inside the jsp page
+		ctx.setVariable("key", key);
+		try{
+			templateEngine.process(path, ctx, response.getWriter());
+		} catch(Exception e){
+			response.sendError(500, "Errore di Thymeleaf" + e.getMessage());
+			return;
+		}
 	}
 		
 	private boolean validateKey(String key){
@@ -79,21 +104,17 @@ public class GoToPurchase extends HttpServlet {
 	
 	// This method filters all auctions by looking inside the relative articles' names and descriptions and checking if the keyword is present
 	// TODO: This method can be optimized with better queries to database
-    private void filterAuctions(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
-    {
-    	List<Auction> auctions = new ArrayList<>();
-    	List <Article> articles = null;
-    	// Used to calculate the remaining time before the expiration of 
-    	LocalDateTime logLdt = (LocalDateTime) request.getSession(false).getAttribute("creationTime");
-    	// Used to check if the deadline of each auction is after the current datetime
-    	LocalDateTime currLdt = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
-    	// The Linked Hash Maps is used because it preserves the order of the elements
-    	
-    	// All auctions with their articles are stored inside them
-    	LinkedHashMap<Auction,List<Article>> filteredOpenAuctions = new LinkedHashMap<>();
-    	// The order here is not important
-    	HashMap<Integer, DiffTime> remainingTimes = new HashMap<>();
-    	
+    private void filterAuctions(HttpServletRequest request,
+								HttpServletResponse response,
+								List<Auction> auctions,
+								List<Article> articles,
+								LinkedHashMap<Auction, List<Article>> filteredOpenAuctions,
+								HashMap<Integer, DiffTime> remainingTimes) throws ServletException, IOException{
+		// Used to calculate the remaining time before the expiration of
+		LocalDateTime logLdt = (LocalDateTime) request.getSession(false).getAttribute("creationTime");
+		// Used to check if the deadline of each auction is after the current datetime
+		LocalDateTime currLdt = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
+
     	String key = request.getParameter("key");
     	
     	if(!validateKey(key)){
@@ -141,19 +162,6 @@ public class GoToPurchase extends HttpServlet {
    					}
    	    		}
        		}
-
-			//TODO: It doesn't have to load the page here
-			String path = "/WEB-INF/purchase.html";
-			final WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
-       		// Here some attributes are set, but the request is always forwarded by setupPage.
-       		// Sets the LinkedHashMap, containing the auctions and the articles as an attribute of the context
-			ctx.setVariable("auctions", filteredOpenAuctions);
-       		// Sets the HashMap, containing the auctions and the remaing time till the expiration for each of them
-       		request.setAttribute("remainingTimes", remainingTimes);
-			ctx.setVariable("remainingTimes", remainingTimes);
-       		// Sets the key as attribute in order to use it inside the jsp page
-			ctx.setVariable("key", key);
-			templateEngine.process(path, ctx, response.getWriter());
     	}
     	// Every time there is an error, the method returns false
     	// so it's possible to execute this line only if there are no errors

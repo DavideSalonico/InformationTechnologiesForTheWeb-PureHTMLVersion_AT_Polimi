@@ -71,19 +71,26 @@
                     <label for="expiring_date">Scadenza (futura): </label>
                     <input type="datetime-local" name="expiring_date" id="expiring_date" th:min="${ldt}" placeholder="yyyy-MM-ddTHH:mm" th:value="${ldt}" required>
                 </div>
-                <label for="article">Article</label>
-      				<select name="article" id="article" multiple>
-				        <option value="javascript">JavaScript</option>
-				        <option value="articolo1">Articolo 3</option>
-				        <option value="java">Articolo 2</option>
-				        <option value="golang">Golang</option>
-				        <option value="python">Python</option>
-				        <option value="c#">C#</option>
-				        <option value="C++">C++</option>
-				        <option value="erlang">Erlang</option>
-      				</select><br />
+                <input th:each="selectedArticle : ${selectedArticles}" type="hidden" name="selectedArticle" th:value="${selectedArticle}">
                 <button name="auction-submit" type="submit">Crea Asta</button>
+
             </form>
+
+            <form th:method="GET" th:action="@{/GoToSell}">
+                <label for="newSelected">Article</label>
+      				<select name="newSelected" id="newSelected" multiple>
+				        <option value="1">JavaScript</option>
+				        <option value="2">Articolo 3</option>
+				        <option value="3">Articolo 2</option>
+				        <option value="4">Golang</option>
+				        <option value="5">Python</option>
+				        <option value="5">C#</option>
+				        <option value="6">C++</option>
+				        <option value="7">Erlang</option>
+      				</select><br />
+                <button name="auction-submit" type="submit">Aggiungi all'Asta</button>
+            </form>
+
         </div>
     </div>
     <div class="col rgt-col">
@@ -91,9 +98,9 @@
             <h3>Menu</h3>
             <ul>
                 <li><a th:href= "@{/GoToHome}">Home</a></li>
-                <li><a th:href="@{/Purchase}">Acquista</a></li>
-                <li><a th:href="@{/GoToSell}">Vendi</a></li>
-                <li><a th:href= "@{/Logout}">Esci</a></li>
+                <li><a th:href="@{/GoToPurchase}">Purchase</a></li>
+                <li><a th:href="@{/GoToSell}">Sell</a></li>
+                <li><a th:href= "@{/Logout}">Logout</a></li>
             </ul>
         </div>
     </div>

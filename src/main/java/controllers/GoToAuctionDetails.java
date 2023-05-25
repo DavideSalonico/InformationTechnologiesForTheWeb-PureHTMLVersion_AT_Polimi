@@ -1,13 +1,18 @@
 package controllers;
 
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-import java.util.LinkedHashMap;
-import java.util.List;
+import DAO.ArticleDAO;
+import DAO.AuctionDAO;
+import DAO.OfferDAO;
+import DAO.UserDAO;
+import beans.Article;
+import beans.Auction;
+import beans.Offer;
+import beans.User;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.WebContext;
+import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
+import utils.ConnectionHandler;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -15,20 +20,15 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.WebContext;
-import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
-
-import beans.Article;
-import beans.Auction;
-import beans.Offer;
-import beans.User;
-import DAO.ArticleDAO;
-import DAO.AuctionDAO;
-import DAO.OfferDAO;
-import DAO.UserDAO;
-import utils.ConnectionHandler;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 // QUANDO CLICCO SU UNA DELLE ASTE TROVATE NELLA LISTA ALLORA TROVO QUESTA PAGINA
 
@@ -177,6 +177,9 @@ public class GoToAuctionDetails extends HttpServlet {private static final long s
 		ctx.setVariable("offers", frmtAuctionOffers);
 		ctx.setVariable("maxAuctionOffer", maxAuctionOffer);
 		ctx.setVariable("awardedUser", awardedUser);
+		HashMap<Article, Integer> awardedArticles = new HashMap<>();
+		//TODO: Da eiminare e scrivere bene
+		ctx.setVariable("awardedArticles", null);
 		// This actually processes the template page
 		// QUESTO TRY and CATCH è messo solo per debuggare
 		try {

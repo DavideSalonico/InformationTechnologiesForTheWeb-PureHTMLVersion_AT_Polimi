@@ -1,16 +1,14 @@
 package controllers;
 
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
+import DAO.ArticleDAO;
+import DAO.AuctionDAO;
+import beans.User;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
+import utils.ConnectionHandler;
 
 import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -18,17 +16,11 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.WebContext;
-import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
-
-import DAO.ArticleDAO;
-import DAO.AuctionDAO;
-import beans.User;
-import utils.ConnectionHandler;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 @WebServlet("/CreateAuction")
 
@@ -88,13 +80,14 @@ public class CreateAuction extends HttpServlet {
 		LocalDateTime expiring_date = LocalDateTime.now().minusYears(1);
 		int minimum_raise;
 		int creator;
+
 		
 		try {
 			//auction_id = Integer.parseInt(request.getParameter("offer_id"));
 			initial_price = Integer.parseInt(request.getParameter("initial_price"));
 			expiring_date =  LocalDateTime.parse(request.getParameter("expiring_date")).truncatedTo(ChronoUnit.MINUTES);
 			minimum_raise = Integer.parseInt(request.getParameter("minimum_raise"));
-			creator = (((User) request.getSession().getAttribute("user")).getUser_id()); 
+			creator = (((User) request.getSession().getAttribute("user")).getUser_id());
 	
 		} catch (NumberFormatException | NullPointerException e) {
 			// only for debugging e.printStackTrace();
@@ -112,6 +105,9 @@ public class CreateAuction extends HttpServlet {
         
         // Forward the Request Dispatcher object.
         reqd.forward(request, response);
+
+
+
 	}
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
