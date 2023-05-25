@@ -47,12 +47,12 @@ public class AuctionDAO {
 	
 	public void insertAuction(int initial_price, LocalDateTime expiring_date, int minimum_raise, int creator) throws SQLException{
 		try {
-			pstatement = connection.prepareStatement("INSERT INTO auction (initia_price, expiring_date, minimum_raise, creator) VALUES(?, ?, ?, ?)");
+			pstatement = connection.prepareStatement("INSERT INTO auction (initial_price, expiring_date, minimum_raise, creator) VALUES(?, ?, ?, ?)");
 			pstatement.setInt(1, initial_price);
 			pstatement.setObject(2, expiring_date);
 			pstatement.setInt(3, minimum_raise);
 			pstatement.setInt(4, creator);
-			pstatement.executeQuery();
+			pstatement.executeUpdate();
 		} catch(SQLException e) {
 			e.printStackTrace();
 			throw new SQLException(e);

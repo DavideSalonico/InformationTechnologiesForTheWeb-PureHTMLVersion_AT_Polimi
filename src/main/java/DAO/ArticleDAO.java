@@ -49,7 +49,7 @@ public class ArticleDAO {
 			pstatement  = connection.prepareStatement(query);
 			pstatement.setString(1,name);
 			pstatement.setString(2,description);
-			pstatement.setString(user_id, image);
+			pstatement.setString(3, image);
 			pstatement.setInt(4, price);
 			pstatement.setInt(5, user_id);
 			pstatement.executeUpdate();

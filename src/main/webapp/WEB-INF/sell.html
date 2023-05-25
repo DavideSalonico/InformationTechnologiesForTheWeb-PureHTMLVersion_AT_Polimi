@@ -31,8 +31,8 @@
             <section th:replace="~{WEB-INF/fragments.html :: showAuctions (${userClosedAuctions}, 0)}"></section>
         </div>
         <div class="row third-row form">
-            <h2 id="create-auc">Creazione di una nuova asta</h2>
-            <form action="#" th:action="@{/CreateAuction}" method="post" enctype="multipart/form-data">
+            <h2 id="create-art">Creazione di un nuovo Articolo</h2>
+            <form action="#" th:action="@{/CreateArticle}" method="post" enctype="multipart/form-data">
                 <div>
                     <label for="name">Nome Articolo:</label>
                     <input type="text" name="name" id="name" min="4" max="50" required>
@@ -42,19 +42,46 @@
                     <textarea name="description" id="description" rows="4" cols="50" minlength="20" maxlength="3000" placeholder=" ..." spellcheck="false" required></textarea>
                 </div>
                 <div>
+                    <label for="price">Prezzo:</label>
+                    <input type="number" name="price" id="price" min="1" step="1" max="700000000" required>
+                    <span> &euro;</span>
+                </div>
+                <div>
+                    <label for="image">Allega un'immagine:</label>
+                    <input type="text" name="image" id="image"  required>
+                    <span> &euro;</span>
+                </div>
+                <button name="article-submit" type="submit">Crea Articolo</button>
+            </form>
+        </div>
+        <div class="row fourth-row form">
+            <h2 id="create-auc">Creazione di una nuova asta</h2>
+            <form action="#" th:action="@{/CreateAuction}" method="post" enctype="multipart/form-data">
+                <div>
                     <label for="initial_price">Prezzo Iniziale:</label>
                     <input type="number" name="initial_price" id="initial_price" min="1" step="1" max="700000000" required>
                     <span> &euro;</span>
                 </div>
                 <div>
                     <label for="minimum_rise">Rialzo Minimo:</label>
-                    <input type="number" name="minimum_rise" id="minimum_rise" min="50" step="1" max="100000" required>
+                    <input type="number" name="minimum_raise" id="minimum_raise" min="30" step="1" max="100000" required>
                     <span> &euro;</span>
                 </div>
                 <div>
                     <label for="expiring_date">Scadenza (futura): </label>
                     <input type="datetime-local" name="expiring_date" id="expiring_date" th:min="${ldt}" placeholder="yyyy-MM-ddTHH:mm" th:value="${ldt}" required>
                 </div>
+                <label for="article">Article</label>
+      				<select name="article" id="article" multiple>
+				        <option value="javascript">JavaScript</option>
+				        <option value="articolo1">Articolo 3</option>
+				        <option value="java">Articolo 2</option>
+				        <option value="golang">Golang</option>
+				        <option value="python">Python</option>
+				        <option value="c#">C#</option>
+				        <option value="C++">C++</option>
+				        <option value="erlang">Erlang</option>
+      				</select><br />
                 <button name="auction-submit" type="submit">Crea Asta</button>
             </form>
         </div>
@@ -66,7 +93,7 @@
                 <li><a th:href= "@{/GoToHome}">Home</a></li>
                 <li><a th:href="@{/Purchase}">Acquista</a></li>
                 <li><a th:href="@{/GoToSell}">Vendi</a></li>
-                <li><a th:href= "index.html">Esci</a></li>
+                <li><a th:href= "@{/Logout}">Esci</a></li>
             </ul>
         </div>
     </div>

@@ -2,12 +2,15 @@ package controllers;
 
 import DAO.ArticleDAO;
 import beans.Article;
+import beans.User;
+
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 import utils.ConnectionHandler;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -67,14 +70,13 @@ public class CreateArticle extends HttpServlet {
 			name = (String) request.getParameter("name");
 			description = (String) request.getParameter("description");
 			image = (String) request.getParameter("image");
-			article_creator = Integer.parseInt(request.getParameter("article_creator"));
-			auction_id = Integer.parseInt(request.getParameter("auction_id"));
+			article_creator = (((User) request.getSession().getAttribute("user")).getUser_id());
 			price = Integer.parseInt(request.getParameter("price"));
 			
 			if(name == null || name.isEmpty() ||
 				description == null || description.isEmpty() ||
 				image == null || image.isEmpty() ||
-				article_creator == null || auction_id == null || price == null) {
+				article_creator == null || price == null) {
 				throw new Exception("Missing or empty credential value");
 			}
 		}
@@ -84,15 +86,15 @@ public class CreateArticle extends HttpServlet {
 		}
 
 		if(name.length() > 255 || description.length() > 255 || image.length() > 255) {
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Unable to read parameters");
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Parameters too long");
 			return;
 		}
 		if(price <= 0) {
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Unable to read parameters");
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Unable to read price");
 			return;
 		}
-		if(article_creator <= 0 || auction_id <= 0) {
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Unable to read parameters");
+		if(article_creator <= 0) {
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Unable to read article creator");
 			return;
 		}
 		
@@ -105,9 +107,10 @@ public class CreateArticle extends HttpServlet {
 			return; 
 		}
 		
-		final WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
-		ctx.setVariable("createdArticle", article);
-		templateEngine.process("/sell.html", ctx, response.getWriter());
+		RequestDispatcher reqd = request.getRequestDispatcher("GoToSell");
+        
+        // Forward the Request Dispatcher object.
+        reqd.forward(request, response);
 	}
 	
 	public void destroy() {
