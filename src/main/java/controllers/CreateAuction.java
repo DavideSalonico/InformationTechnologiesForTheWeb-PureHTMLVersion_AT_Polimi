@@ -84,7 +84,6 @@ public class CreateAuction extends HttpServlet {
 		
 		try {
 			//auction_id = Integer.parseInt(request.getParameter("offer_id"));
-			initial_price = Integer.parseInt(request.getParameter("initial_price"));
 			expiring_date =  LocalDateTime.parse(request.getParameter("expiring_date")).truncatedTo(ChronoUnit.MINUTES);
 			minimum_raise = Integer.parseInt(request.getParameter("minimum_raise"));
 			creator = (((User) request.getSession().getAttribute("user")).getUser_id());
@@ -96,7 +95,7 @@ public class CreateAuction extends HttpServlet {
 		}
 		
 		try {
-			auctionDAO.insertAuction(initial_price, expiring_date, minimum_raise, creator);
+			auctionDAO.insertAuction(expiring_date, minimum_raise, creator);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

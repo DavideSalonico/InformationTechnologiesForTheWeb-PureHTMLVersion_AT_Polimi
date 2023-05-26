@@ -114,10 +114,10 @@ public class ArticleDAO {
 		return articles;
 	}
 	
-	public List<Article> getUserArticles(int user_id) throws SQLException{
+	public List<Article> getAvailableUserArticles(int user_id) throws SQLException{
 		List<Article> articles = new ArrayList<Article>();
 		Article article = new Article();
-		String query = "SELECT * FROM article WHERE article_creator = ?";
+		String query = "SELECT * FROM article WHERE article_creator = ? and sold = 0 and auction_id  is null";
 		try {
 			pstatement = connection.prepareStatement(query);
 			pstatement.setInt(1, user_id);

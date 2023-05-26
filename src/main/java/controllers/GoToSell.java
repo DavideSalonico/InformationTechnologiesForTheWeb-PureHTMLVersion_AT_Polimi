@@ -141,7 +141,7 @@ public class GoToSell extends HttpServlet {
 					maxOffers.put(auction.getAuction_id(), maxOffer);
 			}
 
-			articles = articleDAO.getUserArticles(user.getUser_id());
+			articles = articleDAO.getAvailableUserArticles(user.getUser_id());
 
 			
 		}catch(SQLException e){
