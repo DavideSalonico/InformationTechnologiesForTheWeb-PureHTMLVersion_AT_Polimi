@@ -131,7 +131,7 @@ public class GoToSell extends HttpServlet {
 				maxOffer = offerDAO.getWinningOffer(auction.getAuction_id());
 				
 				for(Article article : articles) {
-					userOpenAuctions.put(auction, article);
+					userClosedAuctions.put(auction, article);
 				}
 				
 				LocalDateTime logLdt = (LocalDateTime) request.getSession(false).getAttribute("creationTime");
