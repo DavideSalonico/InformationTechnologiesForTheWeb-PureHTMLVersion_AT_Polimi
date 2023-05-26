@@ -11,12 +11,12 @@
     <div class="col lft-col"></div>
     <div class="col mid-col introduction">
         <section class="overview">
-            <div th:if="${session.currUser == null}">
+            <div th:if="${session.user == null}">
                 <a th:href="@{/CheckLogin}">Login</a>
             </div>
-            <div th:if="${session.currUser != null}">
+            <div th:if="${session.user != null}">
                 <h2>Online Auctions!</h2>
-                <p>Welcome back <span th:text="${session.currUser.username}"></span></p>
+                <p>Welcome back <span th:text="${session.user.getUser_id()}"></span></p>
                 <p><strong>Online Auctions</strong></p>
                 <h2>Privacy Policy</h2>
                 <p>HolaHolaHola</p>
