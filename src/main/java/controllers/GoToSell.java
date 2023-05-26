@@ -140,6 +140,9 @@ public class GoToSell extends HttpServlet {
 				if(maxOffer != null)
 					maxOffers.put(auction.getAuction_id(), maxOffer);
 			}
+
+			articles = articleDAO.getUserArticles(user.getUser_id());
+
 			
 		}catch(SQLException e){
 			e.printStackTrace();
@@ -160,6 +163,7 @@ public class GoToSell extends HttpServlet {
 		ctx.setVariable("remainingTimes", remainingTimes);
 		ctx.setVariable("maxOffers", maxOffers);
 		ctx.setVariable("ldt", ldt);
+		ctx.setVariable("articles", articles);
 		ctx.setVariable("selectedArticles", selectedArticlesSet);
 		
 		// QUESTO TRY and CATCH è messo solo per debuggare

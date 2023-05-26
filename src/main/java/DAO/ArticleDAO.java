@@ -117,7 +117,7 @@ public class ArticleDAO {
 	public List<Article> getUserArticles(int user_id) throws SQLException{
 		List<Article> articles = new ArrayList<Article>();
 		Article article = new Article();
-		String query = "SELECT * FROM article WHERE user_id = ?";
+		String query = "SELECT * FROM article WHERE article_creator = ?";
 		try {
 			pstatement = connection.prepareStatement(query);
 			pstatement.setInt(1, user_id);
