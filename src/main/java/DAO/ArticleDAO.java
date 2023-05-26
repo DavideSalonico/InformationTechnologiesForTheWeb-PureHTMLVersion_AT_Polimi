@@ -171,6 +171,34 @@ public class ArticleDAO {
 		}
 		return article;
 	}
+
+	public int getAuctionInitialPrice(int auction_id) throws SQLException{
+		String query = "SELECT SUM(price) AS total FROM article where auction_id = ?";
+		int initialPrice = 0;
+		try {
+			pstatement = connection.prepareStatement(query);
+			pstatement.setInt(1, auction_id);
+			result = pstatement.executeQuery();
+			if (result.next()) {
+				initialPrice = result.getInt("total");
+			}
+		}catch(SQLException e) {
+			e.printStackTrace();
+			throw new SQLException(e);
+		}finally {
+			try {
+				result.close();
+			} catch (Exception e1) {
+				throw new SQLException(e1);
+			}
+			try {
+				pstatement.close();
+			} catch (Exception e2) {
+				throw new SQLException(e2);
+			}
+		}
+		return initialPrice;
+	}
 	
 	public Article resultToArticle(ResultSet result) throws SQLException{
 		Article article = new Article(); 

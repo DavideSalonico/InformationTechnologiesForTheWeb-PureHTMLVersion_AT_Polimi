@@ -45,13 +45,23 @@ public class AuctionDAO {
 		}	
 	}
 	
-	public void insertAuction(LocalDateTime expiring_date, int minimum_raise, int creator) throws SQLException{
+	public int insertAuction(LocalDateTime expiring_date, int minimum_raise, int creator) throws SQLException{
+		int auction_id = -1;
 		try {
 			pstatement = connection.prepareStatement("INSERT INTO auction (expiring_date, minimum_raise, creator) VALUES(?, ?, ?)");
 			pstatement.setObject(1, expiring_date);
 			pstatement.setInt(2, minimum_raise);
 			pstatement.setInt(3, creator);
-			pstatement.executeUpdate();
+			int result = pstatement.executeUpdate();
+			if(result > 0) {
+				//System.out.println("Auction inserted successfully");
+				ResultSet resultSet = pstatement.getGeneratedKeys();
+				if(resultSet.next()) {
+					auction_id = resultSet.getInt(1);
+					//System.out.println("Auction id: " + auction_id); relativo all'asta appena aggiunta
+				}
+				resultSet.close();
+			}
 		} catch(SQLException e) {
 			e.printStackTrace();
 			throw new SQLException(e);
@@ -62,7 +72,7 @@ public class AuctionDAO {
 				throw new SQLException(e2);
 			}
 		}
-		return;
+		return auction_id;
 	}
 	
 	public List<Auction> search(String keyword) throws SQLException{
@@ -235,13 +245,14 @@ public class AuctionDAO {
 	}
 	
 	public boolean changeAuctionStatus(int auction_id) throws SQLException{
-		int result = 0;		
+		int worked = 0;
 		try {
 			pstatement = connection.prepareStatement("UPDATE auction SET open = 0 WHERE auction_id = ?");
 			pstatement.setInt(1, auction_id);
-			result = pstatement.executeUpdate();
+			pstatement.executeUpdate();
+			//FAI CONTROLLO
 			// If there is an affected row, it means that the auction has been closed
-			if(result > 0)
+			if(worked > 0)
 				return true;
 		} catch (SQLException e) {
 		    e.printStackTrace();
@@ -252,6 +263,26 @@ public class AuctionDAO {
 			} catch (Exception e1) {}
 		}		
 		return false;
+	}
+
+	public void setInitialPrice(int auction_id, int initialPrice) throws SQLException{
+		int result = -1;
+		try {
+			pstatement = connection.prepareStatement("UPDATE `sys`.`auction` SET `initial_price` = ? WHERE `auction_id` = ?");
+			pstatement.setInt(1, initialPrice);
+			pstatement.setInt(2, auction_id);
+			pstatement.executeUpdate();
+			// If there is an affected row, it means that the auction has been closed
+			// FAI CONTROLLO SULLA BUONA RIUSCITA DI MODIFICA
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new SQLException(e);
+		} finally {
+			try {
+				pstatement.close();
+			} catch (Exception e1) {}
+		}
 	}
 	
 	private Auction resultToAuction(ResultSet result) throws SQLException{

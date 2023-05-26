@@ -17,10 +17,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.Serial;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 @WebServlet("/CreateAuction")
 
@@ -28,6 +30,7 @@ import java.time.temporal.ChronoUnit;
 @MultipartConfig
 
 public class CreateAuction extends HttpServlet {
+	@Serial
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
 	private TemplateEngine templateEngine;
@@ -80,22 +83,38 @@ public class CreateAuction extends HttpServlet {
 		LocalDateTime expiring_date = LocalDateTime.now().minusYears(1);
 		int minimum_raise;
 		int creator;
+		// LISTA DEGLI ID degli articoli da aggiungere all'asta
+		List<Integer> articlesToAdd = null;
 
 		
 		try {
-			//auction_id = Integer.parseInt(request.getParameter("offer_id"));
 			expiring_date =  LocalDateTime.parse(request.getParameter("expiring_date")).truncatedTo(ChronoUnit.MINUTES);
 			minimum_raise = Integer.parseInt(request.getParameter("minimum_raise"));
 			creator = (((User) request.getSession().getAttribute("user")).getUser_id());
-	
+
+			String [] stringheAppoggio = request.getParameterValues("selectedArticles");
+			if( stringheAppoggio == null ) {
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "No articles selected to add to the auction");
+				return;
+			}
+			for ( int i = 0; i<stringheAppoggio.length; i++) {
+				articlesToAdd.add(Integer.parseInt(stringheAppoggio[i]));
+			}
+
 		} catch (NumberFormatException | NullPointerException e) {
 			// only for debugging e.printStackTrace();
 			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Incorrect param values");
 			return;
 		}
-		
+
+		// INSERT AUCTION, LINK ALL THE ARTICLES TO THE AUCTION, SET INITIAL PRICE OF AUCTION
 		try {
-			auctionDAO.insertAuction(expiring_date, minimum_raise, creator);
+			int auction_id = auctionDAO.insertAuction(expiring_date, minimum_raise, creator);
+			for (Integer id : articlesToAdd){
+				articleDAO.addToAuction(id, auction_id);
+			}
+			initial_price = articleDAO.getAuctionInitialPrice(auction_id);
+			auctionDAO.setInitialPrice(auction_id, initial_price);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
