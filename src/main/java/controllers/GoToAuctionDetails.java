@@ -26,7 +26,6 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -85,11 +84,11 @@ public class GoToAuctionDetails extends HttpServlet {private static final long s
 	private void setupPage(HttpServletRequest request, HttpServletResponse response, String page) throws ServletException, IOException
     {
 		// get and check params
-		Integer auction_id = null;
-		Auction auction = null;
-		List <Article> articles = null;
-		Offer maxAuctionOffer = null;
-		List<Offer> auctionOffers = null;
+		Integer auction_id;
+		Auction auction;
+		List <Article> articles;
+		Offer maxAuctionOffer;
+		List<Offer> auctionOffers;
 		
 		//This HashMap contains all the offers with their creationTimes, formatted properly
 		LinkedHashMap<Offer, String> frmtAuctionOffers = null;
@@ -138,6 +137,8 @@ public class GoToAuctionDetails extends HttpServlet {private static final long s
 					// Removes the password from the object for security purposes
 					awardedUser.setPassword("");							
 				}
+
+
 			}
 			
 		}catch(SQLException e) {
@@ -177,9 +178,6 @@ public class GoToAuctionDetails extends HttpServlet {private static final long s
 		ctx.setVariable("offers", frmtAuctionOffers);
 		ctx.setVariable("maxAuctionOffer", maxAuctionOffer);
 		ctx.setVariable("awardedUser", awardedUser);
-		HashMap<Article, Integer> awardedArticles = new HashMap<>();
-		//TODO: Da eiminare e scrivere bene
-		ctx.setVariable("awardedArticles", null);
 		// This actually processes the template page
 		// QUESTO TRY and CATCH è messo solo per debuggare
 		try {

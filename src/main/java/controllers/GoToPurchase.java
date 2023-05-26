@@ -2,8 +2,10 @@ package controllers;
 
 import DAO.ArticleDAO;
 import DAO.AuctionDAO;
+import DAO.OfferDAO;
 import beans.Article;
 import beans.Auction;
+import beans.Offer;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -35,6 +37,7 @@ public class GoToPurchase extends HttpServlet {
 	
 	AuctionDAO auctionDAO;
 	ArticleDAO articleDAO;
+	OfferDAO offerDAO;
        
     public GoToPurchase() {
         super();
@@ -53,6 +56,7 @@ public class GoToPurchase extends HttpServlet {
 		// Here the AuctionDAO is initialized, try catch statement don't needed, ConnectionHandler manage already the connection 
 		auctionDAO = new AuctionDAO(connection);
 		articleDAO = new ArticleDAO(connection);
+		offerDAO = new OfferDAO(connection);
 	}
 
 	public void destroy() {
@@ -71,6 +75,8 @@ public class GoToPurchase extends HttpServlet {
 		LinkedHashMap<Auction,List<Article>> filteredOpenAuctions = new LinkedHashMap<>();
 		// The order here is not important
 		HashMap<Integer, DiffTime> remainingTimes = new HashMap<>();
+		//HashMap that contains all user's awarded articles along with the winning offers
+		HashMap<Article, Offer> awardedArticles = new HashMap<>();
 
 		String key = request.getParameter("key");
 		if(key != null){
@@ -110,10 +116,13 @@ public class GoToPurchase extends HttpServlet {
 								List<Article> articles,
 								LinkedHashMap<Auction, List<Article>> filteredOpenAuctions,
 								HashMap<Integer, DiffTime> remainingTimes) throws ServletException, IOException{
+		Offer maxOffer;
 		// Used to calculate the remaining time before the expiration of
 		LocalDateTime logLdt = (LocalDateTime) request.getSession(false).getAttribute("creationTime");
 		// Used to check if the deadline of each auction is after the current datetime
 		LocalDateTime currLdt = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
+		//HashMap that contains all user's awarded articles along with the winning offers
+		HashMap<Article, Offer> awardedArticles = new HashMap<>();
 
     	String key = request.getParameter("key");
     	
@@ -148,6 +157,7 @@ public class GoToPurchase extends HttpServlet {
    			    			// See CreateAuction, all changes to the db are committed only if there are no errors
    			    			// So, if the auction exists, the article exists too
    							articles = articleDAO.getAuctionArticles(auction.getAuction_id());
+							maxOffer = offerDAO.getWinningOffer(auction.getAuction_id());
    						} catch (SQLException e) {
    							e.printStackTrace();
    							response.sendError(500, "Errore, accesso al database fallito!");
@@ -159,13 +169,15 @@ public class GoToPurchase extends HttpServlet {
    						//Calculated from the creation time of the session
    						DiffTime diff = DiffTime.getRemainingTime(logLdt, auction.getExpiring_date());
    						remainingTimes.put(auction.getAuction_id(), diff);
+						for(Article article : articles){
+						   if(maxOffer != null)
+								awardedArticles.put(article, maxOffer);
+						}
+
    					}
    	    		}
        		}
     	}
-    	// Every time there is an error, the method returns false
-    	// so it's possible to execute this line only if there are no errors
-    	return;
     }
 
 	
