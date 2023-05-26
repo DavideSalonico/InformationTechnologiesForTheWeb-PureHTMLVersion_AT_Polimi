@@ -46,24 +46,26 @@
             </section>
         </div>
         <div class="row third-row offers-list">
-            <h2 id="awarded-art">Won Auctions</h2>
+            <h2 id="awarded-art">Won Offers</h2>
             <section class="scrollable scrll-table" th:if="${not #lists.isEmpty(awardedArticles)}">
-                <table>
-                    <thead>
-                    <tr>
-                        <th class="tbl-name">Article name</th>
-                        <th class="tbl-code">Code</th>
-                        <th class="tbl-price">Price (&euro;)</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="awarded, rowStat : ${awardedArticles}" th:class="${rowStat.count % 2 == 0} ? 'odd' : 'even'">
-                        <td th:text="${awarded.key.name}"></td>
-                        <td th:text="${awarded.key.code}"></td>
-                        <td><span th:text="${#numbers.formatDecimal(awarded.value.value, 0)}"></span></td>
-                    </tr>
-                    </tbody>
-                </table>
+                <div th:each="offer : ${awardedOffers}">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th class="tbl-name">Article name</th>
+                            <th class="tbl-code">Code</th>
+                            <th class="tbl-price">Price (&euro;)</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="awarded, rowStat : ${offer.value}" th:class="${rowStat.count % 2 == 0} ? 'odd' : 'even'">
+                            <td th:text="${offer.value.name}"></td>
+                            <td th:text="${offer.value.code}"></td>
+                            <td><span th:text="${#numbers.formatDecimal(offer.value.price, 0)}"></span></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
             </section>
         </div>
     </div>
