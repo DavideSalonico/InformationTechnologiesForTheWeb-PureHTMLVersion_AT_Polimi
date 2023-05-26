@@ -101,7 +101,7 @@ public class AuctionDAO {
 			pstatement = connection.prepareStatement("SELECT * FROM auction WHERE creator = ? AND open = '1'");
 			pstatement.setInt(1, user_id);
 			result = pstatement.executeQuery();
-			if(result.next()) {
+			while (result.next()) {
 				auctions.add(resultToAuction(result));
 			}
 		} catch (SQLException e) {
@@ -129,7 +129,7 @@ public class AuctionDAO {
 			pstatement = connection.prepareStatement("SELECT * FROM auction WHERE creator = ? AND open = '0'");
 			pstatement.setInt(1, user_id);
 			result = pstatement.executeQuery();
-			if(result.next()) {
+			while(result.next()) {
 				auctions.add(resultToAuction(result));
 			}
 		} catch (SQLException e) {
