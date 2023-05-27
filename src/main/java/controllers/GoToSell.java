@@ -80,24 +80,7 @@ public class GoToSell extends HttpServlet {
     	HashMap<Integer, DiffTime> remainingTimes = new HashMap<>();
     	HashMap<Integer, Offer> maxOffers = new HashMap<>();
 
-		String[] selectedArticles = request.getParameterValues("selectedArticles");
-		String newSelected = request.getParameter("newSelected");
 
-
-
-		Set<Integer> selectedArticlesSet = new HashSet<>();
-		try{
-			if(newSelected !=null && !newSelected.isEmpty())
-				selectedArticlesSet.add(Integer.parseInt(newSelected));
-			for(int i=0;selectedArticles!= null && i<selectedArticles.length;i++) {
-				selectedArticlesSet.add(Integer.parseInt(selectedArticles[i]));
-			}
-		}catch(NumberFormatException ex){
-			response.sendError(500, "Invalid selected article id");
-			return;
-		}
-
-		
 		try {
 			//CONTROLLA SE SONO IN ORDINE CRESCENTE DI DATA+ORA
 			openAuctions = auctionDAO.getOpenAuctions(user.getUser_id());
@@ -158,7 +141,6 @@ public class GoToSell extends HttpServlet {
 		ctx.setVariable("maxOffers", maxOffers);
 		ctx.setVariable("ldt", ldt);
 		ctx.setVariable("articles", articles);
-		ctx.setVariable("selectedArticles", selectedArticlesSet);
 		
 		// QUESTO TRY and CATCH è messo solo per debuggare
 		try {
@@ -170,7 +152,26 @@ public class GoToSell extends HttpServlet {
 
 	//DEFAULT
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doGet(request, response);
+		String[] selectedArticles = request.getParameterValues("selectedArticles");
+		String newSelected = request.getParameter("newSelected");
+
+
+
+		Set<Integer> selectedArticlesSet = new HashSet<>();
+		try{
+			if(newSelected !=null && !newSelected.isEmpty())
+				selectedArticlesSet.add(Integer.parseInt(newSelected));
+			for(int i=0;selectedArticles!= null && i<selectedArticles.length;i++) {
+				selectedArticlesSet.add(Integer.parseInt(selectedArticles[i]));
+			}
+		}catch(NumberFormatException ex){
+			response.sendError(500, "Invalid selected article id");
+			return;
+		}
+
+
+		ctx.setVariable("articlesSelected", articlesSelected);
+
 	}
 
 }

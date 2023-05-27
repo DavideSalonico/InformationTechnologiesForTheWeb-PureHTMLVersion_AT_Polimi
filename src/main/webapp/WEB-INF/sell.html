@@ -60,8 +60,8 @@
                 <div style="display: flex;">
                     <div style="flex: 1;">
                         <div th:if="${not articles.isEmpty()}">
-                            <label for="articleSelected">Article</label>
-                            <select name="articleSelected" id="articleSelected" multiple>
+                            <label for="articles">Article</label>
+                            <select name="articles" id="articles" multiple>
                                 <option th:each="article : ${articles}" th:value="${article.article_id}" th:text="${article.name}"></option>
                             </select><br />
 
