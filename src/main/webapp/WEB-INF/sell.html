@@ -63,7 +63,7 @@
                             <label for="articleSelected">Article</label>
                             <select name="articleSelected" id="articleSelected" multiple>
                                 <option th:each="article : ${articles}" th:value="${article.article_id}" th:text="${article.name}"></option>
-                            </select><br />
+                            </select><br/>
 
                             <button name="auction-submit" type="submit">Aggiungi all'Asta</button>
                         </div>
