@@ -81,15 +81,15 @@ public class GoToSell extends HttpServlet {
     	HashMap<Integer, DiffTime> remainingTimes = new HashMap<>();
     	HashMap<Integer, Offer> maxOffers = new HashMap<>();
 
-		List <Integer> articlesSelected = new ArrayList<>();
+		List <Article> articlesSelected = new ArrayList<>();
 		Article chosenArticle = null;
 
 		try {
 
 			if(request.getParameter("articleSelected") != null) {
 				Integer selectedArticleId = Integer.parseInt(request.getParameter("articleSelected"));
-				articlesSelected.add(selectedArticleId);
 				chosenArticle = articleDAO.getArticle(selectedArticleId);
+				articlesSelected.add(chosenArticle);
 			}
 			//CONTROLLA SE SONO IN ORDINE CRESCENTE DI DATA+ORA
 			openAuctions = auctionDAO.getOpenAuctions(user.getUser_id());
