@@ -85,7 +85,13 @@ public class GoToSell extends HttpServlet {
 		Article chosenArticle = null;
 
 		try {
-
+			if(request.getParameterValues("alreadySelected") != null){
+				String [] selectedArticles = request.getParameterValues("alreadySelected");
+				for(String stringa : selectedArticles) {
+					Article temp = articleDAO.getArticle(Integer.parseInt(stringa));
+					articlesSelected.add(temp);
+				}
+			}
 			if(request.getParameter("articleSelected") != null) {
 				Integer selectedArticleId = Integer.parseInt(request.getParameter("articleSelected"));
 				chosenArticle = articleDAO.getArticle(selectedArticleId);
@@ -129,11 +135,10 @@ public class GoToSell extends HttpServlet {
 
 			articles = articleDAO.getAvailableUserArticles(user.getUser_id());
 
-			if(chosenArticle != null) {
-				for (Article article : articles) {
-					if (article.equals(chosenArticle)) {
-						articles.remove(article);
-						break;
+			if(!articlesSelected.isEmpty()) {
+				for (Article x : articlesSelected) {
+					if (articles.contains(x)) {
+						articles.remove(x);
 					}
 				}
 			}

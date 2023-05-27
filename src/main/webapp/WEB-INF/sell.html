@@ -57,6 +57,7 @@
         <div class="row fourth-row form">
             <h2 id="create-auc">Creazione di una nuova asta</h2>
             <form th:method="GET" th:action="@{/GoToSell}">
+                <input type="hidden"  th:each="article : ${articlesSelected}" th:value="${article.article_id}" name="alreadySelected"></input>
                 <div style="display: flex;">
                     <div style="flex: 1;">
                         <div th:if="${not articles.isEmpty()}">
