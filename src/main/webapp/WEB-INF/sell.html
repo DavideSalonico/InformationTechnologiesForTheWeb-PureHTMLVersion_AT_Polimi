@@ -73,7 +73,7 @@
                         </div>
                     </div>
 
-                    <div style="flex: 1;">
+                    <div style="flex: 1;" th:if="${articlesSelected} != null">
                         <h2>Articoli Aggiunti all'Asta</h2>
                         <!-- Aggiungi qui il codice per visualizzare gli articoli aggiunti all'asta -->
                         <table>
@@ -88,7 +88,7 @@
                             <tbody>
                                 <tr th:each="article : ${articlesSelected}">
                                     <td th:text="${article.name}"></td>
-                                    <td th:text="${article.code}"></td>
+                                    <td th:text="${article.article_id}"></td>
                                     <td th:text="${article.price}"></td>
                                 </tr>
                             </tbody>
