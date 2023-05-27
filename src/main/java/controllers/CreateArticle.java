@@ -14,6 +14,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Part;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -41,16 +42,12 @@ public class CreateArticle extends HttpServlet {
 		
 		articleDAO = new ArticleDAO(connection);
     }
-    
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		WebContext context = new WebContext(request, response, getServletContext(), request.getLocale());
-        templateEngine.process("/WEB-INF/sell.html", context, response.getWriter());
-	}
+
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String name = null;
 		String description = null;
-		String image = null;
+		//Part image = null;
 		Integer article_creator = null;
 		Integer auction_id = null;
 		Integer price = null;
@@ -58,13 +55,12 @@ public class CreateArticle extends HttpServlet {
 		try {
 			name = (String) request.getParameter("name");
 			description = (String) request.getParameter("description");
-			image = (String) request.getParameter("image");
+			//image = request.getPart("image");
 			article_creator = (((User) request.getSession().getAttribute("user")).getUser_id());
 			price = Integer.parseInt(request.getParameter("price"));
 			
 			if(name == null || name.isEmpty() ||
 				description == null || description.isEmpty() ||
-				image == null || image.isEmpty() ||
 				article_creator == null || price == null) {
 				throw new Exception("Missing or empty credential value");
 			}
@@ -74,7 +70,7 @@ public class CreateArticle extends HttpServlet {
 			return;
 		}
 
-		if(name.length() > 255 || description.length() > 255 || image.length() > 255) {
+		if(name.length() > 255 || description.length() > 255 ) {
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Parameters too long");
 			return;
 		}
@@ -87,19 +83,17 @@ public class CreateArticle extends HttpServlet {
 			return;
 		}
 		
-		Article article = null;
+
 		try {
-			articleDAO.insertArticle(name, description,  image, price, article_creator);
+			articleDAO.insertArticle(name, description, price, article_creator);
 		}
 		catch(SQLException e){
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Unable to insert a new articole into database"); 
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Unable to insert a new article into database");
 			return; 
 		}
-		
-		RequestDispatcher reqd = request.getRequestDispatcher("GoToSell");
-        
-        // Forward the Request Dispatcher object.
-        reqd.forward(request, response);
+
+		String path = getServletContext().getContextPath() + "/GoToSell";
+		response.sendRedirect(path);
 	}
 	
 	public void destroy() {

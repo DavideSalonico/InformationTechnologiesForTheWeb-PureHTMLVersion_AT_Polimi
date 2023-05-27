@@ -2,6 +2,8 @@ package DAO;
 
 import beans.Article;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,15 +45,22 @@ public class ArticleDAO {
 		return isSold;
 	}
 	
-	public void insertArticle(String name, String description, String image, int price, int user_id) throws SQLException{
-		String query = "INSERT into article (name, description, image, price, sold, user_id) VALUES (?,?,?,?,false,?)";
+	public void insertArticle(String name, String description, int price, int user_id) throws SQLException{
+		String query = "INSERT into article (name, description, price, sold, article_creator) VALUES (?,?,?,false,?)";
+		InputStream imageInputStream = null;
+		/*try {
+			imageInputStream = image.getInputStream();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}*/
 		try{
 			pstatement  = connection.prepareStatement(query);
 			pstatement.setString(1,name);
 			pstatement.setString(2,description);
-			pstatement.setString(3, image);
-			pstatement.setInt(4, price);
-			pstatement.setInt(5, user_id);
+
+			//pstatement.setBlob(3, imageInputStream);
+			pstatement.setInt(3, price);
+			pstatement.setInt(4, user_id);
 			pstatement.executeUpdate();
 		}catch(SQLException e) {
 			e.printStackTrace();

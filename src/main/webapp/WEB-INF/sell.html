@@ -33,7 +33,7 @@
         </div>
         <div class="row third-row form">
             <h2 id="create-art">Creazione di un nuovo Articolo</h2>
-            <form action="#" th:action="@{/CreateArticle}" method="post" enctype="multipart/form-data">
+            <form th:method="post" th:action="@{/CreateArticle}">
                 <div>
                     <label for="name">Nome Articolo:</label>
                     <input type="text" name="name" id="name" min="4" max="50" required>

@@ -53,8 +53,8 @@
 	   				<!--/* Here two if statements are used instead of an inline if-else because the
 	   				euro symbol's html code is not rendered correctly if processed by the thymeleaf engine
 	   				So, in order to display it, it's necessary to keep it static. That's why span is used in the first case */-->
-	   				<p th:if="${maxOffers != null and maxOffers.containsKey(auction)}"><span th:text="${'Offerta massima: ' + maxOffers.get(auction.auction_id).getPrice()}"></span> &euro;</p>
-					<p th:unless="${maxOffers != null and maxOffers.containsKey(auction)}">Offerta massima: Nessuna</p>
+	   				<p th:if="${maxOffers != null and maxOffers.containsKey(auction.auction_id)}"><span th:text="${'Offerta massima: ' + maxOffers.get(auction.auction_id).getPrice()}"></span> &euro;</p>
+					<p th:unless="${maxOffers != null and maxOffers.containsKey(auction.auction_id)}">Offerta massima: Nessuna</p>
 	   				<!--/*
 	   				(1) th:with="currTimeLeft=${remainingTimes.get(entry.key)}" creates a variable currTimeLeft and assigns
 	   				to it the current DiffTime object, related to the remaining time left before the expiration date of the current auction
