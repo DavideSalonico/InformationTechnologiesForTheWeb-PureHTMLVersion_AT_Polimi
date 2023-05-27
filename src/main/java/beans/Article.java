@@ -32,6 +32,9 @@ public class Article {
 		this.name = name;
 	}
 
+	public boolean equals (Article x){
+		return this.article_id == x.getArticle_id();
+	}
 	public String getDescription() {
 		return description;
 	}

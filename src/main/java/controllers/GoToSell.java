@@ -129,7 +129,14 @@ public class GoToSell extends HttpServlet {
 
 			articles = articleDAO.getAvailableUserArticles(user.getUser_id());
 
-			articles.remove(chosenArticle);
+			if(chosenArticle != null) {
+				for (Article article : articles) {
+					if (article.equals(chosenArticle)) {
+						articles.remove(article);
+						break;
+					}
+				}
+			}
 
 		}catch(SQLException e){
 			e.printStackTrace();
