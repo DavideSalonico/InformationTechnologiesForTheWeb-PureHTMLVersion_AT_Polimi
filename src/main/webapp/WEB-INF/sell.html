@@ -56,6 +56,32 @@
         </div>
         <div class="row fourth-row form">
             <h2 id="create-auc">Creazione di una nuova asta</h2>
+            <form th:method="POST" th:action="@{/GoToSell}">
+                <div style="display: flex;">
+                    <div style="flex: 1;">
+                        <div th:if="${not articles.isEmpty()}">
+                            <label for="articleSelected">Article</label>
+                            <select name="articleSelected" id="articleSelected" multiple>
+                                <option th:each="article : ${articles}" th:value="${article.article_id}" th:text="${article.name}"></option>
+                            </select><br />
+
+                            <button name="auction-submit" type="submit">Aggiungi all'Asta</button>
+                        </div>
+                        <div th:unless="${not articles.isEmpty()}">
+                            <!-- Versione statica della pagina -->
+                            <p>Nessun articolo disponibile.</p>
+                        </div>
+                    </div>
+
+                    <div style="flex: 1;">
+                        <h2>Articoli Aggiunti all'Asta</h2>
+                        <ul>
+                            <!-- Aggiungi qui il codice per visualizzare gli articoli aggiunti all'asta -->
+                        </ul>
+                    </div>
+                </div>
+
+            </form>
             <form action="#" th:action="@{/CreateAuction}" method="post" enctype="multipart/form-data">
                 <div>
                     <label for="minimum_raise">Rialzo Minimo:</label>
@@ -70,23 +96,6 @@
                 <button name="auction-submit" type="submit">Crea Asta</button>
 
             </form>
-
-            <form th:method="GET" th:action="@{/GoToSell}">
-                <div th:if="${not articles.isEmpty()}">
-                    <label for="newSelected">Article</label>
-                        <select name="newSelected" id="newSelected" multiple>
-                            <option th:each="article : ${articles}" th:value="${article.article_id}" th:text="${article.name}"></option>
-                        </select><br />
-
-                    <button name="auction-submit" type="submit">Aggiungi all'Asta</button>
-                </div>
-                <div th:unless="${not articles.isEmpty()}">
-                    <!-- Versione statica della pagina -->
-                    <p>Nessun articolo disponibile.</p>
-                </div>
-
-            </form>
-
         </div>
     </div>
     <div class="col rgt-col">
