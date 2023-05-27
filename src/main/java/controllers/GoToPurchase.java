@@ -8,8 +8,6 @@ import beans.Auction;
 import beans.Offer;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
-import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 import utils.ConnectionHandler;
 import utils.DiffTime;
 
@@ -44,13 +42,9 @@ public class GoToPurchase extends HttpServlet {
     }
 
 	public void init() throws ServletException {
+
 		ServletContext servletContext = getServletContext();
-		ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
-		templateResolver.setTemplateMode(TemplateMode.HTML);
-		this.templateEngine = new TemplateEngine();
-		this.templateEngine.setTemplateResolver(templateResolver);
-		templateResolver.setSuffix(".html");
-	
+		templateEngine = utils.EngineHandler.setEngine(servletContext);
 		connection = ConnectionHandler.getConnection(getServletContext());
 		
 		// Here the AuctionDAO is initialized, try catch statement don't needed, ConnectionHandler manage already the connection 

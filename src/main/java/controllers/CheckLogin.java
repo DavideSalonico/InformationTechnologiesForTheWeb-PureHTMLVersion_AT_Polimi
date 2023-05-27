@@ -1,31 +1,22 @@
 package controllers;
 
+import DAO.UserDAO;
+import beans.User;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.WebContext;
+import utils.ConnectionHandler;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.UnavailableException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.WebContext;
-import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
-
-import DAO.UserDAO;
-import beans.User;
-import utils.ConnectionHandler;
-
-/**
- * Servlet implementation class CheckLogin
- */
 
 @WebServlet("/CheckLogin")
 public class CheckLogin extends HttpServlet {
@@ -33,26 +24,17 @@ public class CheckLogin extends HttpServlet {
 	private Connection connection = null;
 	private TemplateEngine templateEngine;
 	private UserDAO userDao;
-	
     
     public CheckLogin() {
         super();
     }
 
 
-	public void init() throws ServletException {   // FORSE DA METTERE IN UN TRY CATCH
+	public void init() throws ServletException {
 		ServletContext servletContext = getServletContext();
-		try {
-			connection = ConnectionHandler.getConnection(servletContext);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
-		templateResolver.setTemplateMode(TemplateMode.HTML);
-		this.templateEngine = new TemplateEngine();
-		this.templateEngine.setTemplateResolver(templateResolver);
-		templateResolver.setSuffix(".html");
+
+		templateEngine = utils.EngineHandler.setEngine(servletContext);
+		connection = ConnectionHandler.getConnection(servletContext);
 		
 		userDao = new UserDAO(connection);  // Initialize the connection only once, not every doPost()
 	}
@@ -70,7 +52,7 @@ public class CheckLogin extends HttpServlet {
 		String pwd = null;     
 		                                                                                                           
 		try {        
-			usrn = (String) request.getParameter("username");                                 
+			usrn = (String) request.getParameter("username");
 			pwd = (String)request.getParameter("password");                                       
 			                                                                                                       
 			if (usrn == null || pwd == null || usrn.isEmpty() || pwd.isEmpty()) {                                  
@@ -91,11 +73,9 @@ public class CheckLogin extends HttpServlet {
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not Possible to check credentials"); 
 			return;                                                                                                
 		}                                                                                                          
-		                                                                         
-		
+
 		// If the user exists, add info to the session and go to home page, otherwise                              
-		// show login page with error message                                                                      
-		                                                                                                           
+		// show login page with error message
 		String path;
 		if (user == null) {
 			ServletContext servletContext = getServletContext();
@@ -118,6 +98,4 @@ public class CheckLogin extends HttpServlet {
 			e.printStackTrace();
 		}
 	}
-	
-	//TODO: Non mettere link a pagine ma chiamare servlet
 }

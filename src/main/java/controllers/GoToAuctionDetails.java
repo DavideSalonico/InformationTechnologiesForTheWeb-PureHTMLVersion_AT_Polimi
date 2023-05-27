@@ -10,8 +10,6 @@ import beans.Offer;
 import beans.User;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
-import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 import utils.ConnectionHandler;
 
 import javax.servlet.ServletContext;
@@ -46,15 +44,10 @@ public class GoToAuctionDetails extends HttpServlet {private static final long s
 	
 	public void init() throws ServletException {
 		ServletContext servletContext = getServletContext();
-		ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
-		templateResolver.setTemplateMode(TemplateMode.HTML);
-		this.templateEngine = new TemplateEngine();
-		this.templateEngine.setTemplateResolver(templateResolver);
-		templateResolver.setSuffix(".html");
-	
-		connection = ConnectionHandler.getConnection(getServletContext());
-		
-		//Initialize DAO only once and not every doGet()
+
+		templateEngine = utils.EngineHandler.setEngine(servletContext);
+		connection = ConnectionHandler.getConnection(servletContext);
+
 		offerDAO = new OfferDAO(connection);
 		auctionDAO = new AuctionDAO(connection);
 		articleDAO = new ArticleDAO(connection);

@@ -1,12 +1,16 @@
 package controllers;
 
-import java.io.IOException;
-import javax.servlet.ServletConfig;
+import org.thymeleaf.TemplateEngine;
+import utils.ConnectionHandler;
+
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.sql.Connection;
 
 /**
  * Servlet implementation class MakeOffer
@@ -14,42 +18,25 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/MakeOffer")
 public class MakeOffer extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public MakeOffer() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
+	private Connection connection;
+	private TemplateEngine templateEngine;
 
-	/**
-	 * @see Servlet#init(ServletConfig)
-	 */
 	public void init() throws ServletException {
-		// TODO Auto-generated method stub
+		ServletContext servletContext = getServletContext();
+		templateEngine = utils.EngineHandler.setEngine(servletContext);
+		connection = ConnectionHandler.getConnection(getServletContext());
 	}
 
-	/**
-	 * @see Servlet#destroy()
-	 */
 	public void destroy() {
-		// TODO Auto-generated method stub
+		// TODO
 	}
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		response.getWriter().append("Served at: ").append(request.getContextPath());
+		// TODO
 	}
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
+		//TODOs
 		doGet(request, response);
 	}
 

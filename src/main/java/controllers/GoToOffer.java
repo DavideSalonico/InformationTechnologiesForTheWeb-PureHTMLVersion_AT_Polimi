@@ -1,24 +1,20 @@
 package controllers;
 
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
+import DAO.OfferDAO;
+import beans.Offer;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.WebContext;
+import utils.ConnectionHandler;
+
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.WebContext;
-import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
-
-import DAO.OfferDAO;
-import beans.Offer;
-import utils.ConnectionHandler;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 @WebServlet("/GoToOffer")
 public class GoToOffer extends HttpServlet {
@@ -35,11 +31,8 @@ public class GoToOffer extends HttpServlet {
 	
 	public void init() throws ServletException {
 		ServletContext servletContext = getServletContext();
-		ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
-		templateResolver.setTemplateMode(TemplateMode.HTML);
-		this.templateEngine = new TemplateEngine();
-		this.templateEngine.setTemplateResolver(templateResolver);
-		templateResolver.setSuffix(".html");
+		templateEngine = utils.EngineHandler.setEngine(servletContext);
+		connection = ConnectionHandler.getConnection(getServletContext());;
 	
 		connection = ConnectionHandler.getConnection(getServletContext());
 		

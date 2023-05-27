@@ -3,11 +3,8 @@ package controllers;
 import DAO.ArticleDAO;
 import beans.Article;
 import beans.User;
-
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
-import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 import utils.ConnectionHandler;
 
 import javax.servlet.RequestDispatcher;
@@ -37,18 +34,10 @@ public class CreateArticle extends HttpServlet {
         super();
     }
 
-    public void init() {
-    	ServletContext servletContext = getServletContext();
-		try {
-			connection = ConnectionHandler.getConnection(servletContext);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
-		templateResolver.setTemplateMode(TemplateMode.HTML);
-		this.templateEngine = new TemplateEngine();
-		this.templateEngine.setTemplateResolver(templateResolver);
-		templateResolver.setSuffix(".html");
+    public void init() throws ServletException{
+		ServletContext servletContext = getServletContext();
+		templateEngine = utils.EngineHandler.setEngine(servletContext);
+		connection = ConnectionHandler.getConnection(getServletContext());
 		
 		articleDAO = new ArticleDAO(connection);
     }
