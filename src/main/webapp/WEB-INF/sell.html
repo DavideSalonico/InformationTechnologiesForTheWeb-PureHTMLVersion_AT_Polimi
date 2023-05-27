@@ -56,12 +56,12 @@
         </div>
         <div class="row fourth-row form">
             <h2 id="create-auc">Creazione di una nuova asta</h2>
-            <form th:method="POST" th:action="@{/GoToSell}">
+            <form th:method="GET" th:action="@{/GoToSell}">
                 <div style="display: flex;">
                     <div style="flex: 1;">
                         <div th:if="${not articles.isEmpty()}">
-                            <label for="articles">Article</label>
-                            <select name="articles" id="articles" multiple>
+                            <label for="articleSelected">Article</label>
+                            <select name="articleSelected" id="articleSelected" multiple>
                                 <option th:each="article : ${articles}" th:value="${article.article_id}" th:text="${article.name}"></option>
                             </select><br />
 
