@@ -22,15 +22,15 @@
         <ul>
           <a href="#dtl-art"><li>Dettagli</li></a>
           <!--/* Shows this element only if the auction exists and it's closed */-->
-          <a th:if="${auction != null and !auction.isOpen()}" href="#dtl-info"><li>Informazioni</li></a>
+          <a th:if="${auction != null and !auction.isOpen()}" href="#dtl-info"><li>INFORMATION</li></a>
            <!--/* Shows this element only if the auction exists and it's not closed */-->
-          <a th:if="${auction != null and  auction.isOpen()}" href="#dtl-offers"><li>Offerte</li></a>
+          <a th:if="${auction != null and  auction.isOpen()}" href="#dtl-offers"><li>OFFERS</li></a>
         </ul>
       </div>
     </div>
     <div class="col mid-col">
       <div class="row first-row details">
-        <h2 th:if="${auction == null}">Informazioni</h2>
+        <h2 th:if="${auction == null}">INFORMATIONS</h2>
         <!--/* The paragraph exists only if the auction is null */-->
         <p th:if="${auction == null}">L' utente non ha creato l' asta oppure l' asta selezionata non esiste!</p>
         <!--/* th:if="${auction != null}" is used to ensure that the auction exists 
@@ -49,7 +49,7 @@
             that there are no offers for this auction */-->
             <div th:if="${!auction.isOpen() and awardedUser == null}">
             	<hr>
-                <h2 id="dtl-info">Informazioni:</h2>
+                <h2 id="dtl-info">INFORMATIONS:</h2>
                 <p>Purtroppo non e' stata fatta alcuna offerta per questo articolo.</p>
                 <!-- Add a button to close the auction -->
             </div>
