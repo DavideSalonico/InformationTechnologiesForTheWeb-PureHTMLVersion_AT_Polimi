@@ -95,7 +95,7 @@
 			<p><strong>Scadenza: </strong><span th:text="${frmtDeadline}">gg MMM yyyy HH:mm</span></p>
 
 			<!-- Add a button to close the auction -->
-			<a class="button-link" th:if="${auction.isOpen()}" th:href="@{/CloseAuction}" >Chiudi Asta</a>
+			<a class="button-link" th:if="${auction.isOpen()}" th:href="@{/CloseAuction(auctionId=${auction.auction_id})}" >Chiudi Asta</a>
 		</div>
 		
 		

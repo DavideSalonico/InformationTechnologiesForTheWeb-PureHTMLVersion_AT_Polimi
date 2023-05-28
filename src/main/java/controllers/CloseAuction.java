@@ -1,5 +1,6 @@
 package controllers;
 
+import DAO.AuctionDAO;
 import org.thymeleaf.TemplateEngine;
 import utils.ConnectionHandler;
 
@@ -19,7 +20,8 @@ public class CloseAuction extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
 	private TemplateEngine templateEngine;
-	
+
+	private AuctionDAO auctionDAO;
     
 	public CloseAuction() {
         super();
@@ -30,6 +32,7 @@ public class CloseAuction extends HttpServlet {
 
 		templateEngine = utils.EngineHandler.setEngine(servletContext);
 		connection = ConnectionHandler.getConnection(servletContext);
+		auctionDAO = new AuctionDAO(connection);
 	}
 
 	public void destroy() {
@@ -41,7 +44,17 @@ public class CloseAuction extends HttpServlet {
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
+
+		try {
+			int auction_id = Integer.parseInt(request.getParameter("auctionId"));
+			auctionDAO.changeAuctionStatus(auction_id);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+
+		String path = getServletContext().getContextPath() + "/GoToSell";
+		response.sendRedirect(path);
 	
 	}
 
