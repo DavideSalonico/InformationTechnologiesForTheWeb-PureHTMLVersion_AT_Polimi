@@ -1,5 +1,7 @@
 package DAO;
 
+import beans.Offer;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -7,8 +9,6 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import beans.Offer;
 
 public class OfferDAO {
 	private Connection connection;
@@ -135,7 +135,28 @@ public class OfferDAO {
 			} catch(Exception e2) {
 				throw new SQLException(e2);
 			}
-		}	
-		return;
+		}
+	}
+
+    public List<Integer> getWinningOfferByUser(int userId) throws SQLException{
+		List<Integer> auctionId = new ArrayList<>();
+		try{
+			pstatement = connection.prepareStatement("SELECT offer.auction FROM offer o1 WHERE price = (SELECT MAX(price) FROM offer o2 WHERE o1.auction = o2.auction) AND user = ?");
+			pstatement.setInt(1, userId);
+			pstatement.executeQuery();
+			while(result.next()){
+				auctionId.add(result.getInt("auction"));
+			}
+		} catch(SQLException e) {
+			e.printStackTrace();
+			throw new SQLException(e);
+		} finally {
+			try {
+				pstatement.close();
+			} catch(Exception e2) {
+				throw new SQLException(e2);
+			}
+		}
+		return auctionId;
 	}
 }
