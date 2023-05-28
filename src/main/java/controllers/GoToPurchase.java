@@ -36,7 +36,7 @@ public class GoToPurchase extends HttpServlet {
 	AuctionDAO auctionDAO;
 	ArticleDAO articleDAO;
 	OfferDAO offerDAO;
-       
+
     public GoToPurchase() {
         super();
     }
@@ -46,8 +46,8 @@ public class GoToPurchase extends HttpServlet {
 		ServletContext servletContext = getServletContext();
 		templateEngine = utils.EngineHandler.setEngine(servletContext);
 		connection = ConnectionHandler.getConnection(getServletContext());
-		
-		// Here the AuctionDAO is initialized, try catch statement don't needed, ConnectionHandler manage already the connection 
+
+		// Here the AuctionDAO is initialized, try catch statement don't needed, ConnectionHandler manage already the connection
 		auctionDAO = new AuctionDAO(connection);
 		articleDAO = new ArticleDAO(connection);
 		offerDAO = new OfferDAO(connection);
@@ -62,46 +62,46 @@ public class GoToPurchase extends HttpServlet {
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		List<Auction> auctions = new ArrayList<>();
-		List<Article> articles = null;
-		// The Linked Hash Maps is used because it preserves the order of the elements
-		// All auctions with their articles are stored inside them
-		LinkedHashMap<Auction,List<Article>> filteredOpenAuctions = new LinkedHashMap<>();
-		// The order here is not important
-		HashMap<Integer, DiffTime> remainingTimes = new HashMap<>();
-		//HashMap that contains all user's awarded articles along with the winning offers
-		HashMap<Article, Offer> awardedArticles = new HashMap<>();
-
-		String key = request.getParameter("key");
-		if(key != null){
-			filterAuctions(request, response, auctions, articles, filteredOpenAuctions, remainingTimes);
-		}
-
-		String path = "/WEB-INF/purchase.html";
-		final WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
-		// Here some attributes are set, but the request is always forwarded by setupPage.
-		// Sets the LinkedHashMap, containing the auctions and the articles as an attribute of the context
-		ctx.setVariable("auctions", filteredOpenAuctions);
-		// Sets the HashMap, containing the auctions and the remaing time till the expiration for each of them
-		request.setAttribute("remainingTimes", remainingTimes);
-		ctx.setVariable("remainingTimes", remainingTimes);
-		// Sets the key as attribute in order to use it inside the jsp page
-		ctx.setVariable("key", key);
-		try{
-			templateEngine.process(path, ctx, response.getWriter());
-		} catch(Exception e){
-			response.sendError(500, "Errore di Thymeleaf" + e.getMessage());
+		int userId;
+		List<Offer> awardedOffers = null;
+		List<Auction> awardedAuctions = new ArrayList<>();
+		try {
+			userId = (int) request.getSession().getAttribute("userId");
+		} catch (Exception e) {
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing user id");
 			return;
 		}
+
+		// If the user is not logged in (not present in session) redirect to the login
+		if (userId == 0) {
+			response.sendRedirect(getServletContext().getContextPath() + "/index.html");
+			return;
+		}
+
+		try{
+			List<Integer> auctionIds = offerDAO.getWinningOfferByUser(userId);
+			for(Integer auc : auctionIds){
+				awardedAuctions.add(auctionDAO.getAuction(auc));
+			}
+		} catch (SQLException e) {
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not possible to recover the winning offers");
+			return;
+		}
+
+		// If the user is logged in (present in session) redirect to the home page
+		String path = "/WEB-INF/Purchase.html";
+		ServletContext servletContext = getServletContext();
+		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
+		templateEngine.process(path, ctx, response.getWriter());
 	}
-		
+
 	private boolean validateKey(String key){
     	// Checks if the key contains only letters and is longer than 2 characters, but less than 21
     	if(key.matches("[a-zA-Z]+") && key.length() > 2 && key.length() < 21)
     		return true;
     	return false;
     }
-	
+
 	// This method filters all auctions by looking inside the relative articles' names and descriptions and checking if the keyword is present
 	// TODO: This method can be optimized with better queries to database
     private void filterAuctions(HttpServletRequest request,
@@ -112,29 +112,11 @@ public class GoToPurchase extends HttpServlet {
 								HashMap<Integer, DiffTime> remainingTimes) throws ServletException, IOException{
 		Offer maxOffer;
 		// Used to calculate the remaining time before the expiration of
-		LocalDateTime logLdt = (LocalDateTime) request.getSession(false).getAttribute("creationTime");
 		// Used to check if the deadline of each auction is after the current datetime
-		LocalDateTime currLdt = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
 		//HashMap that contains all user's awarded articles along with the winning offers
 		HashMap<Article, Offer> awardedArticles = new HashMap<>();
 
-    	String key = request.getParameter("key");
-    	
-    	if(!validateKey(key)){
-    		response.sendError(400, "Errore, la chiave pu� contenere solo lettere non accentate!"
-    				+ " Inoltre deve avere una lunghezza compresa tra i 3 e 20 caratteri.");
-    		return;
-    	}
     	// Proceeds only if the key is valid
-    	else{
-    		try {
-        		// This returns all the auctions related to the articles that contain the specified keyword
-    			auctions = auctionDAO.search(key);
-    		} catch (SQLException e) {
-    			e.printStackTrace();
-    			response.sendError(500, "Errore, accesso al database fallito!");
-   				return;
-   			}
         		
        		// This means that the there is at least one auction for the given keyword
        		if(auctions != null){
@@ -172,12 +154,39 @@ public class GoToPurchase extends HttpServlet {
    	    		}
        		}
     	}
-    }
 
-	
-	// DEFAULT
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doGet(request, response);
-	}
+		String key = request.getParameter("key");
+		LocalDateTime logLdt = ((LocalDateTime) request.getSession(false).getAttribute("creationTime")).truncatedTo(ChronoUnit.MINUTES);
+		LocalDateTime currLdt = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
+		int user = (int) request.getSession().getAttribute("user");
 
+		List<Auction> filteredAuctions = new ArrayList<>();
+
+		if(validateKey(key) == false){
+			response.sendError(400, "Errore, chiave di ricerca non valida!");
+			return;
+		}
+
+		if (key != null) {
+
+		} else {
+			try {
+				filteredAuctions = auctionDAO.search(key, logLdt, user);
+			} catch (SQLException e) {
+				e.printStackTrace();
+				response.sendError(500, "Errore, accesso al database fallito!");
+				return;
+			}
+
+			String path = "/WEB-INF/purchase.html";
+			final WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
+			ctx.setVariable("key", key);
+			ctx.setVariable("filteredAuctions", filteredAuctions);
+			templateEngine.process(path, ctx, response.getWriter());
+		}
+
+	}
 }
+
+
