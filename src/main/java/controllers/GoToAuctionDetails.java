@@ -65,7 +65,11 @@ public class GoToAuctionDetails extends HttpServlet {private static final long s
 		String page = request.getParameter("page");
 		if(request.getParameter("auction_id") != null && (page.equals("auctionDetails.html") || page.equals("offer.html")))
 		{
-			setupPage(request, response, page);
+			try {
+				setupPage(request, response, page);
+			} catch (SQLException e) {
+				throw new RuntimeException(e);
+			}
 		}
 		else
 		{
@@ -74,8 +78,7 @@ public class GoToAuctionDetails extends HttpServlet {private static final long s
 		}
 	}
 	
-	private void setupPage(HttpServletRequest request, HttpServletResponse response, String page) throws ServletException, IOException
-    {
+	private void setupPage(HttpServletRequest request, HttpServletResponse response, String page) throws ServletException, IOException, SQLException {
 		// get and check params
 		Integer auction_id;
 		Auction auction;
@@ -85,6 +88,7 @@ public class GoToAuctionDetails extends HttpServlet {private static final long s
 		
 		//This HashMap contains all the offers with their creationTimes, formatted properly
 		LinkedHashMap<Offer, String> frmtAuctionOffers = null;
+		LinkedHashMap<Integer, String> users = new LinkedHashMap<>();
     	String frmtDeadline = null;
     	// Used to check if the auction is expired
     	LocalDateTime currLdt = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
@@ -150,6 +154,10 @@ public class GoToAuctionDetails extends HttpServlet {private static final long s
     			String frmtOfferTime = offer.getTime().format(DateTimeFormatter.ofPattern("dd MMM yyyy 'alle' HH:mm"));
     			// Adds both the offer and it's formatted datetime
     			frmtAuctionOffers.put(offer, frmtOfferTime);
+				if(!users.containsKey(offer.getUser())){
+					// Get all "username" of the users who made an offer
+					users.put(offer.getUser(), userDAO.getUser(offer.getUser()).getUsername());
+				}
     		}
 		}
 		
@@ -169,6 +177,7 @@ public class GoToAuctionDetails extends HttpServlet {private static final long s
 		ctx.setVariable("frmtDeadline", frmtDeadline);
 		ctx.setVariable("isExpired", isExpired);
 		ctx.setVariable("offers", frmtAuctionOffers);
+		ctx.setVariable("users", users);
 		ctx.setVariable("maxAuctionOffer", maxAuctionOffer);
 		ctx.setVariable("awardedUser", awardedUser);
 		// This actually processes the template page

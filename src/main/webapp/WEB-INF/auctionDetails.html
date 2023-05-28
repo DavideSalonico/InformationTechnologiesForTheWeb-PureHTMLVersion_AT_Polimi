@@ -39,9 +39,10 @@
         <section th:if="${auction != null}">
             <div th:replace="@{WEB-INF/fragments.html} :: showDetails">
 
-			<!--/* Here a fragment is used, since this piece of markup is identical to 
-			the one used inside offerta.html, it is written once and used twice.
-			The div is replaced by the fragment's one, along with it's children */-->
+
+                <!--/* Here a fragment is used, since this piece of markup is identical to
+                the one used inside offerta.html, it is written once and used twice.
+                The div is replaced by the fragment's one, along with it's children */-->
 
             </div>
             <!--/* If the auction is closed but there isn't a maximum offer, it means
@@ -49,14 +50,16 @@
             <div th:if="${!auction.isOpen() and awardedUser == null}">
             	<hr>
                 <h2 id="dtl-info">Informazioni:</h2>
-                <p>Purtroppo non è stata fatta alcuna offerta per questo articolo.</p>
+                <p>Purtroppo non e' stata fatta alcuna offerta per questo articolo.</p>
+                <!-- Add a button to close the auction -->
             </div>
+
 
             <!--/* If the auction is closed and there is a maximum offer,
             shows the name of the user who has won the auction, his address and his offer's value */-->
             <div th:if="${!auction.isOpen() and awardedUser != null}">
             	<hr>
-                <h2 id="dtl-info">Informazioni aggiudicatario</h2>
+                <h2 id="dtl-infoAwarded">Informazioni aggiudicatario</h2>
                 <p><strong>Nome: </strong><span th:text="${awardedUser.username}">nome 1</span></p>
                 <!--/* "#numbers.formatInteger(num, 1, 'POINT')" : formats the number
       			in order to display it properly. Accepts as parameters the value, the minimum

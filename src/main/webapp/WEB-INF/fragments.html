@@ -27,31 +27,31 @@
 					<table class="dtl-offers">
 						<thead>
 						<tr>
-							<th>Nome</th>
-							<th>Codice</th>
-							<th>Prezzo</th>
+							<th>Article Name</th>
+							<th>Code</th>
+							<th>Price</th>
 						</tr>
 						</thead>
 						<tbody>
 						<!-- Itera sulla lista di articoli associati all'asta corrente -->
 						<tr th:each="article : ${entry.value}">
-							<td th:text="${article.name}">Nome 1</td>
-							<td th:text="${article.article_id}">Cod. 1</td>
-							<td th:text="${#numbers.formatInteger(article.price, 1, 'POINT')}">1000 $</td>
+							<td class="table-cell" th:text="${article.name}">Nome 1</td>
+							<td class="table-cell" th:text="${article.article_id}">Cod. 1</td>
+							<td class="table-cell" th:text="${#numbers.formatInteger(article.price, 1, 'POINT')}">1000 $</td>
 						</tr>
 						</tbody>
 					</table>
 
 					<!-- Mostra l'offerta massima -->
 					<p th:if="${maxOffers != null and maxOffers.containsKey(auction.auction_id)}">
-						<span th:text="${'Offerta massima: ' + maxOffers.get(auction.auction_id).getPrice()}"></span> &euro;
+						<span th:text="${'Max Offered: ' + maxOffers.get(auction.auction_id).getPrice()}"></span> &euro;
 					</p>
-					<p th:unless="${maxOffers != null and maxOffers.containsKey(auction.auction_id)}">Offerta massima: Nessuna</p>
+					<p th:unless="${maxOffers != null and maxOffers.containsKey(auction.auction_id)}">Max Offered : none </p>
 
 					<!-- Mostra il tempo rimanente -->
 					<p th:if="${open == 1}" th:with="currTimeLeft=${remainingTimes.get(auction.auction_id)}"
-					   th:text="${'Tempo rimanente: ' + currTimeLeft.days + ' giorni, ' + currTimeLeft.hours + ' ore e ' + currTimeLeft.minutes + ' minuti'}">
-						Tempo rimanente: x giorni, y ore e z minuti
+					   th:text="${'Tempo rimanente: ' + currTimeLeft.days + ' days, ' + currTimeLeft.hours + ' hours e ' + currTimeLeft.minutes + ' minutes'}">
+						Tempo rimanente: x days, y hours e z minutes
 					</p>
 				</th:block>
 			</a>
@@ -64,26 +64,38 @@
 		This is a fragment, it is requested by "offerta.html" and "dettagli.html"
 		in order to show the auction's and article's details */-->
 		<div th:fragment="showDetails">
-	        <!--/* This calls the Article's getName() function */-->
-	        <h2 id="dtl-art" th:text="${article.get(0).name}">Nome 1</h2>
-	        <!--/* Calls article.getCode() and returns a string */-->
-	        <h4 th:text="${'Codice: ' + article.get(0).article_id}">Codice: Cod. 1</h4>
-	        <!--/* The following line takes a base64 encoded string representing an image and displays it
-	        the image is clickable and if clicked, it's showed at its original size */-->
-	        <a href="#" th:href="${'data:image/jpeg;base64,' + article.get(0).image}"><img src="http://classifieds.usatoday.com/wp-content/uploads/2018/06/Auction-Bidding.jpeg" th:src="${'data:image/jpeg;base64,' + article.get(0).image}" alt="Article picture"/></a>
-	        <!--/* Takes the article's description */-->
-	        <p class="description" th:text="${article.get(0).description}">Descrizione 1</p>
-	        <!--/* "#numbers.formatInteger(num, 1, 'POINT')" : formats the number
-			in order to display it properly. Accepts as parameters the value, the minimum
-			number of integer digits and the thousands separator */-->
-		
-			<!--/* The euro symbol's html code is not rendered correctly if processed by the thymeleaf engine
-			So, in order to display it, it's necessary to keep it static. That's why span is used.
-			Span is also used to make the first word bold */-->
-	        <p><strong>Prezzo iniziale: </strong><span th:text="${#numbers.formatInteger(auction.initial_price,1,'POINT')}">x</span> &euro;</p>
-	        <p><strong>Rialzo minimo: </strong><span th:text="${#numbers.formatInteger(auction.minimum_raise,1,'POINT')}">y</span> &euro;</p>
-	        <!--/* Takes the expiration date of the auction */-->
-	        <p><strong>Scadenza: </strong><span th:text="${frmtDeadline}">gg MMM yyyy HH:mm</span></p>
+			<h2 id="dtl-articles">List of Articles contained by auction</h2>
+			<th:block th:if="${not article.isEmpty()}">
+				<table>
+					<thead>
+					<tr>
+						<th>Name</th>
+						<th>Code</th>
+						<th>Image</th>
+						<th>Description</th>
+					</tr>
+					</thead>
+					<tbody>
+					<tr th:each="item : ${article}">
+						<td class="table-cell" th:text="${item.name}">Nome 1</td>
+						<td class="table-cell" th:text="${item.article_id}">Cod. 1</td>
+						<td>
+							<a href="#" th:href="${'data:image/jpeg;base64,' + item.image}">
+								<img src="http://classifieds.usatoday.com/wp-content/uploads/2018/06/Auction-Bidding.jpeg" th:src="${'data:image/jpeg;base64,' + item.image}" alt="Article picture"/>
+							</a>
+						</td>
+						<td class="table-cell" th:text="${item.description}">Descrizione 1</td>
+					</tr>
+					</tbody>
+				</table>
+			</th:block>
+			<p th:unless="${not article.isEmpty()}">Nessun articolo disponibile</p>
+			<p><strong>Prezzo iniziale: </strong><span th:text="${#numbers.formatInteger(auction.initial_price,1,'POINT')}">x</span> &euro;</p>
+			<p><strong>Rialzo minimo: </strong><span th:text="${#numbers.formatInteger(auction.minimum_raise,1,'POINT')}">y</span> &euro;</p>
+			<p><strong>Scadenza: </strong><span th:text="${frmtDeadline}">gg MMM yyyy HH:mm</span></p>
+
+			<!-- Add a button to close the auction -->
+			<a class="button-link" th:if="${auction.isOpen()}" th:href="@{/CloseAuction}" >Chiudi Asta</a>
 		</div>
 		
 		
@@ -93,7 +105,7 @@
 		in order to display all the offers for the relative auction inside a table.
 		The parameter "details" is necessary to be able to distinguish between the 2 pages. */-->
 		<section class="mid-col scrollable" th:fragment="showOffers(details)">
-			<h2 id="dtl-offers">Offerte pervenute</h2>
+			<h2 id="dtl-offers">OFFERS</h2>
 			<!--/* The paragraph exists only if there are no offers */-->
 			<p th:if="${offers == null or offers.isEmpty()}">Non esiste alcuna offerta al momento!</p>
 			<!--/* The entire table is removed if there are no offers */-->
@@ -109,14 +121,14 @@
 					<!--/* There is no need to check if offers is empty here
 					if it is, the table is entirely deleted (container div's condition)*/-->
 					<tr th:class="${stats.odd}? 'odd' : even" th:each="entry, stats : ${offers}" th:with="offer=${entry.key}, frmtTime=${entry.value}">
-						<td th:text="${offer.user}">Utente 1</td>
+						<td class="table-cell" th:text="${users.get(offer.user)}">Utente 1</td>
 						<!--/* "#numbers.formatInteger(num, 1, 'POINT')" : formats the number
       					in order to display it properly. Accepts as parameters the value, the minimum
       					number of integer digits and the thousands separator */-->
-						<td th:text="${#numbers.formatInteger(offer.price,1,'POINT')}">Valore 1</td>
+						<td class="table-cell" th:text="${#numbers.formatInteger(offer.price,1,'POINT')}">Valore 1</td>
 						<!--/* The following line replaces the T character with a space and
 						shows the date and time of each offer */-->
-						<td th:text="${frmtTime}">dd MMM yyyy HH:mm</td>
+						<td class="table-cell" th:text="${frmtTime}">dd MMM yyyy HH:mm</td>
 					</tr>
 				</tbody>
 			</table>
