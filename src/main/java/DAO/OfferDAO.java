@@ -138,25 +138,30 @@ public class OfferDAO {
 		}
 	}
 
-    public List<Integer> getWinningOfferByUser(int userId) throws SQLException{
-		List<Integer> auctionId = new ArrayList<>();
+    public Map<Integer, Offer> getWinningOfferByUser(int userId) throws SQLException{
+		Map<Integer, Offer> aucOff = new HashMap<Integer, Offer>();
 		try{
-			pstatement = connection.prepareStatement("SELECT offer.auction FROM offer o1 WHERE price = (SELECT MAX(price) FROM offer o2 WHERE o1.auction = o2.auction) AND user = ?");
+			pstatement = connection.prepareStatement("SELECT o1.offer_id, o1.auction FROM offer o1 WHERE price = (SELECT MAX(price) FROM offer o2 WHERE o1.auction = o2.auction) AND o1.user = ?");
 			pstatement.setInt(1, userId);
-			pstatement.executeQuery();
+			result = pstatement.executeQuery();
 			while(result.next()){
-				auctionId.add(result.getInt("auction"));
+				aucOff.put(result.getInt("auction"), this.getOffer(result.getInt("offer_id")));
 			}
 		} catch(SQLException e) {
 			e.printStackTrace();
 			throw new SQLException(e);
 		} finally {
 			try {
+				result.close();
+			} catch(Exception e1) {
+				throw new SQLException(e1);
+			}
+			try {
 				pstatement.close();
 			} catch(Exception e2) {
 				throw new SQLException(e2);
 			}
-		}
-		return auctionId;
+		}	
+		return;
 	}
 }
