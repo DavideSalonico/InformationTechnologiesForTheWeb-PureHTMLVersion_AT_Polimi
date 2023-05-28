@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.time.chrono.ChronoLocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -125,7 +126,8 @@ public class GoToPurchase extends HttpServlet {
    				{
    					// This filters the auctions by their current state and checks if their deadlines are after the datetime related
    					// to the submit of the keyword. After that it adds the auctions to the LinkedHashMap, along with their articles.
-   					if(auction.isOpen() && auction.getExpiring_date().isAfter(currLdt))
+					ChronoLocalDateTime<?> currLdt = null;
+					if(auction.isOpen() && auction.getExpiring_date().isAfter(currLdt))
    					{
    			    		try {
    							// This is used to retrieve the articles related to each auction
@@ -143,7 +145,8 @@ public class GoToPurchase extends HttpServlet {
    						filteredOpenAuctions.put(auction, articles);
    						//Get the remaining time before the expiration date of the auction
    						//Calculated from the creation time of the session
-   						DiffTime diff = DiffTime.getRemainingTime(logLdt, auction.getExpiring_date());
+						LocalDateTime logLdt = null;
+						DiffTime diff = DiffTime.getRemainingTime(logLdt, auction.getExpiring_date());
    						remainingTimes.put(auction.getAuction_id(), diff);
 						for(Article article : articles){
 						   if(maxOffer != null)
