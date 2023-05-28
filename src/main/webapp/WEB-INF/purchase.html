@@ -30,16 +30,15 @@
                 <button name="keyword-submit" type="submit">Search</button>
             </form>
         </div>
-        <div class="row second-row auc-list" th:if="${auctions != null and not auctions.isEmpty()}">
+        <div class="row second-row auc-list" th:if="${map != null and not map.isEmpty()}">
             <h2 id="available-auc" th:text="'Available auction for: \'' + ${key} + '\'"></h2>
             <section class="scrollable">
-                <div th:each="entry, rowStat : ${auctions}" th:class="${rowStat.count % 2 == 0} ? 'odd' : 'even'">
-                    <a th:href="@{GetAuctionDetails(auctionId=${entry.key.auction_id}, page='offer.html')}">
+                <div th:each="entry, rowStat : ${map}" th:class="${rowStat.count % 2 == 0} ? 'odd' : 'even'">
+                    <a th:href="@{GoToAuctionDetails(auctionId=${entry.key}, page='offer.html')}">
                         <article>
-                            <h3 th:text="${entry.value}"></h3> <-- TODO: Check -->
-                            <h4>Code: <span th:text="${entry.value}"></span></h4> <-- TODO: Check -->
-                            <p>Remaining time: <span th:text="${remainingTimes.get(entry.key.auction_id)} + ' days ' + ${remainingTimes.get(entry.key.auction_id)} + ' hours and ' + ${remainingTimes.get(entry.key.auction_id)} + ' minutes'"></span> <-- TODO: Check -->
-                            </p>
+                            <h3 th:text="${entry.value.name}"></h3> <-- TODO: Check -->
+                            <h4>Code: <span th:text="${entry.value.code}"></span></h4> <-- TODO: Check -->
+                            <!--<p>Remaining time: <span th:text="${remainingTimes.get(entry.key.auction_id)} + ' days ' + ${remainingTimes.get(entry.key.auction_id)} + ' hours and ' + ${remainingTimes.get(entry.key.auction_id)} + ' minutes'"></span>-->
                         </article>
                     </a>
                 </div>
@@ -47,8 +46,9 @@
         </div>
         <div class="row third-row offers-list">
             <h2 id="awarded-art">Won Offers</h2>
-            <section class="scrollable scrll-table" th:if="${not #lists.isEmpty(awardedArticles)}">
-                <div th:each="offer : ${awardedOffers}">
+            <section class="scrollable scrll-table" th:if="${not #lists.isEmpty(winningOffers)}">
+                <div th:each="auction : ${winningOffers.keySet()}">
+                    <h3 th:text="'Maximum Offer: '+ ${winningOffers.get(auction).code}" >Offerta massima</h3>
                     <table>
                         <thead>
                         <tr>
@@ -58,10 +58,10 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr th:each="awarded, rowStat : ${offer.value}" th:class="${rowStat.count % 2 == 0} ? 'odd' : 'even'">
-                            <td th:text="${offer.value.name}"></td>
-                            <td th:text="${offer.value.code}"></td>
-                            <td><span th:text="${#numbers.formatDecimal(offer.value.price, 0)}"></span></td>
+                        <tr th:each="article, rowStat : ${awardedAuctions.get(auction)}" th:class="${rowStat.count % 2 == 0} ? 'odd' : 'even'">
+                            <td th:text="${article.name}"></td>
+                            <td th:text="${article.code}"></td>
+                            <td><span th:text="${#numbers.formatDecimal(article.price, 0)}"></span></td>
                         </tr>
                         </tbody>
                     </table>
