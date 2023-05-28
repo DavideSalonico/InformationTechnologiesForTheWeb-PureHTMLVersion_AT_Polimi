@@ -1,11 +1,14 @@
 package DAO;
 
-import java.sql.*;
+import beans.Auction;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import beans.Auction;
 
 public class AuctionDAO {
 	private Connection connection;
@@ -45,7 +48,7 @@ public class AuctionDAO {
 	public int insertAuction(LocalDateTime expiring_date, int minimum_raise, int creator) throws SQLException{
 		int auction_id = -1;
 		try {
-			pstatement = connection.prepareStatement("INSERT INTO auction (expiring_date, minimum_raise, creator) VALUES(?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+			pstatement = connection.prepareStatement("INSERT INTO auction (expiring_date, minimum_raise, creator) VALUES(?, ?, ?)");
 			pstatement.setObject(1, expiring_date);
 			pstatement.setInt(2, minimum_raise);
 			pstatement.setInt(3, creator);
@@ -100,7 +103,37 @@ public class AuctionDAO {
 		}
 		return auctions;
 	}
-	
+
+	public List<Auction> search(String keyword, LocalDateTime time, int user_id) throws SQLException{
+		List<Auction> filteredAuctions = new ArrayList<>();
+		try{
+			pstatement = connection.prepareStatement("SELECT * FROM auction au JOIN article ar ON ar.auction_id = au.auction_id AND (ar.description LIKE ? OR ar.name LIKE ?) AND au.user_id = ?  AND au.expiring_date > ? ORDER BY au.expiring_date DESC");
+			pstatement.setString(1, "%" + keyword + "%");
+			pstatement.setString(2, "%" + keyword + "%");
+			pstatement.setInt(3, user_id);
+			pstatement.setObject(4, time);
+			result = pstatement.executeQuery();
+			while (result.next()) {
+				filteredAuctions.add(resultToAuction(result));
+			}
+		} catch(SQLException e) {
+			e.printStackTrace();
+			throw new SQLException(e);
+		} finally {
+			try {
+				result.close();
+			} catch(Exception e1) {
+				throw new SQLException(e1);
+			}
+			try {
+				pstatement.close();
+			} catch(Exception e2) {
+				throw new SQLException(e2);
+			}
+		}
+		return filteredAuctions;
+	}
+
 	public List<Auction> getOpenAuctions(int user_id) throws SQLException{
 		List<Auction> auctions = new ArrayList<>();	
 		try {
