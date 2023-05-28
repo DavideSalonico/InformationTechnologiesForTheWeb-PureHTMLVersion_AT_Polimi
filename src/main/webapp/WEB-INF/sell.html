@@ -4,6 +4,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
     <title>Vendita</title>
     <link rel="icon" th:href="@{/img/icon.png}">
+    <!-- 3 css, uno per lo stile generico delle pagine, il secondo solo per l'immagine di sfondo, il terzo per i dettagli relativi alle tabelle-->
     <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}">
     <link rel="stylesheet" type="text/css" th:href="@{/css/sell.css}">
     <link rel="stylesheet" type="text/css" th:href="@{/css/auctionOffer.css}">
@@ -14,6 +15,7 @@
         <div class="quick-nav">
             <h3>Navigazione Rapida</h3>
             <ul>
+                <!-- gli href rendono rapida la navigazione all'interno della pagina portando il client direttamente alle zone interessate -->
                 <li><a href="#open-auc">Aste Aperte</a></li>
                 <li><a href="#closed-auc">Aste Chiuse</a></li>
                 <li><a href="#create-auc">Crea Asta</a></li>
@@ -21,48 +23,66 @@
         </div>
     </div>
     <div class="col mid-col">
+
         <div class="row first-row auc-list">
             <h2 id="open-auc">Aste Aperte</h2>
-            <p th:if="${userOpenAuctions.isEmpty()}">Non hai nessuna asta aperta al momento!</p>
+            <p th:if="${userOpenAuctions.isEmpty()}">No open auction open found, Create some new Auctions! </p>
+
+            <!-- Chiamo il metodo showAuction() all'interno della pagina fragments.html che mi mostrerà tutte le aste aperte perchè gli passo userOpenAuctions,
+             mentre l' 1 è il parametro che servirà al metodo per capire se siamo nelle aste aperte o chiuse-->
             <section th:replace="~{WEB-INF/fragments.html :: showAuctions (${userOpenAuctions}, 1)}"></section>
         </div>
+
         <div class="row second-row auc-list">
             <h2 id="closed-auc">Aste Chiuse</h2>
-            <p th:if="${userClosedAuctions.isEmpty()}">Non hai ancora chiuso nessuna asta!</p>
+            <p th:if="${userClosedAuctions.isEmpty()}">There aren't any closed AUCTIONS !</p>
+
+            <!-- Chiamo il metodo showAuction() all'interno della pagina fragments.html che mi mostrerà tutte le aste chiuse perchè gli passo userClosedAuctions,
+            mentre lo 0 è il parametro che servirà al metodo per capire se siamo nelle aste aperte o chiuse-->
             <section th:replace="~{WEB-INF/fragments.html :: showAuctions (${userClosedAuctions}, 0)}"></section>
         </div>
+
         <div class="row third-row form">
-            <h2 id="create-art">Creazione di un nuovo Articolo</h2>
+            <h2 id="create-art">CREATE A NEW ARTICLE</h2>
+            <!-- Form che permette l'inserimento di nuovi articoli, chiama la servlet /CreateArticle che renderizzerà nuovamente questa pagina con l'articolo aggiunto -->
             <form th:method="post" th:action="@{/CreateArticle}">
+
+                <!-- La servlet riceverà i parametri mandati dal form nella sua doPost(), la quale accederà ad essi tramite gli identificatori "name" -->
                 <div>
-                    <label for="name">Nome Articolo:</label>
+                    <label for="name">Article's Name:</label>
                     <input type="text" name="name" id="name" min="4" max="50" required>
                 </div>
                 <div>
-                    <label for="description">Descrizione:</label>
+                    <label for="description">Description:</label>
                     <textarea name="description" id="description" rows="4" cols="50" minlength="20" maxlength="3000" placeholder=" ..." spellcheck="false" required></textarea>
                 </div>
                 <div>
-                    <label for="price">Prezzo:</label>
+                    <label for="price">Price:</label>
                     <input type="number" name="price" id="price" min="1" step="1" max="700000000" required>
                     <span> &euro;</span>
                 </div>
                 <div>
-                    <label for="image">Allega un'immagine:</label>
+                    <label for="image">Select an image:</label>
                     <input type="file" accept="image/png, image/gif, image/jpeg" name="image" id="image"  required>
                 </div>
                 <button name="article-submit" type="submit">Crea Articolo</button>
             </form>
         </div>
+
         <div class="row fourth-row form">
-            <h2 id="create-auc">Creazione di una nuova asta</h2>
+            <h2 id="create-auc">CREATE A NEW AUCTION</h2>
+
+            <!-- Form che scatena la doGet() nella servlet /GoToSell, servirà a ri-renderizzare la pagina con le aggiunte degli articoli selezionati  -->
             <form th:method="GET" th:action="@{/GoToSell}">
+
+                <!-- Necessità di mantenere dei parametri nascosti che tengano traccia di tutti gli articoli selezionati, per non renderli più disponibili nella selezione  -->
                 <input type="hidden"  th:each="article : ${articlesSelected}" th:value="${article.article_id}" name="alreadySelected"></input>
-                <div style="display: flex;">
+                <div style="display: flex;"> <!-- Flexbox per allineare i due div per aggiungere articoli -->
                     <div style="flex: 1;">
                         <div th:if="${not articles.isEmpty()}">
                             <label for="articleSelected">Article</label>
-                            <select name="articleSelected" id="articleSelected" multiple>
+                            <select name="articleSelected" id="articleSelected" >
+                                <!-- Mostra tutti gli articoli creati dal client non ancora assegnati ad alcuna asta -->
                                 <option th:each="article : ${articles}" th:value="${article.article_id}" th:text="${article.name}"></option>
                             </select><br/>
 
@@ -70,19 +90,19 @@
                         </div>
                         <div th:unless="${not articles.isEmpty()}">
                             <!-- Versione statica della pagina -->
-                            <p>Crea degli articoli da aggiungere all'asta !</p>
+                            <p>First of all, create some new ARTICLES !</p>
                         </div>
                     </div>
 
+                    <!-- Riquadro che mostra al client quali articoli stia aggiungendo all'asta in fase di creazione -->
                     <div style="flex: 1;" th:if="${articlesSelected} != null">
-                        <h2>Articoli Aggiunti all'Asta</h2>
-                        <!-- Aggiungi qui il codice per visualizzare gli articoli aggiunti all'asta -->
+                        <h2>List of Articles selected :</h2>
                         <table>
                             <thead>
                                 <tr>
-                                    <th>Nome</th>
-                                    <th>Codice</th>
-                                    <th>Prezzo</th>
+                                    <th>NAME</th>
+                                    <th>CODE</th>
+                                    <th>PRICE</th>
 
                                 </tr>
                             </thead>
@@ -96,21 +116,23 @@
                         </table>
                     </div>
                 </div>
-
             </form>
+
+            <!-- Form che scatena la doPost() della servlet CreateAuction, prende in input tutti gli attributi di un'asta e la crea -->
             <form action="#" th:action="@{/CreateAuction}" method="post" enctype="multipart/form-data">
                 <div>
-                    <label for="minimum_raise">Rialzo Minimo:</label>
+                    <label for="minimum_raise"> Minimum Raise:</label>
                     <input type="number" name="minimum_raise" id="minimum_raise" min="20" step="1" max="100000" required>
                     <span> &euro;</span>
                 </div>
                 <div>
-                    <label for="expiring_date">Scadenza (futura): </label>
+                    <label for="expiring_date">Expiring Date : </label>
                     <input type="datetime-local" name="expiring_date" id="expiring_date" th:min="${ldt}" placeholder="yyyy-MM-ddTHH:mm" th:value="${ldt}" required>
                 </div>
-                <input type="hidden"  th:each="article : ${articlesSelected}" th:value="${article.article_id}" name="articlesSelected"></input>
-                <button name="auction-submit" type="submit">Crea Asta</button>
 
+                <!-- Necessità di mantenere dei parametri nascosti che tengano traccia di tutti gli articoli selezionati per poterli aggiungere all'asta da creare  -->
+                <input type="hidden"  th:each="article : ${articlesSelected}" th:value="${article.article_id}" name="articlesSelected" ></input>
+                <button name="auction-submit" type="submit">Crea Asta</button>
             </form>
         </div>
     </div>

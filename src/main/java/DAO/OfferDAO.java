@@ -8,9 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class OfferDAO {
 	private Connection connection;
@@ -55,18 +53,18 @@ public class OfferDAO {
 	}
 	
 	public Offer getOffer(int offer_id) throws SQLException{
-		Offer off = new Offer();
+		Offer offers = null;
 		try {
 			pstatement = connection.prepareStatement("SELECT * FROM offer WHERE offer_id = ?");
 			pstatement.setInt(1, offer_id);
 			result = pstatement.executeQuery();
-			if(result.next()){
-				off.setOffer_id(result.getInt("offer_id"));
-				off.setPrice(result.getInt("price"));
-				off.setTime(result.getTimestamp("time").toLocalDateTime());
-				off.setUser(result.getInt("user"));
-				off.setAuction(result.getInt("auction"));
-			}
+			result.next();
+			Offer off = new Offer();
+			off.setOffer_id(result.getInt("offer_id"));
+			off.setPrice(result.getInt("price"));
+			off.setTime(result.getTimestamp("time").toLocalDateTime());
+			off.setUser(result.getInt("user"));
+			off.setAuction(result.getInt("auction"));	
 		} catch(SQLException e) {
 			e.printStackTrace();
 			throw new SQLException(e);
@@ -81,8 +79,8 @@ public class OfferDAO {
 			} catch(Exception e2) {
 				throw new SQLException(e2);
 			}
-		}
-		return off;
+		}	
+		return offers;
 	}
 	
 	public Offer getWinningOffer(int auction_id) throws SQLException{
@@ -163,7 +161,7 @@ public class OfferDAO {
 			} catch(Exception e2) {
 				throw new SQLException(e2);
 			}
-		}
-		return aucOff;
+		}	
+		return;
 	}
 }
