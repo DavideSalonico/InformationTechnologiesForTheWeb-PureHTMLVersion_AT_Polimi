@@ -108,7 +108,7 @@
                     <label for="expiring_date">Scadenza (futura): </label>
                     <input type="datetime-local" name="expiring_date" id="expiring_date" th:min="${ldt}" placeholder="yyyy-MM-ddTHH:mm" th:value="${ldt}" required>
                 </div>
-                <input th:each="selectedArticle : ${selectedArticles}" type="hidden" name="selectedArticle" th:value="${selectedArticle}">
+                <input type="hidden"  th:each="article : ${articlesSelected}" th:value="${article.article_id}" name="articlesSelected"></input>
                 <button name="auction-submit" type="submit">Crea Asta</button>
 
             </form>

@@ -1,9 +1,6 @@
 package DAO;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +45,7 @@ public class AuctionDAO {
 	public int insertAuction(LocalDateTime expiring_date, int minimum_raise, int creator) throws SQLException{
 		int auction_id = -1;
 		try {
-			pstatement = connection.prepareStatement("INSERT INTO auction (expiring_date, minimum_raise, creator) VALUES(?, ?, ?)");
+			pstatement = connection.prepareStatement("INSERT INTO auction (expiring_date, minimum_raise, creator) VALUES(?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 			pstatement.setObject(1, expiring_date);
 			pstatement.setInt(2, minimum_raise);
 			pstatement.setInt(3, creator);

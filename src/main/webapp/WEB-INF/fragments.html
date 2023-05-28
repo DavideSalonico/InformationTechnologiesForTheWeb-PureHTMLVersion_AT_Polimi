@@ -21,49 +21,40 @@
       		(2) page is used to distinguish between dettagli.html and offerta.html, because the controller manages both template pages */-->
       		
       		<!--/* "auctions" is the hashmap passed as parameter by vendo.html */-->
-   			<a href="#" th:if="${not auctions.isEmpty() and auctions != null}" th:href="@{GoToAuctionDetails(auction_id= ${auction.auction_id}, page='auctionDetails.html')}" th:each="entry, stats : ${auctions}" th:with="auction=${entry.key}, article=${entry.value}">
-	   			<table class="dtl-offers">
-					<thead>
+			<a th:if="${not auctions.isEmpty() and auctions != null}"  th:each="entry : ${auctions}" th:href="@{GoToAuctionDetails(auction_id= ${entry.key.auction_id}, page='auctionDetails.html')}" >
+				<!-- Assegna l'asta corrente alla variabile 'auction' -->
+				<th:block th:with="auction=${entry.key}">
+					<table class="dtl-offers">
+						<thead>
 						<tr>
 							<th>Nome</th>
 							<th>Codice</th>
 							<th>Prezzo</th>
 						</tr>
-					</thead>
-					<tbody>
-						<tr th:each="art : ${auction}">
-						<!--/* This calls the Article's getName() function */-->
-						<td th:text="${article.name}">Nome 1</td>
-						<!--/* Calls article.getCode() and returns a string*/-->
-						<td th:text="${article.article_id}">Cod. 1</td>
-						<!--/* The text of the paragraph is set by checking if maxOffers is null or empty
-						and if the current auction has a maxOffer
-						if the condition is valid, takes the max offer for the current auction if present
-						otherwise it writes that there is no MaxOffer */-->
-						<td th:text="${#numbers.formatInteger(article.price, 1, 'POINT')}">1000 (?)</td>
-
-						<!--/* "#numbers.formatInteger(num, 1, 'POINT')" : formats the offer's value
-						 in order to display it properly. Accepts as parameters the value, the minimum
-						 number of integer digits and the thousands separator */-->
+						</thead>
+						<tbody>
+						<!-- Itera sulla lista di articoli associati all'asta corrente -->
+						<tr th:each="article : ${entry.value}">
+							<td th:text="${article.name}">Nome 1</td>
+							<td th:text="${article.article_id}">Cod. 1</td>
+							<td th:text="${#numbers.formatInteger(article.price, 1, 'POINT')}">1000 $</td>
 						</tr>
-					</tbody>
-				</table>
+						</tbody>
+					</table>
 
-	   				 
-	   				<!--/* Here two if statements are used instead of an inline if-else because the
-	   				euro symbol's html code is not rendered correctly if processed by the thymeleaf engine
-	   				So, in order to display it, it's necessary to keep it static. That's why span is used in the first case */-->
-	   				<p th:if="${maxOffers != null and maxOffers.containsKey(auction.auction_id)}"><span th:text="${'Offerta massima: ' + maxOffers.get(auction.auction_id).getPrice()}"></span> &euro;</p>
+					<!-- Mostra l'offerta massima -->
+					<p th:if="${maxOffers != null and maxOffers.containsKey(auction.auction_id)}">
+						<span th:text="${'Offerta massima: ' + maxOffers.get(auction.auction_id).getPrice()}"></span> &euro;
+					</p>
 					<p th:unless="${maxOffers != null and maxOffers.containsKey(auction.auction_id)}">Offerta massima: Nessuna</p>
-	   				<!--/*
-	   				(1) th:with="currTimeLeft=${remainingTimes.get(entry.key)}" creates a variable currTimeLeft and assigns
-	   				to it the current DiffTime object, related to the remaining time left before the expiration date of the current auction
-	   				(2) th:text calls the getDays(), getHours() and getMinutes() functions of the currTimeLeft object and returns the string */-->
-	   				
-	   				<!--/* "open" is a parameter passed by vendo.html, the deadline is showed only if open is equal to 1,
-	   				it means that the fragment will be used to show the user's open auctions */-->
-	   				<p th:if="${open == 1}" th:with="currTimeLeft=${remainingTimes.get(auction.auction_id)}" th:text="${'Tempo rimanente: ' + currTimeLeft.days + ' giorni, ' + currTimeLeft.hours + ' ore e ' + currTimeLeft.minutes + ' minuti'}">Tempo rimanente: x giorni, y ore e z minuti</p>
-      		</a>
+
+					<!-- Mostra il tempo rimanente -->
+					<p th:if="${open == 1}" th:with="currTimeLeft=${remainingTimes.get(auction.auction_id)}"
+					   th:text="${'Tempo rimanente: ' + currTimeLeft.days + ' giorni, ' + currTimeLeft.hours + ' ore e ' + currTimeLeft.minutes + ' minuti'}">
+						Tempo rimanente: x giorni, y ore e z minuti
+					</p>
+				</th:block>
+			</a>
 		</section>
 		
 		

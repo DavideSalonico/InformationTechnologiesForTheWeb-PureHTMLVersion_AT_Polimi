@@ -83,8 +83,5 @@ public class Article {
 	public void setSold(boolean sold) {
 		this.sold = sold;
 	}
-	
-	
-	
 
 }

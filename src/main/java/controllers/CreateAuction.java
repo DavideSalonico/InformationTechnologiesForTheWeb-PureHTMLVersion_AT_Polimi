@@ -20,6 +20,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 
 @WebServlet("/CreateAuction")
@@ -78,7 +79,7 @@ public class CreateAuction extends HttpServlet {
 		int minimum_raise;
 		int creator;
 		// LISTA DEGLI ID degli articoli da aggiungere all'asta
-		List<Integer> articlesToAdd = null;
+		List<Integer> articlesToAdd = new ArrayList<>();
 
 		
 		try {
@@ -86,7 +87,7 @@ public class CreateAuction extends HttpServlet {
 			minimum_raise = Integer.parseInt(request.getParameter("minimum_raise"));
 			creator = (((User) request.getSession().getAttribute("user")).getUser_id());
 
-			String [] stringheAppoggio = request.getParameterValues("selectedArticles");
+			String [] stringheAppoggio = request.getParameterValues("articlesSelected" );
 			if( stringheAppoggio == null ) {
 				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "No articles selected to add to the auction");
 				return;
@@ -112,11 +113,9 @@ public class CreateAuction extends HttpServlet {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		
-		RequestDispatcher reqd = request.getRequestDispatcher("GoToSell");
-        
-        // Forward the Request Dispatcher object.
-        reqd.forward(request, response);
+
+		String path = getServletContext().getContextPath() + "/GoToSell";
+		response.sendRedirect(path);
 
 
 

@@ -76,8 +76,8 @@ public class GoToSell extends HttpServlet {
 		Offer maxOffer = null;
 		
 		// The final result
-		LinkedHashMap<Auction,Article> userOpenAuctions = new LinkedHashMap<>();
-    	LinkedHashMap<Auction, Article> userClosedAuctions = new LinkedHashMap<>();
+		Map<Auction,List<Article>> userOpenAuctions = new HashMap<>();
+    	Map<Auction, List<Article>> userClosedAuctions = new LinkedHashMap<>();
     	HashMap<Integer, DiffTime> remainingTimes = new HashMap<>();
     	HashMap<Integer, Offer> maxOffers = new HashMap<>();
 
@@ -107,7 +107,13 @@ public class GoToSell extends HttpServlet {
 				maxOffer = offerDAO.getWinningOffer(auction.getAuction_id());
 				
 				for(Article article : articles) {
-					userOpenAuctions.put(auction, article);
+					if(!userOpenAuctions.containsKey(auction)) {
+						userOpenAuctions.put(auction, new ArrayList<>());
+						userOpenAuctions.get(auction).add(article);
+					}
+					else {
+						userOpenAuctions.get(auction).add(article);
+					}
 				}
 				
 				LocalDateTime logLdt = (LocalDateTime) request.getSession(false).getAttribute("creationTime");
@@ -123,7 +129,13 @@ public class GoToSell extends HttpServlet {
 				maxOffer = offerDAO.getWinningOffer(auction.getAuction_id());
 				
 				for(Article article : articles) {
-					userClosedAuctions.put(auction, article);
+					if(!userClosedAuctions.containsKey(auction)) {
+						userClosedAuctions.put(auction, new ArrayList<>());
+						userClosedAuctions.get(auction).add(article);
+					}
+					else {
+						userClosedAuctions.get(auction).add(article);
+					}
 				}
 				
 				LocalDateTime logLdt = (LocalDateTime) request.getSession(false).getAttribute("creationTime");
