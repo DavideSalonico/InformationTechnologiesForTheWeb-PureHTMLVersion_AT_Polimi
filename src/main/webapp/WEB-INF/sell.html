@@ -135,7 +135,7 @@
 
                 <!-- Necessità di mantenere dei parametri nascosti che tengano traccia di tutti gli articoli selezionati per poterli aggiungere all'asta da creare  -->
                 <input type="hidden"  th:each="article : ${articlesSelected}" th:value="${article.article_id}" name="articlesSelected" ></input>
-                <button name="auction-submit" type="submit">Crea Asta</button>
+                <button type="submit">Crea Asta</button>
             </form>
         </div>
     </div>
