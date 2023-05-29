@@ -49,9 +49,10 @@ public class ArticleDAO {
 	}
 
 	//AGGIUNGI IMMAGINE
-	public void insertArticle(String name, String description, int price, int user_id) throws SQLException{
-		String query = "INSERT into article (name, description, price, sold, article_creator) VALUES (?,?,?,false,?)";
+	public void insertArticle(String name, String description, int price, int user_id, InputStream image) throws SQLException{
+		String query = "INSERT into article (name, description, price, sold, article_creator, image) VALUES (?,?,?,false,?,?)";
 		InputStream imageInputStream = null;
+
 		try{
 			pstatement  = connection.prepareStatement(query);
 			pstatement.setString(1,name.toUpperCase());
@@ -60,6 +61,7 @@ public class ArticleDAO {
 			//pstatement.setBlob(3, imageInputStream);
 			pstatement.setInt(3, price);
 			pstatement.setInt(4, user_id);
+			pstatement.setBlob(5, image);
 			pstatement.executeUpdate();
 		}catch(SQLException e) {
 			e.printStackTrace();

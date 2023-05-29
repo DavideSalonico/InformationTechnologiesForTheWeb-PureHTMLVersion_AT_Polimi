@@ -45,7 +45,7 @@
         <div class="row third-row form">
             <h2 id="create-art">CREATE A NEW ARTICLE</h2>
             <!-- Form che permette l'inserimento di nuovi articoli, chiama la servlet /CreateArticle che renderizzerà nuovamente questa pagina con l'articolo aggiunto -->
-            <form th:method="post" th:action="@{/CreateArticle}">
+            <form th:method="post" th:action="@{/CreateArticle}" enctype="multipart/form-data">
 
                 <!-- La servlet riceverà i parametri mandati dal form nella sua doPost(), la quale accederà ad essi tramite gli identificatori "name" -->
                 <div>

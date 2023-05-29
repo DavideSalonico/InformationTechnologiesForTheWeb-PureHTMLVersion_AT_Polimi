@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -51,14 +52,16 @@ public class CreateArticle extends HttpServlet {
 		Integer article_creator = null;
 		Integer auction_id = null;
 		Integer price = null;
-		
+		InputStream imageStream = null;
 		try {
 			name = (String) request.getParameter("name");
 			description = (String) request.getParameter("description");
 			//image = request.getPart("image");
 			article_creator = (((User) request.getSession().getAttribute("user")).getUser_id());
 			price = Integer.parseInt(request.getParameter("price"));
-			
+			imageStream = request.getPart("image").getInputStream();
+
+
 			if(name == null || name.isEmpty() ||
 				description == null || description.isEmpty() ||
 				article_creator == null || price == null) {
@@ -85,7 +88,7 @@ public class CreateArticle extends HttpServlet {
 		
 
 		try {
-			articleDAO.insertArticle(name, description, price, article_creator);
+			articleDAO.insertArticle(name, description, price, article_creator, imageStream);
 		}
 		catch(SQLException e){
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Unable to insert a new article into database");
