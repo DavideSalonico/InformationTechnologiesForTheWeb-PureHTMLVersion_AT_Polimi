@@ -156,7 +156,7 @@ public class MakeOffer extends HttpServlet {
 						+ " o superiore al valore iniziale dell' asta! Il valore massimo � 2 miliardi!");
 			}
 
-			String path = getServletContext().getContextPath() +"/GetAuctionDetails?auctionId=" + strAucId + "&page=offerta.html";
+			String path = getServletContext().getContextPath() +"/GoToAuctionDetails?auctionId=" + strAucId + "&page=offer.html";
 			response.sendRedirect(path);
 
 		} else {
