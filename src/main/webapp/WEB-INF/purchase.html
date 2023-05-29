@@ -51,6 +51,10 @@
                             </tr>
                             </tbody>
                         </table>
+                        <p th:with="currTimeLeft=${remainingTimes.get(entry.key)}"
+                           th:text="${'Tempo rimanente: ' + currTimeLeft.days + ' days, ' + currTimeLeft.hours + ' hours e ' + currTimeLeft.minutes + ' minutes'}">
+                            Tempo rimanente: x days, y hours e z minutes
+                        </p>
                     </a>
                 </div>
             </section>

@@ -10,6 +10,7 @@ import beans.User;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
 import utils.ConnectionHandler;
+import utils.DiffTime;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -66,6 +67,7 @@ public class GoToPurchase extends HttpServlet {
 		Map<Integer, Offer> winningOffers;
 		List<Auction> filteredAuctions = null;
 		Map<Integer, List<Article>> map = new HashMap<>();
+		HashMap<Integer, DiffTime> remainingTimes = new HashMap<Integer, DiffTime>();
 
 		user = (User) request.getSession().getAttribute("user");
 		String key = request.getParameter("key");
@@ -101,6 +103,7 @@ public class GoToPurchase extends HttpServlet {
 			for(Auction auction : filteredAuctions){
 				try {
 					map.put(auction.getAuction_id(), articleDAO.getAuctionArticles(auction.getAuction_id()));
+					remainingTimes.put(auction.getAuction_id(), DiffTime.getRemainingTime(currLdt, auction.getExpiring_date()));
 				} catch (SQLException e) {
 					e.printStackTrace();
 					response.sendError(500, "Errore, accesso al database fallito!" + e.getMessage());
@@ -118,6 +121,7 @@ public class GoToPurchase extends HttpServlet {
 		ctx.setVariable("awardedAuctions", awardedAuctions);
 		ctx.setVariable("winningOffers", winningOffers);
 		ctx.setVariable("map", map);
+		ctx.setVariable("remainingTimes", remainingTimes);
 		try{
 			templateEngine.process(path, ctx, response.getWriter());
 		} catch (Exception e){
