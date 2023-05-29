@@ -24,8 +24,7 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 
 // QUANDO CLICCO SU UNA DELLE ASTE TROVATE NELLA LISTA ALLORA TROVO QUESTA PAGINA
 
@@ -85,6 +84,7 @@ public class GoToAuctionDetails extends HttpServlet {private static final long s
 		List <Article> articles;
 		Offer maxAuctionOffer;
 		List<Offer> auctionOffers;
+		Map<Integer, String> imageMap = new HashMap<Integer, String>();
 		
 		//This HashMap contains all the offers with their creationTimes, formatted properly
 		LinkedHashMap<Offer, String> frmtAuctionOffers = null;
@@ -159,6 +159,12 @@ public class GoToAuctionDetails extends HttpServlet {private static final long s
 				}
     		}
 		}
+
+		for(Article article : articles)
+		{
+			// Adds the image to the map
+			imageMap.put(article.getArticle_id(), Base64.getEncoder().encodeToString(article.getImage().getBytes(1, (int) article.getImage().length())));
+		}
 		
 		// This changes the deadline format in order to be more readable when showed in the html page
 		frmtDeadline = auction.getExpiring_date().format(DateTimeFormatter.ofPattern("dd MMM yyyy 'ore' HH:mm"));
@@ -180,6 +186,7 @@ public class GoToAuctionDetails extends HttpServlet {private static final long s
 		ctx.setVariable("users", users);
 		ctx.setVariable("maxAuctionOffer", maxAuctionOffer);
 		ctx.setVariable("awardedUser", awardedUser);
+		ctx.setVariable("imageMap", imageMap);
 		// This actually processes the template page
 		// QUESTO TRY and CATCH è messo solo per debuggare
 		try {
