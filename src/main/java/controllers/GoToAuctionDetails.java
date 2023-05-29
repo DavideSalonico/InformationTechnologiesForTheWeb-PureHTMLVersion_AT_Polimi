@@ -60,21 +60,25 @@ public class GoToAuctionDetails extends HttpServlet {private static final long s
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		String page = null;
+		Integer auction_id;
 	
 		// Page is a parameter that allows to distinguish between the auctionDetails.html and offer.html pages
-		String page = request.getParameter("page");
-		if(request.getParameter("auction_id") != null && (page.equals("auctionDetails.html") || page.equals("offer.html")))
-		{
+		try{
+			page = request.getParameter("page");
+			auction_id = Integer.parseInt(request.getParameter("auction_id"));
+		} catch(NumberFormatException e){
+			response.sendError(400, "Try-catch fallito" + e.getMessage());
+		}
+		if((page.equals("auctionDetails.html") || page.equals("offer.html"))){
 			try {
 				setupPage(request, response, page);
 			} catch (SQLException e) {
 				throw new RuntimeException(e);
 			}
 		}
-		else
-		{
-			// The auctionId parameter is missing
-			response.sendError(400, "Errore, parametri mancanti o errati nella richiesta!");
+		else {
+			response.sendError(400, "Page parameter not valid: " + page);
 		}
 	}
 	

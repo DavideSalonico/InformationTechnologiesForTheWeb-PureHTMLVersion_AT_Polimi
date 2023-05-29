@@ -22,12 +22,12 @@
     <div class="col mid-col">
         <div class="row first-row form">
             <h2 id="filter-auc">Search with a keyword</h2>
-            <form action="GoToPurchase" method="get">
+            <form th:action="@{GoToPurchase}" th:method="GET">
                 <div>
                     <label for="key">Key:</label>
                     <input type="text" name="key" id="key" required>
                 </div>
-                <button name="keyword-submit" type="submit">Search</button>
+                <button type="submit">Search</button>
             </form>
         </div>
         <div class="row second-row auc-list" th:if="${key} != null">
@@ -35,11 +35,22 @@
             <section class="scrollable">
                 <div th:each="entry, rowStat : ${map}" th:class="${rowStat.count % 2 == 0} ? 'odd' : 'even'">
                     <a th:href="@{GoToAuctionDetails(auctionId=${entry.key}, page ='offer.html')}">
-                        <article>
-                            <h3 th:text="${entry.value.name}"></h3> <-- TODO: Check -->
-                            <h4>Code: <span th:text="${entry.value.code}"></span></h4> <-- TODO: Check -->
-                            <!--<p>Remaining time: <span th:text="${remainingTimes.get(entry.key.auction_id)} + ' days ' + ${remainingTimes.get(entry.key.auction_id)} + ' hours and ' + ${remainingTimes.get(entry.key.auction_id)} + ' minutes'"></span>-->
-                        </article>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th class="tbl-name">Article name</th>
+                                    <th class="tbl-code">Code</th>
+                                    <th class="tbl-price">Price (&euro;)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="art : ${entry.value}">
+                                <td th:text="${art.name}"></td>
+                                <td th:text="${art.article_id}"></td>
+                                <td><span th:text="${art.price}"></span></td>
+                            </tr>
+                            </tbody>
+                        </table>
                     </a>
                 </div>
             </section>

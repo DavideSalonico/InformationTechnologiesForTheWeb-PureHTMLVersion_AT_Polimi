@@ -74,40 +74,11 @@ public class AuctionDAO {
 		}
 		return auction_id;
 	}
-	
-	public List<Auction> search(String keyword) throws SQLException{
-		List<Auction> auctions = new ArrayList<>();
-		try {
-			//TODO: read again where to look the similarity
-			pstatement = connection.prepareStatement("SELECT * FROM auction au, article ar WHERE ar.auction_id = au.auction_id AND (ar.description LIKE ? OR ar.name LIKE ?)");
-			pstatement.setString(1, "%" + keyword + "%");
-			pstatement.setString(2, "%" + keyword + "%");
-			result = pstatement.executeQuery();
-			while(result.next()) {
-				auctions.add(resultToAuction(result));
-			}
-		} catch(SQLException e) {
-			e.printStackTrace();
-			throw new SQLException(e);
-		} finally {
-			try {
-				result.close();
-			} catch(Exception e1) {
-				throw new SQLException(e1);
-			}
-			try {
-				pstatement.close();
-			} catch(Exception e2) {
-				throw new SQLException(e2);
-			}
-		}
-		return auctions;
-	}
 
 	public List<Auction> search(String keyword, LocalDateTime time, int user_id) throws SQLException{
 		List<Auction> filteredAuctions = new ArrayList<>();
 		try{
-			pstatement = connection.prepareStatement("SELECT * FROM auction au JOIN article ar ON ar.auction_id = au.auction_id AND (ar.description LIKE ? OR ar.name LIKE ?) AND au.user_id = ?  AND au.expiring_date > ? ORDER BY au.expiring_date DESC");
+			pstatement = connection.prepareStatement("SELECT * FROM auction au JOIN article ar ON ar.auction_id = au.auction_id AND (ar.description LIKE ? OR ar.name LIKE ?) AND au.creator = ?  AND au.expiring_date > ? ORDER BY au.expiring_date DESC");
 			pstatement.setString(1, "%" + keyword + "%");
 			pstatement.setString(2, "%" + keyword + "%");
 			pstatement.setInt(3, user_id);

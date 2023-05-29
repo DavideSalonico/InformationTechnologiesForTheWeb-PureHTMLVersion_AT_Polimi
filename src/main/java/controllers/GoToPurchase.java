@@ -92,7 +92,7 @@ public class GoToPurchase extends HttpServlet {
 				filteredAuctions = auctionDAO.search(key, logLdt, user.getUser_id());
 			} catch (SQLException e) {
 				e.printStackTrace();
-				response.sendError(500, "Errore, accesso al database fallito!");
+				response.sendError(500, "Errore, accesso al database fallito!" + e.getMessage());
 				return;
 			}
 		}
@@ -103,7 +103,7 @@ public class GoToPurchase extends HttpServlet {
 					map.put(auction.getAuction_id(), articleDAO.getAuctionArticles(auction.getAuction_id()));
 				} catch (SQLException e) {
 					e.printStackTrace();
-					response.sendError(500, "Errore, accesso al database fallito!");
+					response.sendError(500, "Errore, accesso al database fallito!" + e.getMessage());
 					return;
 				}
 			}
@@ -118,7 +118,12 @@ public class GoToPurchase extends HttpServlet {
 		ctx.setVariable("awardedAuctions", awardedAuctions);
 		ctx.setVariable("winningOffers", winningOffers);
 		ctx.setVariable("map", map);
-		templateEngine.process(path, ctx, response.getWriter());
+		try{
+			templateEngine.process(path, ctx, response.getWriter());
+		} catch (Exception e){
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not possible to recover the page" + e.getMessage());
+		}
+
 	}
 
 	private boolean validateKey(String key){
