@@ -1,6 +1,7 @@
 package beans;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class Auction {
 	private int auction_id;
@@ -46,6 +47,14 @@ public class Auction {
 	public void setMinimum_raise(int minimum_raise) {
 		this.minimum_raise = minimum_raise;
 	}
-	
-	
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Auction auction = (Auction) o;
+		return auction_id == auction.auction_id && open == auction.open && initial_price == auction.initial_price && minimum_raise == auction.minimum_raise && creator == auction.creator && Objects.equals(expiring_date, auction.expiring_date);
+	}
+
+
 }
