@@ -80,8 +80,8 @@
 						<td class="table-cell" th:text="${item.name}">Nome 1</td>
 						<td class="table-cell" th:text="${item.article_id}">Cod. 1</td>
 						<td>
-							<a href="#" th:href="${'data:image/jpeg;base64,' + item.image}">
-								<img src="http://classifieds.usatoday.com/wp-content/uploads/2018/06/Auction-Bidding.jpeg" th:src="${'data:image/jpeg;base64,' + item.image}" alt="Article picture"/>
+							<a href="#" th:href="${'data:image/jpeg;base64,' + imageMap.get(item.article_id)}">
+								<img th:src="${'data:image/jpeg;base64,' + imageMap.get(item.article_id)}" alt="Article picture"/>
 							</a>
 						</td>
 						<td class="table-cell" th:text="${item.description}">Descrizione 1</td>

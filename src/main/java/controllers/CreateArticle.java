@@ -1,15 +1,13 @@
 package controllers;
 
 import DAO.ArticleDAO;
-import beans.Article;
 import beans.User;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.WebContext;
 import utils.ConnectionHandler;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -24,6 +22,7 @@ import java.sql.SQLException;
  * Servlet implementation class CreateArticle
  */
 @WebServlet("/CreateArticle")
+@MultipartConfig
 public class CreateArticle extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
@@ -52,14 +51,14 @@ public class CreateArticle extends HttpServlet {
 		Integer article_creator = null;
 		Integer auction_id = null;
 		Integer price = null;
-		InputStream imageStream = null;
+		Part image = null;
 		try {
 			name = (String) request.getParameter("name");
 			description = (String) request.getParameter("description");
 			//image = request.getPart("image");
 			article_creator = (((User) request.getSession().getAttribute("user")).getUser_id());
 			price = Integer.parseInt(request.getParameter("price"));
-			imageStream = request.getPart("image").getInputStream();
+			image = request.getPart("image");
 
 
 			if(name == null || name.isEmpty() ||
@@ -85,7 +84,8 @@ public class CreateArticle extends HttpServlet {
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Unable to read article creator");
 			return;
 		}
-		
+
+		InputStream imageStream = checkImage(image);
 
 		try {
 			articleDAO.insertArticle(name, description, price, article_creator, imageStream);
@@ -107,4 +107,20 @@ public class CreateArticle extends HttpServlet {
 		}
 	}
 
+	private InputStream checkImage(Part image) throws IOException {
+		if (image != null) {
+			InputStream imgStream = null;
+			String mimeType = null;
+			imgStream = image.getInputStream();
+			String filename = image.getSubmittedFileName();
+			mimeType = getServletContext().getMimeType(filename);
+			// Since the user could edit the html page, he could change the input type of the image
+			// And if he doesn't upload a file, mimeType is null and this would result in an unexpected server error
+			if (mimeType != null)
+				// Checks if the uploaded file is an image and if it has been parsed correclty
+				if (imgStream != null && imgStream.available() > 0 && mimeType.startsWith("image/"))
+					return imgStream;
+		}
+		return null;
+	}
 }
