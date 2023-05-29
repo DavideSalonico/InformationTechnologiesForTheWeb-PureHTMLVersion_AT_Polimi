@@ -16,10 +16,11 @@
             </div>
             <div th:if="${session.user != null}">
                 <h2>Online Auctions!</h2>
-                <p>Welcome back <span th:text="${session.user.getUser_id()}"></span></p>
-                <p><strong>Online Auctions</strong></p>
+                <p>Welcome back <span th:text="${session.user.getUsername()}"></span></p>
+                <p><strong>
+                    Welcome to our online auction page, where treasures await and bidding is an adventure. Explore our curated selection of unique items from around the world, spanning art, antiques, jewelry, and more. Join the excitement, place your bids, and discover extraordinary pieces that will capture your heart. Happy bidding!</strong></p>
                 <h2>Privacy Policy</h2>
-                <p>HolaHolaHola</p>
+                <p>Your privacy is of utmost importance to us. We are committed to protecting and safeguarding your personal information while ensuring a secure and transparent auction experience. Rest assured that any data you provide will be handled in accordance with our strict privacy policy, ensuring confidentiality and respect for your privacy at all times</p>
             </div>
         </section>
     </div>
