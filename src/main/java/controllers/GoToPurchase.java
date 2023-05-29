@@ -127,6 +127,8 @@ public class GoToPurchase extends HttpServlet {
 		} catch (Exception e){
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not possible to recover the page" + e.getMessage());
 		}
+		//aggiunto commento a caso per fare un commit
+
 
 	}
 
