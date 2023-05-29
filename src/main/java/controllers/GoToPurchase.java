@@ -76,6 +76,7 @@ public class GoToPurchase extends HttpServlet {
 			winningOffers = offerDAO.getWinningOfferByUser(user.getUser_id());
 			for(Integer auction : winningOffers.keySet()){
 				awardedAuctions.put(auction, articleDAO.getAuctionArticles(auction));
+				map.put(auction, articleDAO.getAuctionArticles(auction));
 			}
 		} catch (SQLException e) {
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not possible to recover the winning offers");
@@ -96,18 +97,20 @@ public class GoToPurchase extends HttpServlet {
 			}
 		}
 
-		for(Auction auction : filteredAuctions){
-			try {
-				map.put(auction.getAuction_id(), articleDAO.getAuctionArticles(auction.getAuction_id()));
-			} catch (SQLException e) {
-				e.printStackTrace();
-				response.sendError(500, "Errore, accesso al database fallito!");
-				return;
+		if(filteredAuctions != null){
+			for(Auction auction : filteredAuctions){
+				try {
+					map.put(auction.getAuction_id(), articleDAO.getAuctionArticles(auction.getAuction_id()));
+				} catch (SQLException e) {
+					e.printStackTrace();
+					response.sendError(500, "Errore, accesso al database fallito!");
+					return;
+				}
 			}
 		}
 
 		// If the user is logged in (present in session) redirect to the home page
-		String path = "/WEB-INF/Purchase.html";
+		String path = "/WEB-INF/purchase.html";
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 		ctx.setVariable("key", key);

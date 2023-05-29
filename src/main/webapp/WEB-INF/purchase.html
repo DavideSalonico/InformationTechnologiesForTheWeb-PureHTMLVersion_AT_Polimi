@@ -22,7 +22,7 @@
     <div class="col mid-col">
         <div class="row first-row form">
             <h2 id="filter-auc">Search with a keyword</h2>
-            <form action="GoToPurchase" method="post">
+            <form action="GoToPurchase" method="get">
                 <div>
                     <label for="key">Key:</label>
                     <input type="text" name="key" id="key" required>
@@ -30,11 +30,11 @@
                 <button name="keyword-submit" type="submit">Search</button>
             </form>
         </div>
-        <div class="row second-row auc-list" th:if="${map != null and not map.isEmpty()}">
-            <h2 id="available-auc" th:text="'Available auction for: \'' + ${key} + '\'"></h2>
+        <div class="row second-row auc-list" th:if="${key} != null">
+            <h2 id="available-auc" th:text="'Available auction for: ' + ${key}"></h2>
             <section class="scrollable">
                 <div th:each="entry, rowStat : ${map}" th:class="${rowStat.count % 2 == 0} ? 'odd' : 'even'">
-                    <a th:href="@{GoToAuctionDetails(auctionId=${entry.key}, page='offer.html')}">
+                    <a th:href="@{GoToPurchase(auctionId=${entry.key})}">
                         <article>
                             <h3 th:text="${entry.value.name}"></h3> <-- TODO: Check -->
                             <h4>Code: <span th:text="${entry.value.code}"></span></h4> <-- TODO: Check -->
@@ -46,9 +46,9 @@
         </div>
         <div class="row third-row offers-list">
             <h2 id="awarded-art">Won Offers</h2>
-            <section class="scrollable scrll-table" th:if="${not #lists.isEmpty(winningOffers)}">
+            <section class="scrollable scrll-table" th:if="${winningOffers} != null and not ${winningOffers.isEmpty()}">
                 <div th:each="auction : ${winningOffers.keySet()}">
-                    <h3 th:text="'Maximum Offer: '+ ${winningOffers.get(auction).code}" >Offerta massima</h3>
+                    <h3 th:text="'Maximum Offer: '+ ${winningOffers.get(auction).getOffer_id()}" >Offerta massima</h3>
                     <table>
                         <thead>
                         <tr>
@@ -60,8 +60,8 @@
                         <tbody>
                         <tr th:each="article, rowStat : ${awardedAuctions.get(auction)}" th:class="${rowStat.count % 2 == 0} ? 'odd' : 'even'">
                             <td th:text="${article.name}"></td>
-                            <td th:text="${article.code}"></td>
-                            <td><span th:text="${#numbers.formatDecimal(article.price, 0)}"></span></td>
+                            <td th:text="${article.article_id}"></td>
+                            <td><span th:text="${article.price}"></span></td>
                         </tr>
                         </tbody>
                     </table>
