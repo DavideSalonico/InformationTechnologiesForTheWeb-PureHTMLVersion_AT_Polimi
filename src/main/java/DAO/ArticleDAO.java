@@ -17,6 +17,7 @@ public class ArticleDAO {
 		this.connection = connection;
 	}
 	
+	// DA CANCELLARE
 	public boolean isSold(int article_id) throws SQLException{
 		boolean isSold = false;
 		String query = "SELECT sold FROM article WHERE article_id = ?";
@@ -44,7 +45,8 @@ public class ArticleDAO {
 		
 		return isSold;
 	}
-	
+
+	//AGGIUNGI IMMAGINE
 	public void insertArticle(String name, String description, int price, int user_id) throws SQLException{
 		String query = "INSERT into article (name, description, price, sold, article_creator) VALUES (?,?,?,false,?)";
 		InputStream imageInputStream = null;
