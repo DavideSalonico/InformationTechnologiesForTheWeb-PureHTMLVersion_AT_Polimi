@@ -87,13 +87,14 @@ public class OfferDAO {
 	}
 	
 	public Offer getWinningOffer(int auction_id) throws SQLException{
-		Offer off = new Offer();
+		Offer off = null;
 		try {
 			//Assumo che l'ultima offerta in ordine di data con il corretto auction_id sia effettivamente la vincente
 			pstatement = connection.prepareStatement("SELECT * FROM offer WHERE time = (SELECT MAX(time) FROM offer WHERE auction = ?)");
 			pstatement.setInt(1, auction_id);
 			result = pstatement.executeQuery();
 			if(result.next()) {
+				off = new Offer();
 				off.setOffer_id(result.getInt("offer_id"));
 				off.setPrice(result.getInt("price"));
 				off.setTime(result.getTimestamp("time").toLocalDateTime());
