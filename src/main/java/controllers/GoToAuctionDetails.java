@@ -33,10 +33,10 @@ import java.util.List;
 public class GoToAuctionDetails extends HttpServlet {private static final long serialVersionUID = 1L;
 	private Connection connection = null;
 	private TemplateEngine templateEngine;
-	OfferDAO offerDAO;
-	AuctionDAO auctionDAO;
-	ArticleDAO articleDAO;
-	UserDAO userDAO;
+	private OfferDAO offerDAO;
+	private AuctionDAO auctionDAO;
+	private ArticleDAO articleDAO;
+	private UserDAO userDAO;
 	
 	public GoToAuctionDetails() {
 		super();
@@ -56,12 +56,12 @@ public class GoToAuctionDetails extends HttpServlet {private static final long s
 	
 	
 	
-	// TO DO : OGNI DOGET DEVE ESSERE CHIAMATA PER OGNI ASTA DI NOSTRO INTERESSE, oppure generalizza modificando questo codice 
+	// TODO : OGNI DOGET DEVE ESSERE CHIAMATA PER OGNI ASTA DI NOSTRO INTERESSE, oppure generalizza modificando questo codice
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String page = null;
-		Integer auction_id;
+		Integer auction_id = null;
 	
 		// Page is a parameter that allows to distinguish between the auctionDetails.html and offer.html pages
 		try{
@@ -72,19 +72,15 @@ public class GoToAuctionDetails extends HttpServlet {private static final long s
 		}
 		if((page.equals("auctionDetails.html") || page.equals("offer.html"))){
 			try {
-				setupPage(request, response, page);
+				setupPage(request, response, page, auction_id);
 			} catch (SQLException e) {
-				throw new RuntimeException(e);
+				response.sendError(400, "Page parameter not valid: " + page);
 			}
-		}
-		else {
-			response.sendError(400, "Page parameter not valid: " + page);
 		}
 	}
 	
-	private void setupPage(HttpServletRequest request, HttpServletResponse response, String page) throws ServletException, IOException, SQLException {
+	private void setupPage(HttpServletRequest request, HttpServletResponse response, String page, Integer auction_id) throws ServletException, IOException, SQLException {
 		// get and check params
-		Integer auction_id;
 		Auction auction;
 		List <Article> articles;
 		Offer maxAuctionOffer;
@@ -105,7 +101,6 @@ public class GoToAuctionDetails extends HttpServlet {private static final long s
 		try {
 			auction_id = Integer.parseInt(request.getParameter("auction_id"));   // AGGIUNGERE PARAMETRO ALLA URL
 		} catch (NumberFormatException | NullPointerException e) {
-			// only for debugging e.printStackTrace();
 			response.sendError(400, "Errore, l' id deve essere un numero intero!" );
     		return;
 		}
@@ -176,6 +171,7 @@ public class GoToAuctionDetails extends HttpServlet {private static final long s
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 		// PASSO VALORI ALLA PAGINA DI RITORNO 
 		// Creates and sets 7 variables to use inside the 2 template pages
+		ctx.setVariable("auction_id", auction_id);
 		ctx.setVariable("auction", auction);
 		ctx.setVariable("article", articles);  // OCCHIO CHE qua è settato senza S, è una lista però
 		ctx.setVariable("frmtDeadline", frmtDeadline);
