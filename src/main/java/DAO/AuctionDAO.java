@@ -52,7 +52,7 @@ public class AuctionDAO {
 	public List<Auction> search(String keyword, LocalDateTime time) throws SQLException{
 		List<Auction> filteredAuctions = new ArrayList<>();
 		try{
-			pstatement = connection.prepareStatement("SELECT * FROM auction au JOIN article ar ON ar.auction_id = au.auction_id AND (ar.description LIKE ? OR ar.name LIKE ?) AND au.expiring_date > ? AND au.open = 'true' ORDER BY au.expiring_date DESC");
+			pstatement = connection.prepareStatement("SELECT DISTINCT au.* FROM auction au JOIN article ar ON ar.auction_id = au.auction_id WHERE (ar.name LIKE ? OR ar.description LIKE ?) AND au.expiring_date > ? AND au.open = '1' ORDER BY au.expiring_date ASC");
 			pstatement.setString(1, "%" + keyword.toUpperCase() + "%");
 			pstatement.setString(2, "%" + keyword.toUpperCase() + "%");
 			pstatement.setObject(3, time);
