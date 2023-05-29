@@ -1,3 +1,7 @@
+
+<!-- Fragment è una pagina che permette di riutulizzare codice HTML in varie pagine, noi utilizzeremo i suoi metodi
+		all'interno di sell.html. auctionDetails.html e offer.html-->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,21 +10,22 @@
 	</head>
 	<body>
 		<!--/* 1° FRAGMENT:
-		This is a parameterized fragment, "auctions" is the HashMap passed as parameter by "vendo.html"
-		"open" is used to distinguish between the user's open and closed auctions */-->
+		Questa sezione viene riutilizzata in 2 porzioni delle pagina sell.html, mostra sia le Aste Aperte (open = 1) che quelle
+		chiuse (open = 0), le quali vengono distinte dal attributo open, auctions è una Map<Integer, List<Article>> con chiave id
+		dell'asta e come valore una lista di Articoli ad essa associati/-->
+
 		<section class="scrollable" th:fragment="showAuctions(auctions, open)">
 			        	
-      		<!--/* The following lines iterate over the LinkedHashMap and dynamically create the elements
-      		(1) th:if="${not auctions.isEmpty()}" is used to ensure the HashMap is not empty
-      		(2) th:each="entry, stats : ${auctions}" is used to iterate over the HashMap
-      		(3) th:with="article=${entry.value}, auction=${entry.key}" creates 2 variables that contain each Article and each Auction object
-      		(4) th:class="${stats.odd}? 'odd' : even" checks if the current iteration is even or odd and assigns the correct value as class */-->
+      		<!--/* The following lines iterate over the Map and dynamically create the elements
+      		(1) th:if="${not auctions.isEmpty()}" is used to ensure the Map is not empty
+      		(3) th:with="article=${entry.value}, auction=${entry.key}" creates 2 variables that contain each Articles related to each Auction object
+      		(4) th:class="${stats.odd}? 'odd' : even" checks if the current iteration is even or odd and assigns the correct value as class, just for css */-->
 
       		<!--/* th:href="@{GetAuctionDetails(auctionId= ${auction.id}, page='dettagli.html')} creates a relative url with 2 parameters
       		(1) auctionId is used to specify which is the auction in order to get it's details
       		(2) page is used to distinguish between dettagli.html and offerta.html, because the controller manages both template pages */-->
       		
-      		<!--/* "auctions" is the hashmap passed as parameter by vendo.html */-->
+      		<!--/* "auctions" is the hashmap passed as parameter by sell.html */-->
 			<a th:if="${not auctions.isEmpty() and auctions != null}"  th:each="entry : ${auctions}" th:href="@{GoToAuctionDetails(auctionId= ${entry.key.auction_id}, page='auctionDetails.html')}" >
 				<!-- Assegna l'asta corrente alla variabile 'auction' -->
 				<th:block th:with="auction=${entry.key}">
@@ -33,7 +38,7 @@
 						</tr>
 						</thead>
 						<tbody>
-						<!-- Itera sulla lista di articoli associati all'asta corrente -->
+						<!-- Itera sulla lista di articoli associati all'asta corrente e li stampa tutti  -->
 						<tr th:each="article : ${entry.value}">
 							<td class="table-cell" th:text="${article.name}">Nome 1</td>
 							<td class="table-cell" th:text="${article.article_id}">Cod. 1</td>
@@ -61,7 +66,7 @@
 		
 		
 		<!--/* 2° FRAGMENT:
-		This is a fragment, it is requested by "offerta.html" and "dettagli.html"
+		This is a fragment, it is requested by "offer.html" and "auctionDetails.html"
 		in order to show the auction's and article's details */-->
 		<div th:fragment="showDetails">
 			<h2 id="dtl-articles">List of Articles contained by auction</h2>
@@ -100,7 +105,7 @@
 		
 		
 		<!--/* 3° FRAGMENT:
-		This is a parameterized fragment, requested by "offerta.html" and "dettagli.html"
+		This is a parameterized fragment, requested by "offer.html" (details = false) and "AuctionDetails.html (details = true)"
 		in order to display all the offers for the relative auction inside a table.
 		The parameter "details" is necessary to be able to distinguish between the 2 pages. */-->
 		<section class="mid-col scrollable" th:fragment="showOffers(details)">
