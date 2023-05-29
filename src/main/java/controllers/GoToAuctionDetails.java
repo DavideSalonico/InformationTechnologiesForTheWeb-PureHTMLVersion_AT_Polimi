@@ -61,25 +61,25 @@ public class GoToAuctionDetails extends HttpServlet {private static final long s
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String page = null;
-		Integer auction_id = null;
+		Integer auctionId = null;
 	
 		// Page is a parameter that allows to distinguish between the auctionDetails.html and offer.html pages
 		try{
 			page = request.getParameter("page");
-			auction_id = Integer.parseInt(request.getParameter("auction_id"));
+			auctionId = Integer.parseInt(request.getParameter("auctionId"));
 		} catch(NumberFormatException e){
 			response.sendError(400, "Try-catch fallito" + e.getMessage());
 		}
 		if((page.equals("auctionDetails.html") || page.equals("offer.html"))){
 			try {
-				setupPage(request, response, page, auction_id);
+				setupPage(request, response, page, auctionId);
 			} catch (SQLException e) {
 				response.sendError(400, "Page parameter not valid: " + page);
 			}
 		}
 	}
 	
-	private void setupPage(HttpServletRequest request, HttpServletResponse response, String page, Integer auction_id) throws ServletException, IOException, SQLException {
+	private void setupPage(HttpServletRequest request, HttpServletResponse response, String page, Integer auctionId) throws ServletException, IOException, SQLException {
 		// get and check params
 		Auction auction;
 		List <Article> articles;
@@ -99,14 +99,14 @@ public class GoToAuctionDetails extends HttpServlet {private static final long s
     	
     	
 		try {
-			auction_id = Integer.parseInt(request.getParameter("auction_id"));   // AGGIUNGERE PARAMETRO ALLA URL
+			auctionId = Integer.parseInt(request.getParameter("auctionId"));   // AGGIUNGERE PARAMETRO ALLA URL
 		} catch (NumberFormatException | NullPointerException e) {
 			response.sendError(400, "Errore, l' id deve essere un numero intero!" );
     		return;
 		}
 		
 		try {
-			auction = auctionDAO.getAuction(auction_id);
+			auction = auctionDAO.getAuction(auctionId);
 			if (auction == null) {
 				response.sendError(HttpServletResponse.SC_NOT_FOUND, "Auction not found");
 				return;
@@ -119,9 +119,9 @@ public class GoToAuctionDetails extends HttpServlet {private static final long s
 		}
 		
 		try {
-			articles = articleDAO.getAuctionArticles(auction_id);
-			auctionOffers = offerDAO.getOffers(auction_id);
-			maxAuctionOffer = offerDAO.getWinningOffer(auction_id);
+			articles = articleDAO.getAuctionArticles(auctionId);
+			auctionOffers = offerDAO.getOffers(auctionId);
+			maxAuctionOffer = offerDAO.getWinningOffer(auctionId);
 			
 			if(maxAuctionOffer != null)
 			{
@@ -171,7 +171,7 @@ public class GoToAuctionDetails extends HttpServlet {private static final long s
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 		// PASSO VALORI ALLA PAGINA DI RITORNO 
 		// Creates and sets 7 variables to use inside the 2 template pages
-		ctx.setVariable("auction_id", auction_id);
+		ctx.setVariable("auctionId", auctionId);
 		ctx.setVariable("auction", auction);
 		ctx.setVariable("article", articles);  // OCCHIO CHE qua è settato senza S, è una lista però
 		ctx.setVariable("frmtDeadline", frmtDeadline);

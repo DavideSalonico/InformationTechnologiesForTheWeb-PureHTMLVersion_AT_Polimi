@@ -89,7 +89,7 @@ public class GoToPurchase extends HttpServlet {
 				return;
 			}
 			try {
-				filteredAuctions = auctionDAO.search(key, logLdt, user.getUser_id());
+				filteredAuctions = auctionDAO.search(key, logLdt);
 			} catch (SQLException e) {
 				e.printStackTrace();
 				response.sendError(500, "Errore, accesso al database fallito!" + e.getMessage());

@@ -21,7 +21,7 @@
       		(2) page is used to distinguish between dettagli.html and offerta.html, because the controller manages both template pages */-->
       		
       		<!--/* "auctions" is the hashmap passed as parameter by vendo.html */-->
-			<a th:if="${not auctions.isEmpty() and auctions != null}"  th:each="entry : ${auctions}" th:href="@{GoToAuctionDetails(auction_id= ${entry.key.auction_id}, page='auctionDetails.html')}" >
+			<a th:if="${not auctions.isEmpty() and auctions != null}"  th:each="entry : ${auctions}" th:href="@{GoToAuctionDetails(auctionId= ${entry.key.auctionId}, page='auctionDetails.html')}" >
 				<!-- Assegna l'asta corrente alla variabile 'auction' -->
 				<th:block th:with="auction=${entry.key}">
 					<table class="dtl-offers">

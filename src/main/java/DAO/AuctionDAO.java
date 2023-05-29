@@ -19,32 +19,6 @@ public class AuctionDAO {
 		this.connection = conn;
 	}
 	
-	public boolean isClosed(int auction_id) throws SQLException{
-		try {
-			pstatement = connection.prepareStatement("SELECT * FROM auction WHERE auction_id = ?");
-			pstatement.setInt(1, auction_id);
-			result = pstatement.executeQuery();
-			if(result.getBoolean("open") == true) {
-				return false;
-			}
-			return true;
-		} catch(SQLException e) {
-			e.printStackTrace();
-			throw new SQLException(e);
-		} finally {
-			try {
-				result.close();
-			} catch(Exception e1) {
-				throw new SQLException(e1);
-			}
-			try {
-				pstatement.close();
-			} catch(Exception e2) {
-				throw new SQLException(e2);
-			}
-		}	
-	}
-	
 	public int insertAuction(LocalDateTime expiring_date, int minimum_raise, int creator) throws SQLException{
 		int auction_id = -1;
 		try {
@@ -75,14 +49,13 @@ public class AuctionDAO {
 		return auction_id;
 	}
 
-	public List<Auction> search(String keyword, LocalDateTime time, int user_id) throws SQLException{
+	public List<Auction> search(String keyword, LocalDateTime time) throws SQLException{
 		List<Auction> filteredAuctions = new ArrayList<>();
 		try{
-			pstatement = connection.prepareStatement("SELECT * FROM auction au JOIN article ar ON ar.auction_id = au.auction_id AND (ar.description LIKE ? OR ar.name LIKE ?) AND au.creator = ?  AND au.expiring_date > ? ORDER BY au.expiring_date DESC");
+			pstatement = connection.prepareStatement("SELECT * FROM auction au JOIN article ar ON ar.auction_id = au.auction_id AND (ar.description LIKE ? OR ar.name LIKE ?) AND au.expiring_date > ? AND au.open = 'true' ORDER BY au.expiring_date DESC");
 			pstatement.setString(1, "%" + keyword + "%");
 			pstatement.setString(2, "%" + keyword + "%");
-			pstatement.setInt(3, user_id);
-			pstatement.setObject(4, time);
+			pstatement.setObject(3, time);
 			result = pstatement.executeQuery();
 			while (result.next()) {
 				filteredAuctions.add(resultToAuction(result));

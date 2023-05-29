@@ -34,7 +34,7 @@
             <h2 id="available-auc" th:text="'Available auction for: ' + ${key}"></h2>
             <section class="scrollable">
                 <div th:each="entry, rowStat : ${map}" th:class="${rowStat.count % 2 == 0} ? 'odd' : 'even'">
-                    <a th:href="@{GoToAuctionDetails(auction_id=${entry.key}, page ='offer.html')}">
+                    <a th:href="@{GoToAuctionDetails(auctionId=${entry.key}, page ='offer.html')}">
                         <table>
                             <thead>
                                 <tr>
@@ -85,8 +85,8 @@
             <h3>Menu</h3>
             <ul>
                 <li><a th:href="@{/GoToHome}">Home</a></li>
-                <li><a th:href="@{/GoToSell}">Sell</a></li>
                 <li><a th:href="@{/GoToPurchase}">Purchase</a></li>
+                <li><a th:href="@{/GoToSell}">Sell</a></li>
                 <li><a th:href="@{/Logout}">Logout</a></li>
             </ul>
         </div>
