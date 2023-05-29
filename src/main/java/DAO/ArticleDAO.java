@@ -2,9 +2,11 @@ package DAO;
 
 import beans.Article;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,15 +52,10 @@ public class ArticleDAO {
 	public void insertArticle(String name, String description, int price, int user_id) throws SQLException{
 		String query = "INSERT into article (name, description, price, sold, article_creator) VALUES (?,?,?,false,?)";
 		InputStream imageInputStream = null;
-		/*try {
-			imageInputStream = image.getInputStream();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}*/
 		try{
 			pstatement  = connection.prepareStatement(query);
-			pstatement.setString(1,name);
-			pstatement.setString(2,description);
+			pstatement.setString(1,name.toUpperCase());
+			pstatement.setString(2,description.toUpperCase());
 
 			//pstatement.setBlob(3, imageInputStream);
 			pstatement.setInt(3, price);
