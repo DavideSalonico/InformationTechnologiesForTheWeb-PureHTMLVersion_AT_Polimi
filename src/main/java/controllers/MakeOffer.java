@@ -19,9 +19,6 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
-/**
- * Servlet implementation class MakeOffer
- */
 @WebServlet("/MakeOffer")
 public class MakeOffer extends HttpServlet {
 	@Serial
@@ -32,6 +29,7 @@ public class MakeOffer extends HttpServlet {
 
 	public void init() throws ServletException {
 		connection = ConnectionHandler.getConnection(getServletContext());
+
 		offerDAO = new OfferDAO(connection);
 		auctionDAO = new AuctionDAO(connection);
 	}
@@ -40,7 +38,6 @@ public class MakeOffer extends HttpServlet {
 		try {
 			connection.close();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -48,23 +45,17 @@ public class MakeOffer extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		// Page is a parameter that allows to distinguish between the dettagli.html and offerta.html pages
-		if(request.getParameter("auctionId") != null )
-		{
+		if(request.getParameter("auctionId") != null ){
 			makeOffer(request, response);
-		}
-		else
-		{
-			// The auctionId parameter is missing
-			response.sendError(400, "Errore, parametri mancanti nella richiesta (auctionID non trovato)!");
 		}
 	}
 
 	private boolean checkValue(int offerValue, Auction auction, Offer maxAuctionOffer)
 	{
 		// Min sets the minum value the user can submit
-		int min = 0;
+		int min;
 		// 2 billions is the maximum value allowed
-		int max = 2000000000;
+		int max = 1000000000;
 
 		// If there is at least an offer for the specified auction
 		// the minimum value is equal to the minimum upside offer plus
@@ -80,25 +71,21 @@ public class MakeOffer extends HttpServlet {
 		return min <= offerValue && offerValue <= max;
 	}
 	private void makeOffer(HttpServletRequest request, HttpServletResponse response) throws IOException {
-
 		Auction auction;
 		Offer maxAuctionOffer;
 		LocalDateTime currLdt = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
 		User user = (User) request.getSession(false).getAttribute("user");
 		// Used once the offer has been created to redirect to GetAuctionsDetails
-		// In order to work, the controller needs 2 parameters, the auctionId and the page to process
-		String strAucId = request.getParameter("auctionId");
 		int aucId, offerValue;
+		String strAucId;
 
 		try {
 			// These retrieve the auctionId and the value of the offer
+			strAucId = request.getParameter("auctionId");
 			aucId = Integer.parseInt(strAucId);
-			//Il parametro offer contiene il valore dell'offerta
 			offerValue = Integer.parseInt(request.getParameter("offer"));
-		} catch (Exception e) {
-			// If the values can't be parsed they are not formatted correctly
-			e.printStackTrace();
-			response.sendError(400, "Errore, l'id dell' asta e il valore dell' offerta devono essere numeri 'interi'!");
+		} catch (NumberFormatException e) {
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "auctionIn and offer must be integers!");
 			return;
 		}
 
@@ -106,16 +93,14 @@ public class MakeOffer extends HttpServlet {
 			// This return the Auction object related to the specified auction if it exists or null
 			auction = auctionDAO.getAuction(aucId);
 		} catch (SQLException e) {
-			e.printStackTrace();
-			response.sendError(500, "Errore, Asta non trovata nel database!");
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Auction not found or access to database failed!");
 			return;
 		}
 
 		if (auction != null) {
-
 			// Checks if the logged user has created the auction
 			if (auction.getCreator() == (user.getUser_id())) {
-				response.sendError(400, "Errore, non e' concesso fare offerte sulle proprie aste!");
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Error. You can't make an offer for your own auction!");
 				return;
 			}
 
@@ -123,15 +108,14 @@ public class MakeOffer extends HttpServlet {
 				// This returns the Offer object related to the maximum offer for specified auction if it exists or null
 				maxAuctionOffer = offerDAO.getWinningOffer(aucId);
 			} catch (SQLException e) {
-				e.printStackTrace();
-				response.sendError(500, "Errore, accesso al database fallito, non trovo l'offerta massima per quell'asta!");
+				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error. Access to database failed! Cannot retrieve the maximum offer!");
 				return;
 			}
 
 			// This checks, if there is a maximum offer, if it belongs to the logged user
 			// If so, the user is not allowed to make another offer
 			if (maxAuctionOffer != null && user.getUser_id() == (maxAuctionOffer.getUser())) {
-				response.sendError(400, "Errore, è necessario attendere che qualcun altro faccia un' offerta, prima di poterne fare una nuova!");
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Error. You have to wait for another user to make an offer!");
 				return;
 			}
 			if (checkValue(offerValue, auction, maxAuctionOffer)) {
@@ -139,18 +123,18 @@ public class MakeOffer extends HttpServlet {
 					// This returns true if the Offer has been added to the database
 					int outcome = offerDAO.insertOffer(offerValue, currLdt, user.getUser_id(), aucId);
 					if (outcome == 0) {
-						response.sendError(500, "Errore, accesso al database fallito, non sono riuscito ad inserire l'offerta!");
+						response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Errore, accesso al database fallito! Could not insert the offer!");
 						return;
 					}
 				} catch (SQLException e) {
-					e.printStackTrace();
-					response.sendError(500, "Errore, accesso al database fallito!");
+					response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error while inserting the offer!");
 					return;
 				}
 			} else {
-				response.sendError(400, "Errore, il valore specificato deve essere superiore all' offerta massima attuale di un ammontare"
-						+ " pari almeno al rialzo minimo! Se non ci sono offerte al momento, il valore minimo deve essere pari"
-						+ " o superiore al valore iniziale dell' asta! Il valore massimo � 2 miliardi!");
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Error, the offer's value is not valid! " +
+						"Your offer must be greater than the minimum raise plus the maximum offer's value!" +
+						" If there are no offers, your offer must be greater than the initial price!" +
+						" Max value allowed: 1 billion!");
 			}
 
 			String path = getServletContext().getContextPath() +"/GoToAuctionDetails?auctionId=" + strAucId + "&page=offer.html";
@@ -158,7 +142,7 @@ public class MakeOffer extends HttpServlet {
 
 		} else {
 			// The given ID doesn't belong to any of the auctions
-			response.sendError(400, "Errore, l'asta specificata non esiste!");
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Specified auction doesn't exist!");
 		}
 	}
 

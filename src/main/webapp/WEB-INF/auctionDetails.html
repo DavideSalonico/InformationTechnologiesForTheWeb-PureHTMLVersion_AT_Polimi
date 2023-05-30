@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <!--/* Specify the language of the page and the direction, left-to-right */-->
-<html lang="it" dir="ltr" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" dir="ltr" xmlns:th="http://www.thymeleaf.org">
   <head>
   	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 
-    <title>Dettagli</title>
+    <title>Details</title>
 
 	<link rel="icon" href="#" th:href="@{/img/icon.png}">
     <link rel="stylesheet" type="text/css" href="#" th:href="@{/css/main.css}">
@@ -15,10 +15,10 @@
   <body>
 	<!--/* th:remove="tag" removes only the containing tag, but not the text */-->
 	<!--/* th:remove="all" removes both the tag and the children, text included */-->
-	<p th:remove="all">Questa è una pagina dinamica, viene generata a runtime, non è previsto un accesso diretto!</p>
+	<p th:remove="all">This is a dynamic page, it is generated at runtime, no direct access is expected</p>
     <div class="col lft-col">
       <div class="quick-nav">
-        <h3>Navigazione Rapida</h3>
+        <h3>Rapid Navigation</h3>
         <ul>
           <a href="#dtl-art"><li>DETAILS</li></a>
           <!--/* Shows this element only if the auction exists and it's closed */-->
@@ -32,7 +32,7 @@
       <div class="row first-row details">
         <h2 th:if="${auction == null}">INFORMATIONS</h2>
         <!--/* The paragraph exists only if the auction is null */-->
-        <p th:if="${auction == null}">L' utente non ha creato l' asta oppure l' asta selezionata non esiste!</p>
+        <p th:if="${auction == null}">User did not create the auction or user does not exists</p>
         <!--/* th:if="${auction != null}" is used to ensure that the auction exists 
         the section is created along with it's children only if the condition
         is true */-->
@@ -51,7 +51,7 @@
             <div th:if="${!auction.isOpen() and awardedUser == null}">
             	<hr>
                 <h2 id="dtl-info">INFORMATIONS:</h2>
-                <p>Purtroppo non e' stata fatta alcuna offerta per questo articolo.</p>
+                <p>No offers made for this article</p>
                 <!-- Add a button to close the auction -->
             </div>
 
@@ -60,8 +60,8 @@
             shows the name of the user who has won the auction, his address and his offer's value */-->
             <div th:if="${!auction.isOpen() and awardedUser != null}">
             	<hr>
-                <h2 id="dtl-infoAwarded">Informazioni aggiudicatario</h2>
-                <p><strong>Nome: </strong><span th:text="${awardedUser.username}">nome 1</span></p>
+                <h2 id="dtl-infoAwarded">Winner informations</h2>
+                <p><strong>Name: </strong><span th:text="${awardedUser.username}">name 1</span></p>
                 <!--/* "#numbers.formatInteger(num, 1, 'POINT')" : formats the number
       			in order to display it properly. Accepts as parameters the value, the minimum
       			number of integer digits and the thousands separator */-->
@@ -69,8 +69,8 @@
       			<!--/* The euro symbol's html code is not rendered correctly if processed by the thymeleaf engine
       			So, in order to display it, it's necessary to keep it static. That's why span is used.
       			Span is also used to make the first word bold */-->
-                <p><strong>Offerta: </strong><span th:text="${#numbers.formatInteger(maxAuctionOffer.price,1,'POINT')}">Offerta: offerta 1</span> &euro;</p>
-                <p><strong>Indirizzo: </strong><span th:text="${awardedUser.address}">indirizzo 1</span></p>
+                <p><strong>Offer: </strong><span th:text="${#numbers.formatInteger(maxAuctionOffer.price,1,'POINT')}">Offer: offer 1</span> &euro;</p>
+                <p><strong>Address: </strong><span th:text="${awardedUser.address}">address 1</span></p>
             </div>
         </section>
       </div>

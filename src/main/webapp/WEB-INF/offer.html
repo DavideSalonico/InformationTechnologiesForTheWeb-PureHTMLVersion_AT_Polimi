@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="it" dir="ltr" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" dir="ltr" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
     <title>Offerte</title>
@@ -10,22 +10,22 @@
     <link rel="stylesheet" type="text/css" href="css/offer.css">
 </head>
 <body>
-<p th:remove="all">Questa è una pagina dinamica, viene generata a runtime, non è previsto un accesso diretto!</p>
+<p th:remove="all">This is a dynamic page, it is generated at runtime, no direct access is expected</p>
 <div class="col lft-col">
     <div class="quick-nav">
-        <h3>Navigazione Rapida</h3>
+        <h3>Rapid Navigation</h3>
         <ul>
-            <a href="#dtl-articles"><li>Dettagli</li></a>
-            <a href="#dtl-offers"><li>Offerte</li></a>
-            <a href="#offr-new"><li>Nuova offerta</li></a>
+            <a href="#dtl-articles"><li>Details</li></a>
+            <a href="#dtl-offers"><li>Offers</li></a>
+            <a href="#offr-new"><li>New offer</li></a>
         </ul>
     </div>
 </div>
 <div class="col mid-col">
     <div class="row first-row details">
-        <h2 th:if="${auction == null or isExpired}">Informazioni</h2>
-        <p th:if="${auction == null}">L'asta selezionata non esiste!</p>
-        <p th:if="${isExpired}">L'asta per l'articolo selezionato è scaduta!</p>
+        <h2 th:if="${auction == null or isExpired}">Informations</h2>
+        <p th:if="${auction == null}">Selected auction does not exists</p>
+        <p th:if="${isExpired}">Auction for selected article is expired</p>
         <section th:if="${auction != null and not isExpired}">
             <div th:replace="WEB-INF/fragments.html :: showDetails"></div>
         </section>
@@ -34,15 +34,15 @@
         <section th:replace="WEB-INF/fragments.html :: showOffers(0)"></section>
     </div>
     <div class="row third-row form" th:if="${auction != null and not isExpired}">
-        <h2 id="offr-new">Nuova offerta</h2>
+        <h2 id="offr-new">New Offer</h2>
         <form action="#" th:action="@{/MakeOffer}" method="post">
             <div>
-                <label for="offer">Valore:</label>
+                <label for="offer">Value:</label>
                 <input type="number" name="offer" id="offer" min="1" max="2000000000" step="1" th:min="${min}" th:value="${min}" th:with="min=${not offers.isEmpty()} ? ${maxAuctionOffer.price + auction.minimum_raise} : ${auction.initial_price}" required>
                 <span>&euro;</span>
                 <input type="hidden" name="auctionId" th:value="${auction.auction_id}">
             </div>
-            <button name="offer-submit" type="submit">Conferma</button>
+            <button name="offer-submit" type="submit">Confirm</button>
         </form>
     </div>
 </div>

@@ -51,7 +51,7 @@ public class CloseAuction extends HttpServlet {
 		int user_id = ((User) request.getSession().getAttribute("user")).getUser_id();
 
 		try {
-			if (auctionDAO.checkUserId(auction_id, user_id)) {
+			if (!auctionDAO.checkUserId(auction_id, user_id)) {
 				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Not possible to close this auction: you are not the owner");
 				return;
 			}
