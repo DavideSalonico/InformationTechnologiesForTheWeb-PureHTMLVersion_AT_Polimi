@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.Serial;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -20,6 +21,7 @@ import java.time.LocalDateTime;
 
 @WebServlet("/CheckLogin")
 public class CheckLogin extends HttpServlet {
+	@Serial
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
 	private TemplateEngine templateEngine;
@@ -46,14 +48,14 @@ public class CheckLogin extends HttpServlet {
 	}
 
 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		// obtain and escape params                                                                                
-		String usrn = null;                                                                                        
-		String pwd = null;     
+		String usrn;
+		String pwd;
 		                                                                                                           
 		try {        
-			usrn = (String) request.getParameter("username");
-			pwd = (String)request.getParameter("password");                                       
+			usrn = request.getParameter("username");
+			pwd = request.getParameter("password");
 			                                                                                                       
 			if (usrn == null || pwd == null || usrn.isEmpty() || pwd.isEmpty()) {                                  
 				throw new Exception("Missing or empty credential value");                                          
@@ -66,7 +68,7 @@ public class CheckLogin extends HttpServlet {
 		}                                                                                                          
 		                                                                                                           
 		// query db to authenticate for user                                                                                                                                        
-		User user = null;                                                                                          
+		User user;
 		try {                                                                                                      
 			user = userDao.checkCredentials(usrn, pwd);                                                            
 		} catch (SQLException e) {                                                                                 

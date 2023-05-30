@@ -22,8 +22,7 @@ public class ArticleDAO {
 
 	public void insertArticle(String name, String description, int price, int user_id, InputStream image) throws SQLException{
 		String query = "INSERT into article (name, description, price, sold, article_creator, image) VALUES (?,?,?,false,?,?)";
-		InputStream imageInputStream = null;
-		int outcome = 0;
+		int outcome;
 		try{
 			pstatement  = connection.prepareStatement(query);
 			pstatement.setString(1,name.toUpperCase());
@@ -51,7 +50,7 @@ public class ArticleDAO {
 	
 	public void addToAuction(int article_id, int auction_id) throws SQLException{
 		String query = "UPDATE article SET auction_id = ? where article_id = ?";
-		int outcome = 0;
+		int outcome;
 		try{
 			pstatement  = connection.prepareStatement(query);
 			pstatement.setInt(1,auction_id);
@@ -104,7 +103,7 @@ public class ArticleDAO {
 	
 	public List<Article> getAvailableUserArticles(int user_id) throws SQLException{
 		List<Article> articles = new ArrayList<Article>();
-		Article article = new Article();
+		Article article;
 		String query = "SELECT * FROM article WHERE article_creator = ? and sold = 0 and auction_id  is null";
 		try {
 			pstatement = connection.prepareStatement(query);

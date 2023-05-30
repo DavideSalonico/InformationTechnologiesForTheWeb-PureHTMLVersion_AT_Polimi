@@ -93,7 +93,7 @@ public class AuctionDAO {
 
 		} finally {
 			try {
-				//result.close();
+				result.close();
 			} catch (Exception e1) {
 				throw new SQLException(e1);
 			}

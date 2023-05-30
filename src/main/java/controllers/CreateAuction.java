@@ -3,11 +3,8 @@ package controllers;
 import DAO.ArticleDAO;
 import DAO.AuctionDAO;
 import beans.User;
-import org.thymeleaf.TemplateEngine;
 import utils.ConnectionHandler;
 
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
@@ -32,7 +29,6 @@ public class CreateAuction extends HttpServlet {
 	@Serial
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
-	private TemplateEngine templateEngine;
 	private ArticleDAO articleDAO;
 	private AuctionDAO auctionDAO;
        
@@ -41,8 +37,6 @@ public class CreateAuction extends HttpServlet {
     }
 
 	public void init() throws ServletException {
-		ServletContext servletContext = getServletContext();
-		templateEngine = utils.EngineHandler.setEngine(servletContext);
 		connection = ConnectionHandler.getConnection(getServletContext());
 		
 		articleDAO = new ArticleDAO(connection);
@@ -57,34 +51,33 @@ public class CreateAuction extends HttpServlet {
 		}
 	}
 
-	private boolean checkNumbers(int initialPrice, int minUpsideOffer)
-    {
-      	if(initialPrice > 0 && initialPrice < 700000001 && minUpsideOffer > 49 && minUpsideOffer < 100001)
-      		return true;
-      	return false;
-    }
     
     private boolean checkDatetime(LocalDateTime deadline)
     {
     	// Checks if the datetime provided by the user is after the current one
-    	if(deadline.isAfter(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES)))
-    		return true;
-    	return false;
-    }
+		return deadline.isAfter(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
+	}
     
 	
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		int initial_price;
-		LocalDateTime expiring_date = LocalDateTime.now().minusYears(1);
+		LocalDateTime expiring_date;
 		int minimum_raise;
 		int creator;
-		// LISTA DEGLI ID degli articoli da aggiungere all'asta
+
 		List<Integer> articlesToAdd = new ArrayList<>();
 
-		
 		try {
 			expiring_date =  LocalDateTime.parse(request.getParameter("expiring_date")).truncatedTo(ChronoUnit.MINUTES);
+			if (checkDatetime(expiring_date)) {
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Incorrect datetime");
+				return;
+			}
 			minimum_raise = Integer.parseInt(request.getParameter("minimum_raise"));
+			if (minimum_raise < 0) {
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Incorrect minimum raise");
+				return;
+			}
 			creator = (((User) request.getSession().getAttribute("user")).getUser_id());
 
 			String [] stringheAppoggio = request.getParameterValues("articlesSelected" );
@@ -92,12 +85,11 @@ public class CreateAuction extends HttpServlet {
 				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "No articles selected to add to the auction");
 				return;
 			}
-			for ( int i = 0; i<stringheAppoggio.length; i++) {
-				articlesToAdd.add(Integer.parseInt(stringheAppoggio[i]));
+			for (String s : stringheAppoggio) {
+				articlesToAdd.add(Integer.parseInt(s));
 			}
 
 		} catch (NumberFormatException | NullPointerException e) {
-			// only for debugging e.printStackTrace();
 			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Incorrect param values");
 			return;
 		}
@@ -117,12 +109,6 @@ public class CreateAuction extends HttpServlet {
 		String path = getServletContext().getContextPath() + "/GoToSell";
 		response.sendRedirect(path);
 
-
-
-	}
-	
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// No needed
 	}
 	
 

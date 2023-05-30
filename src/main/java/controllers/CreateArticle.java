@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serial;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -24,6 +25,7 @@ import java.sql.SQLException;
 @WebServlet("/CreateArticle")
 @MultipartConfig
 public class CreateArticle extends HttpServlet {
+	@Serial
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
 	private TemplateEngine templateEngine;
@@ -44,18 +46,15 @@ public class CreateArticle extends HttpServlet {
     }
 
 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String name = null;
-		String description = null;
-		//Part image = null;
-		Integer article_creator = null;
-		Integer auction_id = null;
-		Integer price = null;
-		Part image = null;
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		String name;
+		String description;
+		Integer article_creator;
+		Integer price;
+		Part image;
 		try {
-			name = (String) request.getParameter("name");
-			description = (String) request.getParameter("description");
-			//image = request.getPart("image");
+			name = request.getParameter("name");
+			description = request.getParameter("description");
 			article_creator = (((User) request.getSession().getAttribute("user")).getUser_id());
 			price = Integer.parseInt(request.getParameter("price"));
 			image = request.getPart("image");
@@ -109,8 +108,8 @@ public class CreateArticle extends HttpServlet {
 
 	private InputStream checkImage(Part image) throws IOException {
 		if (image != null) {
-			InputStream imgStream = null;
-			String mimeType = null;
+			InputStream imgStream;
+			String mimeType;
 			imgStream = image.getInputStream();
 			String filename = image.getSubmittedFileName();
 			mimeType = getServletContext().getMimeType(filename);
