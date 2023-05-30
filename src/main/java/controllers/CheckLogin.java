@@ -58,16 +58,18 @@ public class CheckLogin extends HttpServlet {
 			pwd = request.getParameter("password");
 			                                                                                                       
 			if (usrn == null || pwd == null || usrn.isEmpty() || pwd.isEmpty()) {                                  
-				throw new Exception("Missing or empty credential value");                                          
-			}                                                                                                      
-		                                                                                                           
-		} catch (Exception e) {                                                                                    
-			e.printStackTrace();                                                             
-			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing credential value");                    
-			return;                                                                                                
-		}                                                                                                          
-		                                                                                                           
-		// query db to authenticate for user                                                                                                                                        
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing credential value. Username or password are null or empty");
+				return;
+			}
+			if (usrn.length() < 3 || usrn.length() > 20 || pwd.length() < 3 || pwd.length() > 20) {
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Username or password length is not valid");
+				return;
+			}
+		} catch (IOException e) {
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Wrong format for password and username");
+			return;
+		}
+
 		User user;
 		try {                                                                                                      
 			user = userDao.checkCredentials(usrn, pwd);                                                            

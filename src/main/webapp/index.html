@@ -7,24 +7,22 @@
 <link rel="stylesheet" type="text/css" href="css/index.css" th:href="@{/css/index.css}">
 </head>
 <body>
-	<div class="col lft-col"></div>
 	<div class="col mid-col form lgn-form">
-		<h2>Accedi</h2>
+		<h2>Login</h2>
 		<form action="CheckLogin" method="post">
 			<div>
-				<label for="username">Nome Utente:</label> <input type="text"
-					id="username" name="username" required>
+				<label for="username">Username:</label> <input type="text"
+					id="username" name="username" min="3" max="20" required>
 			</div>
 			<div>
 				<label for="password">Password:</label> <input type="password"
-					id="password" name="password" required>
+					id="password" name="password" min="3" max="20" required>
 			</div>
 			<div th:if="${errorMsg}" class="error-message">
 				<span th:text="${errorMsg}"></span>
 			</div>
-			<button type="submit">Accedi</button>
+			<button type="submit">Login</button>
 		</form>
 	</div>
-	<div class="col rgt-col"></div>
 </body>
 </html>

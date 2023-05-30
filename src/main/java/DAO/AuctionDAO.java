@@ -202,6 +202,34 @@ public class AuctionDAO {
 			} catch (Exception e1) {}
 		}
 	}
+
+	public boolean checkUserId(int auction_id, int user_id) throws SQLException {
+		int outcome = -1;
+		try {
+			pstatement = connection.prepareStatement("SELECT auction_id, creator FROM auction WHERE auction_id = ?");
+			pstatement.setInt(1, auction_id);
+			result = pstatement.executeQuery();
+			if(result.next()) {
+				if(result.getInt("creator") == user_id)
+					return true;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new SQLException(e);
+		}  finally {
+			try {
+				result.close();
+			} catch (Exception e1) {
+				throw new SQLException(e1);
+			}
+			try {
+				pstatement.close();
+			} catch (Exception e2) {
+				throw new SQLException(e2);
+			}
+		}
+		return false;
+	}
 	
 	private Auction resultToAuction(ResultSet result) throws SQLException{
 		Auction auction = new Auction();

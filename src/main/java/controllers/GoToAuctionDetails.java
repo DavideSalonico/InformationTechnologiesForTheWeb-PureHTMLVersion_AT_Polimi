@@ -27,22 +27,17 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
-// QUANDO CLICCO SU UNA DELLE ASTE TROVATE NELLA LISTA ALLORA TROVO QUESTA PAGINA
-
 @WebServlet("/GoToAuctionDetails")
 public class GoToAuctionDetails extends HttpServlet {
 	@Serial
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
 	private TemplateEngine templateEngine;
+
 	private OfferDAO offerDAO;
 	private AuctionDAO auctionDAO;
 	private ArticleDAO articleDAO;
 	private UserDAO userDAO;
-	
-	public GoToAuctionDetails() {
-		super();
-	}
 	
 	public void init() throws ServletException {
 		ServletContext servletContext = getServletContext();
@@ -55,69 +50,57 @@ public class GoToAuctionDetails extends HttpServlet {
 		articleDAO = new ArticleDAO(connection);
 		userDAO = new UserDAO(connection);
 	}
-	
-	
-	
-	// TODO : OGNI DOGET DEVE ESSERE CHIAMATA PER OGNI ASTA DI NOSTRO INTERESSE, oppure generalizza modificando questo codice
-	
+
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String page = null;
-		Integer auctionId = null;
+		String page;
+		int auctionId;
 	
-		// Page is a parameter that allows to distinguish between the auctionDetails.html and offer.html pages
+		// page is a parameter that allows to distinguish between the auctionDetails.html and offer.html pages
 		try{
 			page = request.getParameter("page");
+			if(page == null || (!page.equals("auctionDetails.html") && !page.equals("offer.html"))){
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Page parameter not valid: " + page);
+				return;
+			}
 			auctionId = Integer.parseInt(request.getParameter("auctionId"));
 		} catch(NumberFormatException e){
-			response.sendError(400, "Try-catch fallito" + e.getMessage());
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "auctionId must be an integer value");
+			return;
 		}
-		if(page != null && (page.equals("auctionDetails.html") || page.equals("offer.html"))){
-			try {
-				setupPage(request, response, page, auctionId);
-			} catch (SQLException e) {
-				response.sendError(400, "Page parameter not valid: " + page);
-			}
+
+		try {
+			setupPage(request, response, page, auctionId);
+		} catch (SQLException e) {
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error accessing the database");
 		}
 	}
 	
 	private void setupPage(HttpServletRequest request, HttpServletResponse response, String page, Integer auctionId) throws IOException, SQLException {
-		// get and check params
 		Auction auction;
 		List <Article> articles;
 		Offer maxAuctionOffer;
 		List<Offer> auctionOffers;
-		Map<Integer, String> imageMap = new HashMap<Integer, String>();
-		
-		//This HashMap contains all the offers with their creationTimes, formatted properly
+		Map<Integer, String> imageMap = new HashMap<>();
+
 		LinkedHashMap<Offer, String> frmtAuctionOffers = null;
 		LinkedHashMap<Integer, String> users = new LinkedHashMap<>();
     	String frmtDeadline;
     	// Used to check if the auction is expired
     	LocalDateTime currLdt = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
-    	boolean isExpired = false;
+    	boolean isExpired;
 		
     	// This is the user who has won the auction, if it has been closed already
     	User awardedUser = null;
-    	
-    	
-		try {
-			auctionId = Integer.parseInt(request.getParameter("auctionId"));   // AGGIUNGERE PARAMETRO ALLA URL
-		} catch (NumberFormatException | NullPointerException e) {
-			response.sendError(400, "Errore, l' id deve essere un numero intero!" );
-    		return;
-		}
 		
 		try {
 			auction = auctionDAO.getAuction(auctionId);
 			if (auction == null) {
-				response.sendError(HttpServletResponse.SC_NOT_FOUND, "Auction not found");
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "auctionId is not valid");
 				return;
 			}
-			
 		} catch (SQLException e) {
-			e.printStackTrace();
-			response.sendError(500, "Errore, accesso al database fallito!"+ e.getMessage());
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Unable to access the database");
 			return;
 		}
 		
@@ -125,34 +108,26 @@ public class GoToAuctionDetails extends HttpServlet {
 			articles = articleDAO.getAuctionArticles(auctionId);
 			auctionOffers = offerDAO.getOffers(auctionId);
 			maxAuctionOffer = offerDAO.getWinningOffer(auctionId);
-			
-			if(maxAuctionOffer != null)
-			{
+
+			if(maxAuctionOffer != null){
 				// Since there is a maximum offer that belongs to the user, the user surely exists
 				awardedUser = userDAO.getUser(maxAuctionOffer.getUser());
-				
-				if(awardedUser != null)
-				{
+				if(awardedUser != null){
 					// Removes the password from the object for security purposes
-					awardedUser.setPassword("");							
+					awardedUser.setPassword("");
 				}
-
-
 			}
 			
 		}catch(SQLException e) {
-			e.printStackTrace();
-			response.sendError(500, "Errore, quando cerco le offerte!");
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error accessing the database!");
 			return;
 		}
 		
 		// Proceeds only if there is at least 1 offer for the auction
-		if(auctionOffers != null)
-		{	// Initializes the HashMap
+		if(auctionOffers != null && !auctionOffers.isEmpty()){
 			frmtAuctionOffers = new LinkedHashMap<>();
 			// Iterates over the list of offers and formats the datetime properly
-    		for(Offer offer : auctionOffers)
-    		{
+    		for(Offer offer : auctionOffers){
     			String frmtOfferTime = offer.getTime().format(DateTimeFormatter.ofPattern("dd MMM yyyy 'alle' HH:mm"));
     			// Adds both the offer and it's formatted datetime
     			frmtAuctionOffers.put(offer, frmtOfferTime);
@@ -163,8 +138,7 @@ public class GoToAuctionDetails extends HttpServlet {
     		}
 		}
 
-		for(Article article : articles)
-		{
+		for(Article article : articles){
 			// Adds the image to the map
 			imageMap.put(article.getArticle_id(), Base64.getEncoder().encodeToString(article.getImage().getBytes(1, (int) article.getImage().length())));
 		}
@@ -178,11 +152,9 @@ public class GoToAuctionDetails extends HttpServlet {
 		String path = "/WEB-INF/" + page;
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-		// PASSO VALORI ALLA PAGINA DI RITORNO 
-		// Creates and sets 7 variables to use inside the 2 template pages
 		ctx.setVariable("auctionId", auctionId);
 		ctx.setVariable("auction", auction);
-		ctx.setVariable("article", articles);  // OCCHIO CHE qua è settato senza S, è una lista però
+		ctx.setVariable("article", articles);
 		ctx.setVariable("frmtDeadline", frmtDeadline);
 		ctx.setVariable("isExpired", isExpired);
 		ctx.setVariable("offers", frmtAuctionOffers);
@@ -190,14 +162,7 @@ public class GoToAuctionDetails extends HttpServlet {
 		ctx.setVariable("maxAuctionOffer", maxAuctionOffer);
 		ctx.setVariable("awardedUser", awardedUser);
 		ctx.setVariable("imageMap", imageMap);
-		// This actually processes the template page
-		// QUESTO TRY and CATCH è messo solo per debuggare
-		try {
-			templateEngine.process(path, ctx, response.getWriter());
-		}catch(Exception e) {
-			response.sendError(500,e.getMessage());
-		}
-		
+		templateEngine.process(path, ctx, response.getWriter());
     }
 	
 	public void destroy() {

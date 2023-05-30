@@ -39,17 +39,11 @@ public class GoToPurchase extends HttpServlet {
 	ArticleDAO articleDAO;
 	OfferDAO offerDAO;
 
-    public GoToPurchase() {
-        super();
-    }
-
 	public void init() throws ServletException {
-
 		ServletContext servletContext = getServletContext();
 		templateEngine = utils.EngineHandler.setEngine(servletContext);
 		connection = ConnectionHandler.getConnection(getServletContext());
 
-		// Here the AuctionDAO is initialized, try catch statement don't needed, ConnectionHandler manage already the connection
 		auctionDAO = new AuctionDAO(connection);
 		articleDAO = new ArticleDAO(connection);
 		offerDAO = new OfferDAO(connection);
@@ -70,33 +64,37 @@ public class GoToPurchase extends HttpServlet {
 		List<Auction> filteredAuctions = null;
 		Map<Integer, List<Article>> map = new HashMap<>();
 		HashMap<Integer, DiffTime> remainingTimes = new HashMap<Integer, DiffTime>();
-
-		user = (User) request.getSession().getAttribute("user");
-		String key = request.getParameter("key");
-		LocalDateTime logLdt = ((LocalDateTime) request.getSession(false).getAttribute("creationTime")).truncatedTo(ChronoUnit.MINUTES);
+		LocalDateTime logLdt = null;
 		LocalDateTime currLdt = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
+
+		try{
+			user = (User) request.getSession().getAttribute("user");
+			logLdt = ((LocalDateTime) request.getSession(false).getAttribute("creationTime")).truncatedTo(ChronoUnit.MINUTES);
+		} catch (NullPointerException e){
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Errore, user not logged in correctly!");
+			return;
+		}
 
 		try{
 			winningOffers = offerDAO.getWinningOfferByUser(user.getUser_id());
 			for(Integer auction : winningOffers.keySet()){
 				awardedAuctions.put(auction, articleDAO.getAuctionArticles(auction));
-				/// IN TEORIA QUA NON SERVE map.put(auction, articleDAO.getAuctionArticles(auction));
 			}
 		} catch (SQLException e) {
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not possible to recover the winning offers");
 			return;
 		}
 
+		String key = request.getParameter("key");
 		if (key != null){
 			if(!validateKey(key)){
-				response.sendError(400, "Errore, chiave di ricerca non valida!");
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Not valid key!, key must contain only letters and be longer than 2 characters, but less than 63");
 				return;
 			}
 			try {
 				filteredAuctions = auctionDAO.search(key, logLdt);
 			} catch (SQLException e) {
-				e.printStackTrace();
-				response.sendError(500, "Errore, accesso al database fallito!" + e.getMessage());
+				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error accessing the database!");
 				return;
 			}
 		}
@@ -107,14 +105,12 @@ public class GoToPurchase extends HttpServlet {
 					map.put(auction.getAuction_id(), articleDAO.getAuctionArticles(auction.getAuction_id()));
 					remainingTimes.put(auction.getAuction_id(), DiffTime.getRemainingTime(currLdt, auction.getExpiring_date()));
 				} catch (SQLException e) {
-					e.printStackTrace();
-					response.sendError(500, "Errore, accesso al database fallito!" + e.getMessage());
+					response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error accessing the database!");
 					return;
 				}
 			}
 		}
 
-		// If the user is logged in (present in session) redirect to the home page
 		String path = "/WEB-INF/purchase.html";
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
@@ -124,19 +120,12 @@ public class GoToPurchase extends HttpServlet {
 		ctx.setVariable("winningOffers", winningOffers);
 		ctx.setVariable("map", map);
 		ctx.setVariable("remainingTimes", remainingTimes);
-		try{
-			templateEngine.process(path, ctx, response.getWriter());
-		} catch (Exception e){
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not possible to recover the page" + e.getMessage());
-		}
-		//aggiunto commento a caso per fare un commit
-
-
+		templateEngine.process(path, ctx, response.getWriter());
 	}
 
 	private boolean validateKey(String key){
-    	// Checks if the key contains only letters and is longer than 2 characters, but less than 21
-		return key.matches("[a-zA-Z]+") && key.length() > 2 && key.length() < 21;
+    	// Checks if the key contains only letters and is longer than 2 characters, but less than 63
+		return key.matches("[a-zA-Z]+") && key.length() > 2 && key.length() < 63;
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
