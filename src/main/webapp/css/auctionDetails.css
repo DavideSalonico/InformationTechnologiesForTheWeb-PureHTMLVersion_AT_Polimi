@@ -25,7 +25,7 @@ td {
 }
 
 
-a.button-link {
+.button-link {
 	display: inline-block;
 	padding: 10px 20px;
 	text-decoration: none;
@@ -36,11 +36,11 @@ a.button-link {
 	cursor: pointer;
 }
 
-a.button-link:hover {
+.button-link:hover {
 	background-color: #45a049;
 }
 
-a.button-link:focus {
+.button-link:focus {
 	outline: none;
 }
 

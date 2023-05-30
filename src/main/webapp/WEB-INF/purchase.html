@@ -63,7 +63,7 @@
             <h2 id="awarded-art">Won Offers</h2>
             <section class="scrollable scrll-table" th:if="${winningOffers} != null and not ${winningOffers.isEmpty()}">
                 <div th:each="auction : ${winningOffers.keySet()}">
-                    <h3 th:text="'Maximum Offer: '+ ${winningOffers.get(auction).getOffer_id()}" >Offerta massima</h3>
+                    <h3 th:text="'Maximum Offered for this auction &#x20AC; : '+ ${winningOffers.get(auction).getPrice()}" >Offerta massima </h3>
                     <table>
                         <thead>
                         <tr>

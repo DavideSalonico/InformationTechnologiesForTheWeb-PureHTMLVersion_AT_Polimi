@@ -84,7 +84,7 @@
 						<td class="table-cell" th:text="${item.name}">Nome 1</td>
 						<td class="table-cell" th:text="${item.article_id}">Cod. 1</td>
 						<td>
-							<a href="#" th:href="${'data:image/jpeg;base64,' + imageMap.get(item.article_id)}">
+							<a>
 								<img th:src="${'data:image/jpeg;base64,' + imageMap.get(item.article_id)}" alt="Article picture"/>
 							</a>
 						</td>
