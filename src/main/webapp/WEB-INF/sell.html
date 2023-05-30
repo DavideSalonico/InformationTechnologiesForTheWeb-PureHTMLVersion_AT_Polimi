@@ -34,7 +34,7 @@
         </div>
 
         <div class="row second-row auc-list">
-            <h2 id="closed-auc">Aste Chiuse</h2>
+            <h2 id="closed-auc">Closed Auctions</h2>
             <p th:if="${userClosedAuctions.isEmpty()}">There aren't any closed auctions!</p>
 
             <!-- I call the method showAuction() inside the fragments.html page that will show me all the closed auctions because I pass it userClosedAuctions,
@@ -77,7 +77,7 @@
 
                 <!-- Necessary to keep hidden parameters that keep track of all the selected articles, so as not to make them available again in the selection -->
                 <input type="hidden"  th:each="article : ${articlesSelected}" th:value="${article.article_id}" name="alreadySelected">
-                <div style="display: flex;"> <!-- Flexbox per allineare i due div per aggiungere articoli -->
+                <div style="display: flex;"> <!-- Flexbox per allign the two divs to insert articles -->
                     <div style="flex: 1;">
                         <div th:if="${not articles.isEmpty()}">
                             <label for="articleSelected">Article</label>

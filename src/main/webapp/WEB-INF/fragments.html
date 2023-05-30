@@ -39,7 +39,7 @@
 						<tbody>
 						<!-- Itera sulla lista di articoli associati all'asta corrente -->
 						<tr th:each="article : ${entry.value}">
-							<td class="table-cell" th:text="${article.name}">Nome 1</td>
+							<td class="table-cell" th:text="${article.name}">Name 1</td>
 							<td class="table-cell" th:text="${article.article_id}">Cod. 1</td>
 							<td class="table-cell" th:text="${#numbers.formatInteger(article.price, 1, 'POINT')}">1000 $</td>
 						</tr>
@@ -50,12 +50,12 @@
 					<p th:if="${maxOffers != null and maxOffers.containsKey(auction.auction_id)}">
 						<span th:text="${'Max Offered: ' + maxOffers.get(auction.auction_id).getPrice()}"></span> &euro;
 					</p>
-					<p th:unless="${maxOffers != null and maxOffers.containsKey(auction.auction_id)}">Max Offered : none </p>
+					<p th:unless="${maxOffers != null and maxOffers.containsKey(auction.auction_id)}">Max Offered : None </p>
 
 					<!-- Mostra il tempo rimanente -->
 					<p th:if="${open == 1}" th:with="currTimeLeft=${remainingTimes.get(auction.auction_id)}"
-					   th:text="${'Tempo rimanente: ' + currTimeLeft.days + ' days, ' + currTimeLeft.hours + ' hours e ' + currTimeLeft.minutes + ' minutes'}">
-						Tempo rimanente: x days, y hours e z minutes
+					   th:text="${'Tempo rimanente: ' + currTimeLeft.days + ' days, ' + currTimeLeft.hours + ' hours and ' + currTimeLeft.minutes + ' minutes'}">
+						Remaining time: x days, y hours and z minutes
 					</p>
 				</th:block>
 			</a>
@@ -139,7 +139,7 @@
 			<!--/* "details" is the parameter passed by offerta.html or dettagli.html
 			it is used to distinguish between the 2 pages */-->
 			<a class="button-link" href="#" th:if="${details == 1 and !isExpired }" th:href="@{CloseAuction(auctionId= ${auction.auction_id})}">
-				<button>Chiudi asta</button>
+				<button>Close auction</button>
 			</a>
 
 		</section>

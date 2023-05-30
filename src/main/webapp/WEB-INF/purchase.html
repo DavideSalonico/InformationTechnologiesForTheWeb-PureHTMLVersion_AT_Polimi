@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="it" dir="ltr" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" dir="ltr" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
     <title>Acquisto</title>
@@ -52,8 +52,8 @@
                             </tbody>
                         </table>
                         <p th:if="${!remainingTimes.isEmpty()}"  th:with=" x =${remainingTimes.get(entry.key)}"
-                           th:text="${'Tempo rimanente: ' + x.getDays() + ' days, ' + x.getHours() + ' hours e ' + x.getMinutes() + ' minutes'}">
-                            Tempo rimanente: x days, y hours e z minutes
+                           th:text="${'Tempo rimanente: ' + x.getDays() + ' days, ' + x.getHours() + ' hours and ' + x.getMinutes() + ' minutes'}">
+                            Remaining time: x days, x hours and x minutes
                         </p>
                     </a>
                 </div>

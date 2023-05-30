@@ -23,53 +23,46 @@ public class GoToOffer extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
 	private TemplateEngine templateEngine;
-	OfferDAO offerDAO;
-	
-	public GoToOffer() {
-		super();
-	}
+
+	private OfferDAO offerDAO;
 	
 	public void init() throws ServletException {
 		ServletContext servletContext = getServletContext();
 		templateEngine = utils.EngineHandler.setEngine(servletContext);
-		connection = ConnectionHandler.getConnection(getServletContext());;
-	
-		connection = ConnectionHandler.getConnection(getServletContext());
+		connection = ConnectionHandler.getConnection(servletContext);
 		
 		offerDAO = new OfferDAO(connection);
 	}
 	
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-	
-		// get and check params
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Integer offer_id = null;
+		Offer offer;
 		
 		try {
-			offer_id = Integer.parseInt(request.getParameter("offer_id"));    //AGGIUNGERE ALL'URL
+			offer_id = Integer.parseInt(request.getParameter("offer_id"));
 		} catch (NumberFormatException | NullPointerException e) {
-			// only for debugging e.printStackTrace();
-			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Incorrect param values");
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Incorrect offer_id value");
 			return;
 		}
-	
-		
-		Offer offer;
+		if(offer_id < 0) {
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Offer id must be positive");
+			return;
+		}
+
 		try {
 			offer = offerDAO.getOffer(offer_id);
 			if (offer == null) {
-				response.sendError(HttpServletResponse.SC_NOT_FOUND, "Offer not found");
+				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Offer not found in database");
 				return;
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
-			//response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not possible to recover mission");
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not possible to recover mission");
 			return;
 		}
 	
 		// Redirect to AuctionDetails 
-		String path = "/WEB-INF/offer.html";    //CAPIRE SE MODIFICARE DINAMICAMENTE
+		String path = "/WEB-INF/offer.html";
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 		ctx.setVariable("offer", offer);
