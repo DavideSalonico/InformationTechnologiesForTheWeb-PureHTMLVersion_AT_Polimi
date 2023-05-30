@@ -69,7 +69,7 @@ public class CreateAuction extends HttpServlet {
 
 		try {
 			expiring_date =  LocalDateTime.parse(request.getParameter("expiring_date")).truncatedTo(ChronoUnit.MINUTES);
-			if (checkDatetime(expiring_date)) {
+			if (!checkDatetime(expiring_date)) {
 				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Incorrect datetime");
 				return;
 			}
