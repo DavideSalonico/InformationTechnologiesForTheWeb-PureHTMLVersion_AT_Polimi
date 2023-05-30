@@ -78,7 +78,7 @@ public class GoToPurchase extends HttpServlet {
 			winningOffers = offerDAO.getWinningOfferByUser(user.getUser_id());
 			for(Integer auction : winningOffers.keySet()){
 				awardedAuctions.put(auction, articleDAO.getAuctionArticles(auction));
-				map.put(auction, articleDAO.getAuctionArticles(auction));
+				/// IN TEORIA QUA NON SERVE map.put(auction, articleDAO.getAuctionArticles(auction));
 			}
 		} catch (SQLException e) {
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not possible to recover the winning offers");
