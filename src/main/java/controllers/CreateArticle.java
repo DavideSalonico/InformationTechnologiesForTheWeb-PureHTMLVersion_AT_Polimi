@@ -2,10 +2,8 @@ package controllers;
 
 import DAO.ArticleDAO;
 import beans.User;
-import org.thymeleaf.TemplateEngine;
 import utils.ConnectionHandler;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
@@ -19,29 +17,17 @@ import java.io.Serial;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-/**
- * Servlet implementation class CreateArticle
- */
 @WebServlet("/CreateArticle")
 @MultipartConfig
 public class CreateArticle extends HttpServlet {
 	@Serial
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
-	private TemplateEngine templateEngine;
-	
 	private ArticleDAO articleDAO;
-    
-	
-    public CreateArticle() {
-        super();
-    }
 
     public void init() throws ServletException{
-		ServletContext servletContext = getServletContext();
-		templateEngine = utils.EngineHandler.setEngine(servletContext);
 		connection = ConnectionHandler.getConnection(getServletContext());
-		
+
 		articleDAO = new ArticleDAO(connection);
     }
 
@@ -49,8 +35,8 @@ public class CreateArticle extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		String name;
 		String description;
-		Integer article_creator;
-		Integer price;
+		int article_creator;
+		int price;
 		Part image;
 		try {
 			name = request.getParameter("name");
@@ -60,31 +46,50 @@ public class CreateArticle extends HttpServlet {
 			image = request.getPart("image");
 
 
-			if(name == null || name.isEmpty() ||
-				description == null || description.isEmpty() ||
-				article_creator == null || price == null) {
-				throw new Exception("Missing or empty credential value");
+			if(name == null || name.isEmpty()){
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing or empty name value");
+				return;
 			}
-		}
-		catch(Exception e){
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Unable to read parameters");
+			if(description == null || description.isEmpty()){
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing or empty description value");
+				return;
+			}
+			if(article_creator == 0){
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing article creator value");
+				return;
+			}
+			if(price == 0){
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing price value");
+				return;
+			}
+		} catch (NumberFormatException e) {
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Incorrect values");
+			return;
+		} catch (ServletException e) {
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Unable to get the image");
 			return;
 		}
 
-		if(name.length() > 255 || description.length() > 255 ) {
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Parameters too long");
+		if(name.length() < 4 || name.length() > 255 ) {
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Name must be between 4 and 255 characters");
 			return;
 		}
-		if(price <= 0) {
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Unable to read price");
+		if(description.length() < 10 || description.length() > 255){
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Description must be between 4 and 255 characters");
+			return;
+		}
+		if(price <= 0 || price > 1000000000){
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Price must be between 1 and 1000000000");
 			return;
 		}
 		if(article_creator <= 0) {
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Unable to read article creator");
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Unable to read article creator, must be a positive integer");
 			return;
 		}
 
-		InputStream imageStream = checkImage(image);
+		InputStream imageStream = checkImage(image, response);
+		if(imageStream == null)
+			return;
 
 		try {
 			articleDAO.insertArticle(name, description, price, article_creator, imageStream);
@@ -106,7 +111,7 @@ public class CreateArticle extends HttpServlet {
 		}
 	}
 
-	private InputStream checkImage(Part image) throws IOException {
+	private InputStream checkImage(Part image, HttpServletResponse response) throws IOException {
 		if (image != null) {
 			InputStream imgStream;
 			String mimeType;
@@ -119,6 +124,9 @@ public class CreateArticle extends HttpServlet {
 				// Checks if the uploaded file is an image and if it has been parsed correclty
 				if (imgStream != null && imgStream.available() > 0 && mimeType.startsWith("image/"))
 					return imgStream;
+		} else{
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Wrong image format");
+			return null;
 		}
 		return null;
 	}

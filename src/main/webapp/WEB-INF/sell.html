@@ -1,53 +1,53 @@
 <!DOCTYPE html>
-<html lang="it" dir="ltr" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" dir="ltr" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-    <title>Vendita</title>
+    <title>Sell</title>
     <link rel="icon" th:href="@{/img/icon.png}">
-    <!-- 3 css, uno per lo stile generico delle pagine, il secondo solo per l'immagine di sfondo, il terzo per i dettagli relativi alle tabelle-->
+    <!-- 3 css, first for generic page style, the second for backgroung image only, the third to table related details-->
     <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}">
     <link rel="stylesheet" type="text/css" th:href="@{/css/sell.css}">
     <link rel="stylesheet" type="text/css" th:href="@{/css/auctionOffer.css}">
 </head>
 <body>
-    <p th:remove="all">Questa è una pagina dinamica, viene generata a runtime, non è previsto un accesso diretto!</p>
+    <p th:remove="all">This is a dynamic page, it is generated during runtime, no direct access is expected!</p>
     <div class="col lft-col">
         <div class="quick-nav">
-            <h3>Navigazione Rapida</h3>
+            <h3>Rapid Navigation</h3>
             <ul>
                 <!-- gli href rendono rapida la navigazione all'interno della pagina portando il client direttamente alle zone interessate -->
-                <li><a href="#open-auc">Aste Aperte</a></li>
-                <li><a href="#closed-auc">Aste Chiuse</a></li>
-                <li><a href="#create-auc">Crea Asta</a></li>
+                <li><a href="#open-auc">Open Auctions</a></li>
+                <li><a href="#closed-auc">Closed Auctions</a></li>
+                <li><a href="#create-auc">Create Auction</a></li>
             </ul>
         </div>
     </div>
     <div class="col mid-col">
 
         <div class="row first-row auc-list">
-            <h2 id="open-auc">Aste Aperte</h2>
-            <p th:if="${userOpenAuctions.isEmpty()}">No open auction open found, Create some new Auctions! </p>
+            <h2 id="open-auc">Open Auctions</h2>
+            <p th:if="${userOpenAuctions.isEmpty()}">No open auction open found, create some new Auctions! </p>
 
-            <!-- Chiamo il metodo showAuction() all'interno della pagina fragments.html che mi mostrerà tutte le aste aperte perchè gli passo userOpenAuctions,
-             mentre l' 1 è il parametro che servirà al metodo per capire se siamo nelle aste aperte o chiuse-->
+            <!--I call the method showAuction() inside the fragments.html page that will show me all the open auctions because I pass it userOpenAuctions,
+            while the 1 is the parameter that will be used by the method to understand if we are in the open or closed auctions-->
             <section th:replace="~{WEB-INF/fragments.html :: showAuctions (${userOpenAuctions}, 1)}"></section>
         </div>
 
         <div class="row second-row auc-list">
             <h2 id="closed-auc">Aste Chiuse</h2>
-            <p th:if="${userClosedAuctions.isEmpty()}">There aren't any closed AUCTIONS !</p>
+            <p th:if="${userClosedAuctions.isEmpty()}">There aren't any closed auctions!</p>
 
-            <!-- Chiamo il metodo showAuction() all'interno della pagina fragments.html che mi mostrerà tutte le aste chiuse perchè gli passo userClosedAuctions,
-            mentre lo 0 è il parametro che servirà al metodo per capire se siamo nelle aste aperte o chiuse-->
+            <!-- I call the method showAuction() inside the fragments.html page that will show me all the closed auctions because I pass it userClosedAuctions,
+            while the 0 is the parameter that will be used by the method to understand if we are in the open or closed auctions-->
             <section th:replace="~{WEB-INF/fragments.html :: showAuctions (${userClosedAuctions}, 0)}"></section>
         </div>
 
         <div class="row third-row form">
             <h2 id="create-art">CREATE A NEW ARTICLE</h2>
-            <!-- Form che permette l'inserimento di nuovi articoli, chiama la servlet /CreateArticle che renderizzerà nuovamente questa pagina con l'articolo aggiunto -->
+            <!-- Form that allows the insertion of new articles, it calls the servlet /CreateArticle that will render this page again with the added article -->
             <form th:method="post" th:action="@{/CreateArticle}" enctype="multipart/form-data">
 
-                <!-- La servlet riceverà i parametri mandati dal form nella sua doPost(), la quale accederà ad essi tramite gli identificatori "name" -->
+                <!-- The servlet will receive the parameters sent by the form in its doPost (), which will access them through the "name" identifiers -->
                 <div>
                     <label for="name">Article's Name:</label>
                     <input type="text" name="name" id="name" min="4" max="50" required>
