@@ -50,20 +50,20 @@
                 <!-- The servlet will receive the parameters sent by the form in its doPost (), which will access them through the "name" identifiers -->
                 <div>
                     <label for="name">Article's Name:</label>
-                    <input type="text" name="name" id="name" min="4" max="50" required>
+                    <input type="text" name="name" id="name" min="4" max="255" required>
                 </div>
                 <div>
                     <label for="description">Description:</label>
-                    <textarea name="description" id="description" rows="4" cols="50" minlength="20" maxlength="3000" placeholder=" ..." spellcheck="false" required></textarea>
+                    <textarea name="description" id="description" rows="4" cols="50" minlength="10" maxlength="255" placeholder=" ..." spellcheck="false" required></textarea>
                 </div>
                 <div>
                     <label for="price">Price:</label>
-                    <input type="number" name="price" id="price" min="1" step="1" max="700000000" required>
+                    <input type="number" name="price" id="price" min="1" step="1" max="1000000000" required>
                     <span> &euro;</span>
                 </div>
                 <div>
                     <label for="image">Select an image:</label>
-                    <input type="file" accept="image/png, image/gif, image/jpeg" name="image" id="image"  required>
+                    <input type="file" accept="image/*" name="image" id="image"  required>
                 </div>
                 <button name="article-submit" type="submit">Create Article</button>
             </form>
@@ -72,29 +72,28 @@
         <div class="row fourth-row form">
             <h2 id="create-auc">CREATE A NEW AUCTION</h2>
 
-            <!-- Form che scatena la doGet() nella servlet /GoToSell, servirà a ri-renderizzare la pagina con le aggiunte degli articoli selezionati  -->
+            <!-- Form that triggers the doGet () in the servlet / GoToSell, it will be used to re-render the page with the additions of the selected articles -->
             <form th:method="GET" th:action="@{/GoToSell}">
 
-                <!-- Necessità di mantenere dei parametri nascosti che tengano traccia di tutti gli articoli selezionati, per non renderli più disponibili nella selezione  -->
-                <input type="hidden"  th:each="article : ${articlesSelected}" th:value="${article.article_id}" name="alreadySelected"></input>
+                <!-- Necessary to keep hidden parameters that keep track of all the selected articles, so as not to make them available again in the selection -->
+                <input type="hidden"  th:each="article : ${articlesSelected}" th:value="${article.article_id}" name="alreadySelected">
                 <div style="display: flex;"> <!-- Flexbox per allineare i due div per aggiungere articoli -->
                     <div style="flex: 1;">
                         <div th:if="${not articles.isEmpty()}">
                             <label for="articleSelected">Article</label>
                             <select name="articleSelected" id="articleSelected" >
-                                <!-- Mostra tutti gli articoli creati dal client non ancora assegnati ad alcuna asta -->
+                                <!-- Shows all the articles created by the client not yet assigned to any auction -->
                                 <option th:each="article : ${articles}" th:value="${article.article_id}" th:text="${article.name}"></option>
                             </select><br/>
-
-                            <button type="submit">Aggiungi all'Asta</button>
+                            <button type="submit">Add to auction</button>
                         </div>
                         <div th:unless="${not articles.isEmpty()}">
-                            <!-- Versione statica della pagina -->
+                            <!-- Static version of the page -->
                             <p>First of all, create some new ARTICLES !</p>
                         </div>
                     </div>
 
-                    <!-- Riquadro che mostra al client quali articoli stia aggiungendo all'asta in fase di creazione -->
+                    <!-- Box that shows the client which articles he is adding to the auction during creation -->
                     <div style="flex: 1;" th:if="${!articlesSelected.isEmpty()} ">
                         <h2>List of Articles selected :</h2>
                         <table>
@@ -103,7 +102,6 @@
                                     <th>NAME</th>
                                     <th>CODE</th>
                                     <th>PRICE</th>
-
                                 </tr>
                             </thead>
                             <tbody>
@@ -121,11 +119,11 @@
                 </div>
             </form>
 
-            <!-- Form che scatena la doPost() della servlet CreateAuction, prende in input tutti gli attributi di un'asta e la crea -->
+            <!-- Form that triggers the doPost () of the CreateAuction servlet, takes as input all the attributes of an auction and creates it -->
             <form action="#" th:action="@{/CreateAuction}" method="post" enctype="multipart/form-data">
                 <div>
                     <label for="minimum_raise"> Minimum Raise:</label>
-                    <input type="number" name="minimum_raise" id="minimum_raise" min="5" step="1" max="100000" required>
+                    <input type="number" name="minimum_raise" id="minimum_raise" min="1" step="1" max="1000000" required>
                     <span> &euro;</span>
                 </div>
                 <div>
@@ -133,9 +131,9 @@
                     <input type="datetime-local" name="expiring_date" id="expiring_date" th:min="${ldt}" placeholder="yyyy-MM-ddTHH:mm" th:value="${ldt}" required>
                 </div>
 
-                <!-- Necessità di mantenere dei parametri nascosti che tengano traccia di tutti gli articoli selezionati per poterli aggiungere all'asta da creare  -->
-                <input type="hidden"  th:each="article : ${articlesSelected}" th:value="${article.article_id}" name="articlesSelected" ></input>
-                <button type="submit">Crea Asta</button>
+                <!-- Necessary to keep hidden parameters that keep track of all the selected articles, so as not to make them available again in the selection -->
+                <input type="hidden"  th:each="article : ${articlesSelected}" th:value="${article.article_id}" name="articlesSelected" >
+                <button type="submit">Create Auction</button>
             </form>
         </div>
     </div>

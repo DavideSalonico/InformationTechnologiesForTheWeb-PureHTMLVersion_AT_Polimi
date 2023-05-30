@@ -36,10 +36,6 @@ public class GoToSell extends HttpServlet {
 	private AuctionDAO auctionDAO;
 	private ArticleDAO articleDAO;
 	private OfferDAO offerDAO;
-    
-    public GoToSell() {
-        super();
-    }
 
 	public void init() throws ServletException {
 		ServletContext servletContext = getServletContext();
@@ -60,7 +56,6 @@ public class GoToSell extends HttpServlet {
 		}
 	}
 
-	// Filter already check if the user is logged
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		setupPage(request, response);
 	}
@@ -68,15 +63,13 @@ public class GoToSell extends HttpServlet {
 	private void setupPage(HttpServletRequest request, HttpServletResponse response) throws IOException
     {
 		User user = (User) request.getSession().getAttribute("user");
-		
-		// Variabili di appoggio 
+
 		List<Auction> openAuctions;
 		List<Auction> closedAuctions;
 		List<Article> articles;
 
 		Offer maxOffer;
-		
-		// The final result
+
 		Map<Auction,List<Article>> userOpenAuctions = new HashMap<>();
     	Map<Auction, List<Article>> userClosedAuctions = new LinkedHashMap<>();
     	HashMap<Integer, DiffTime> remainingTimes = new HashMap<>();
@@ -88,17 +81,16 @@ public class GoToSell extends HttpServlet {
 		try {
 			if(request.getParameterValues("alreadySelected") != null){
 				String [] selectedArticles = request.getParameterValues("alreadySelected");
-				for(String stringa : selectedArticles) {
-					Article temp = articleDAO.getArticle(Integer.parseInt(stringa));
+				for(String string : selectedArticles) {
+					Article temp = articleDAO.getArticle(Integer.parseInt(string));
 					articlesSelected.add(temp);
 				}
 			}
 			if(request.getParameter("articleSelected") != null) {
-				Integer selectedArticleId = Integer.parseInt(request.getParameter("articleSelected"));
+				int selectedArticleId = Integer.parseInt(request.getParameter("articleSelected"));
 				chosenArticle = articleDAO.getArticle(selectedArticleId);
 				articlesSelected.add(chosenArticle);
 			}
-			//CONTROLLA SE SONO IN ORDINE CRESCENTE DI DATA+ORA
 			openAuctions = auctionDAO.getOpenAuctions(user.getUser_id());
 			closedAuctions = auctionDAO.getClosedAuctions(user.getUser_id());
 			
@@ -155,8 +147,7 @@ public class GoToSell extends HttpServlet {
 			}
 
 		}catch(SQLException e){
-			e.printStackTrace();
-			response.sendError(500, e.getMessage());
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not possible to recover articles in database");
 			return;
 		}
 
@@ -167,7 +158,6 @@ public class GoToSell extends HttpServlet {
 		String path = "/WEB-INF/sell.html";
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-		// PASSO VALORI ALLA PAGINA DI RITORNO 
 		ctx.setVariable("userOpenAuctions", userOpenAuctions);
 		ctx.setVariable("userClosedAuctions", userClosedAuctions);
 		ctx.setVariable("remainingTimes", remainingTimes);
@@ -175,16 +165,6 @@ public class GoToSell extends HttpServlet {
 		ctx.setVariable("ldt", ldt);
 		ctx.setVariable("articles", articles);
 		ctx.setVariable("articlesSelected", articlesSelected);
-		
-		// QUESTO TRY and CATCH è messo solo per debuggare
-		try {
-			templateEngine.process(path, ctx, response.getWriter());
-		}catch(Exception e) {
-			response.sendError(500,e.getMessage());
-		}
+		templateEngine.process(path, ctx, response.getWriter());
     }
-
-	//DEFAULT
-
-
 }

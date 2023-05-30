@@ -31,10 +31,6 @@ public class CreateAuction extends HttpServlet {
 	private Connection connection = null;
 	private ArticleDAO articleDAO;
 	private AuctionDAO auctionDAO;
-       
-    public CreateAuction() {
-        super();
-    }
 
 	public void init() throws ServletException {
 		connection = ConnectionHandler.getConnection(getServletContext());
@@ -48,6 +44,7 @@ public class CreateAuction extends HttpServlet {
 			ConnectionHandler.closeConnection(connection);
 		} catch (SQLException e) {
 			e.printStackTrace();
+			//TODO: show error page, not just stacktrace
 		}
 	}
 
@@ -74,8 +71,8 @@ public class CreateAuction extends HttpServlet {
 				return;
 			}
 			minimum_raise = Integer.parseInt(request.getParameter("minimum_raise"));
-			if (minimum_raise < 0) {
-				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Incorrect minimum raise");
+			if (minimum_raise < 1 || minimum_raise > 1000000) {
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Minumum raise must be between 1 and 1000000");
 				return;
 			}
 			creator = (((User) request.getSession().getAttribute("user")).getUser_id());
@@ -89,8 +86,8 @@ public class CreateAuction extends HttpServlet {
 				articlesToAdd.add(Integer.parseInt(s));
 			}
 
-		} catch (NumberFormatException | NullPointerException e) {
-			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Incorrect param values");
+		} catch (NumberFormatException e) {
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Incorrect input");
 			return;
 		}
 
@@ -103,7 +100,8 @@ public class CreateAuction extends HttpServlet {
 			initial_price = articleDAO.getAuctionInitialPrice(auction_id);
 			auctionDAO.setInitialPrice(auction_id, initial_price);
 		} catch (SQLException e) {
-			e.printStackTrace();
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not possible to create auction. Error in database");
+			return;
 		}
 
 		String path = getServletContext().getContextPath() + "/GoToSell";
