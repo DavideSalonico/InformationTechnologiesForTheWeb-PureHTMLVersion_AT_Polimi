@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.Serial;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -29,7 +30,9 @@ import java.util.*;
 // QUANDO CLICCO SU UNA DELLE ASTE TROVATE NELLA LISTA ALLORA TROVO QUESTA PAGINA
 
 @WebServlet("/GoToAuctionDetails")
-public class GoToAuctionDetails extends HttpServlet {private static final long serialVersionUID = 1L;
+public class GoToAuctionDetails extends HttpServlet {
+	@Serial
+	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
 	private TemplateEngine templateEngine;
 	private OfferDAO offerDAO;
@@ -69,7 +72,7 @@ public class GoToAuctionDetails extends HttpServlet {private static final long s
 		} catch(NumberFormatException e){
 			response.sendError(400, "Try-catch fallito" + e.getMessage());
 		}
-		if((page.equals("auctionDetails.html") || page.equals("offer.html"))){
+		if(page != null && (page.equals("auctionDetails.html") || page.equals("offer.html"))){
 			try {
 				setupPage(request, response, page, auctionId);
 			} catch (SQLException e) {
@@ -78,7 +81,7 @@ public class GoToAuctionDetails extends HttpServlet {private static final long s
 		}
 	}
 	
-	private void setupPage(HttpServletRequest request, HttpServletResponse response, String page, Integer auctionId) throws ServletException, IOException, SQLException {
+	private void setupPage(HttpServletRequest request, HttpServletResponse response, String page, Integer auctionId) throws IOException, SQLException {
 		// get and check params
 		Auction auction;
 		List <Article> articles;
@@ -89,7 +92,7 @@ public class GoToAuctionDetails extends HttpServlet {private static final long s
 		//This HashMap contains all the offers with their creationTimes, formatted properly
 		LinkedHashMap<Offer, String> frmtAuctionOffers = null;
 		LinkedHashMap<Integer, String> users = new LinkedHashMap<>();
-    	String frmtDeadline = null;
+    	String frmtDeadline;
     	// Used to check if the auction is expired
     	LocalDateTime currLdt = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
     	boolean isExpired = false;

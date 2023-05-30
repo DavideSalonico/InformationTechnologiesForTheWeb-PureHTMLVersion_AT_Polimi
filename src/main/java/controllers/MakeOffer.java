@@ -5,16 +5,15 @@ import DAO.OfferDAO;
 import beans.Auction;
 import beans.Offer;
 import beans.User;
-import org.thymeleaf.TemplateEngine;
 import utils.ConnectionHandler;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.Serial;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -25,15 +24,13 @@ import java.time.temporal.ChronoUnit;
  */
 @WebServlet("/MakeOffer")
 public class MakeOffer extends HttpServlet {
+	@Serial
 	private static final long serialVersionUID = 1L;
 	private Connection connection;
-	private TemplateEngine templateEngine;
 	private OfferDAO offerDAO;
 	private AuctionDAO auctionDAO;
 
 	public void init() throws ServletException {
-		ServletContext servletContext = getServletContext();
-		templateEngine = utils.EngineHandler.setEngine(servletContext);
 		connection = ConnectionHandler.getConnection(getServletContext());
 		offerDAO = new OfferDAO(connection);
 		auctionDAO = new AuctionDAO(connection);
@@ -49,7 +46,7 @@ public class MakeOffer extends HttpServlet {
 	}
 
 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		// Page is a parameter that allows to distinguish between the dettagli.html and offerta.html pages
 		if(request.getParameter("auctionId") != null )
 		{
@@ -80,22 +77,18 @@ public class MakeOffer extends HttpServlet {
 			min = auction.getInitial_price();
 
 		// The offer's value is correct if it stays in between
-		if(min <= offerValue && offerValue <= max)
-			return true;
-		return false;
+		return min <= offerValue && offerValue <= max;
 	}
 	private void makeOffer(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-		Auction auction = null;
-		Offer maxAuctionOffer = null;
+		Auction auction;
+		Offer maxAuctionOffer;
 		LocalDateTime currLdt = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
 		User user = (User) request.getSession(false).getAttribute("user");
 		// Used once the offer has been created to redirect to GetAuctionsDetails
 		// In order to work, the controller needs 2 parameters, the auctionId and the page to process
 		String strAucId = request.getParameter("auctionId");
 		int aucId, offerValue;
-		// Used to check if the offer has been added correctly
-		boolean result = false;
 
 		try {
 			// These retrieve the auctionId and the value of the offer
@@ -144,7 +137,11 @@ public class MakeOffer extends HttpServlet {
 			if (checkValue(offerValue, auction, maxAuctionOffer)) {
 				try {
 					// This returns true if the Offer has been added to the database
-					offerDAO.insertOffer(offerValue, currLdt, user.getUser_id(), aucId);  // NON CONTROLLO LA BUONA RIUSCITA
+					int outcome = offerDAO.insertOffer(offerValue, currLdt, user.getUser_id(), aucId);
+					if (outcome == 0) {
+						response.sendError(500, "Errore, accesso al database fallito, non sono riuscito ad inserire l'offerta!");
+						return;
+					}
 				} catch (SQLException e) {
 					e.printStackTrace();
 					response.sendError(500, "Errore, accesso al database fallito!");
@@ -160,7 +157,7 @@ public class MakeOffer extends HttpServlet {
 			response.sendRedirect(path);
 
 		} else {
-			// The given Id doesn't belong to any of the auctions
+			// The given ID doesn't belong to any of the auctions
 			response.sendError(400, "Errore, l'asta specificata non esiste!");
 		}
 	}

@@ -121,7 +121,7 @@ public class OfferDAO {
 		return off;
 	}
 	
-	public void insertOffer(int price, LocalDateTime datetime, int user_id, int auction_id) throws SQLException{
+	public int insertOffer(int price, LocalDateTime datetime, int user_id, int auction_id) throws SQLException{
 		int outcome = 0;
 		try {
 			pstatement = connection.prepareStatement("INSERT INTO offer (auction, user, price, time) VALUES(?, ?, ?, ?)");
@@ -143,6 +143,7 @@ public class OfferDAO {
 				throw new SQLException(e2);
 			}
 		}
+		return outcome;
 	}
 
     public Map<Integer, Offer> getWinningOfferByUser(int userId) throws SQLException{

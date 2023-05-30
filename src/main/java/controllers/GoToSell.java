@@ -19,15 +19,16 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.Serial;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @WebServlet("/GoToSell")
 public class GoToSell extends HttpServlet {
+	@Serial
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
 	private TemplateEngine templateEngine;
@@ -64,16 +65,16 @@ public class GoToSell extends HttpServlet {
 		setupPage(request, response);
 	}
 	
-	private void setupPage(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+	private void setupPage(HttpServletRequest request, HttpServletResponse response) throws IOException
     {
 		User user = (User) request.getSession().getAttribute("user");
 		
 		// Variabili di appoggio 
-		List<Auction> openAuctions= null;
-		List<Auction> closedAuctions = null;
-		List<Article> articles = null;
+		List<Auction> openAuctions;
+		List<Auction> closedAuctions;
+		List<Article> articles;
 
-		Offer maxOffer = null;
+		Offer maxOffer;
 		
 		// The final result
 		Map<Auction,List<Article>> userOpenAuctions = new HashMap<>();
@@ -82,7 +83,7 @@ public class GoToSell extends HttpServlet {
     	HashMap<Integer, Offer> maxOffers = new HashMap<>();
 
 		List <Article> articlesSelected = new ArrayList<>();
-		Article chosenArticle = null;
+		Article chosenArticle;
 
 		try {
 			if(request.getParameterValues("alreadySelected") != null){
@@ -149,9 +150,7 @@ public class GoToSell extends HttpServlet {
 
 			if(!articlesSelected.isEmpty()) {
 				for (Article x : articlesSelected) {
-					if (articles.contains(x)) {
-						articles.remove(x);
-					}
+					articles.remove(x);
 				}
 			}
 

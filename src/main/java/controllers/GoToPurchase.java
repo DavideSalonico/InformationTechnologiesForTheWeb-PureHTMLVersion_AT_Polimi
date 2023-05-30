@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.Serial;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -29,6 +30,7 @@ import java.util.Map;
 
 @WebServlet("/GoToPurchase")
 public class GoToPurchase extends HttpServlet {
+	@Serial
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
 	private TemplateEngine templateEngine;
@@ -63,7 +65,7 @@ public class GoToPurchase extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		User user;
-		Map<Integer, List<Article>> awardedAuctions = new HashMap();
+		Map<Integer, List<Article>> awardedAuctions = new HashMap<>();
 		Map<Integer, Offer> winningOffers;
 		List<Auction> filteredAuctions = null;
 		Map<Integer, List<Article>> map = new HashMap<>();
@@ -86,7 +88,7 @@ public class GoToPurchase extends HttpServlet {
 		}
 
 		if (key != null){
-			if(validateKey(key) == false){
+			if(!validateKey(key)){
 				response.sendError(400, "Errore, chiave di ricerca non valida!");
 				return;
 			}
@@ -134,10 +136,8 @@ public class GoToPurchase extends HttpServlet {
 
 	private boolean validateKey(String key){
     	// Checks if the key contains only letters and is longer than 2 characters, but less than 21
-    	if(key.matches("[a-zA-Z]+") && key.length() > 2 && key.length() < 21)
-    		return true;
-    	return false;
-    }
+		return key.matches("[a-zA-Z]+") && key.length() > 2 && key.length() < 21;
+	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doGet(request, response);
