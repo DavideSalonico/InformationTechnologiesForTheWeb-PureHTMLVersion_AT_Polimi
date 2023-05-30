@@ -121,7 +121,7 @@ public class AuctionDAO {
 
 		} finally {
 			try {
-				//result.close();
+				result.close();
 			} catch (Exception e1) {
 				throw new SQLException(e1);
 			}
@@ -160,73 +160,17 @@ public class AuctionDAO {
 		}	
 		return auction;
 	}
-	
-	public LocalDateTime getExpiringTime(int auction_id) throws SQLException{
-		LocalDateTime exp_time;
-		try {
-			pstatement = connection.prepareStatement("SELECT expiring_date FROM auction WHERE auction_id = ?");
-			pstatement.setInt(1, auction_id);
-			result = pstatement.executeQuery();
-			if(result.next())
-				exp_time = result.getTimestamp("expiring_date").toLocalDateTime();
-			else
-				exp_time = null;
-		} catch (SQLException e) {
-		    e.printStackTrace();
-			throw new SQLException(e);
 
-		} finally {
-			try {
-				result.close();
-			} catch (Exception e1) {
-				throw new SQLException(e1);
-			}
-			try {
-				pstatement.close();
-			} catch (Exception e2) {
-				throw new SQLException(e2);
-			}
-		}	
-		return exp_time;
-	}
-	
-	public List<Auction> getValidAuctions(LocalDateTime session_datetime) throws SQLException{
-		List<Auction> auctions = new ArrayList<>();	
-		try {
-			pstatement = connection.prepareStatement("SELECT * FROM auction WHERE time < ? AND open = 1");
-			pstatement.setObject(1, session_datetime);
-			result = pstatement.executeQuery();
-			if(result.next()) {
-				auctions.add(resultToAuction(result));
-			}
-		} catch (SQLException e) {
-		    e.printStackTrace();
-			throw new SQLException(e);
-
-		} finally {
-			try {
-				result.close();
-			} catch (Exception e1) {
-				throw new SQLException(e1);
-			}
-			try {
-				pstatement.close();
-			} catch (Exception e2) {
-				throw new SQLException(e2);
-			}
-		}	
-		return auctions;
-	}
 	
 	public boolean changeAuctionStatus(int auction_id) throws SQLException{
-		int worked = 0;
+		int outcome = 0;
 		try {
 			pstatement = connection.prepareStatement("UPDATE auction SET open = 0 WHERE auction_id = ?");
 			pstatement.setInt(1, auction_id);
 			pstatement.executeUpdate();
 			//FAI CONTROLLO
 			// If there is an affected row, it means that the auction has been closed
-			if(worked > 0)
+			if(outcome > 0)
 				return true;
 		} catch (SQLException e) {
 		    e.printStackTrace();
@@ -240,14 +184,14 @@ public class AuctionDAO {
 	}
 
 	public void setInitialPrice(int auction_id, int initialPrice) throws SQLException{
-		int result = -1;
+		int outcome = -1;
 		try {
 			pstatement = connection.prepareStatement("UPDATE `sys`.`auction` SET `initial_price` = ? WHERE `auction_id` = ?");
 			pstatement.setInt(1, initialPrice);
 			pstatement.setInt(2, auction_id);
-			pstatement.executeUpdate();
-			// If there is an affected row, it means that the auction has been closed
-			// FAI CONTROLLO SULLA BUONA RIUSCITA DI MODIFICA
+			outcome = pstatement.executeUpdate();
+			if (outcome == 0)
+				throw new SQLException("No auction with id " + auction_id + " found");
 
 		} catch (SQLException e) {
 			e.printStackTrace();

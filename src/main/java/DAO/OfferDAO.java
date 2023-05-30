@@ -122,14 +122,17 @@ public class OfferDAO {
 	}
 	
 	public void insertOffer(int price, LocalDateTime datetime, int user_id, int auction_id) throws SQLException{
-		//TODO: controls can be added
+		int outcome = 0;
 		try {
 			pstatement = connection.prepareStatement("INSERT INTO offer (auction, user, price, time) VALUES(?, ?, ?, ?)");
 			pstatement.setInt(1, auction_id);
 			pstatement.setInt(2, user_id);
 			pstatement.setInt(3, price);
 			pstatement.setObject(4, datetime);
-			pstatement.executeUpdate();
+			outcome = pstatement.executeUpdate();
+			if(outcome != 1) {
+				throw new SQLException("Error in inserting offer");
+			}
 		} catch(SQLException e) {
 			e.printStackTrace();
 			throw new SQLException(e);

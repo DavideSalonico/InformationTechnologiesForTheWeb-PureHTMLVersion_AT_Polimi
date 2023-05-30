@@ -18,41 +18,12 @@ public class ArticleDAO {
 	public ArticleDAO(Connection connection) {
 		this.connection = connection;
 	}
-	
-	// DA CANCELLARE
-	public boolean isSold(int article_id) throws SQLException{
-		boolean isSold = false;
-		String query = "SELECT sold FROM article WHERE article_id = ?";
-		try {
-			pstatement = connection.prepareStatement(query);
-			pstatement.setInt(1, article_id);
-			ResultSet result = pstatement.executeQuery();
-			if(result.next())
-				isSold = result.getBoolean("sold");  //BIT type automatically converted to boolean
-		}catch(SQLException e) {
-			e.printStackTrace();
-			throw new SQLException(e);
-		}finally {
-			try {
-				result.close();
-			} catch (Exception e1) {
-				throw new SQLException(e1);
-			}
-			try {
-				pstatement.close();
-			} catch (Exception e2) {
-				throw new SQLException(e2);
-			}
-		}
-		
-		return isSold;
-	}
 
-	//AGGIUNGI IMMAGINE
+
 	public void insertArticle(String name, String description, int price, int user_id, InputStream image) throws SQLException{
 		String query = "INSERT into article (name, description, price, sold, article_creator, image) VALUES (?,?,?,false,?,?)";
 		InputStream imageInputStream = null;
-
+		int outcome = 0;
 		try{
 			pstatement  = connection.prepareStatement(query);
 			pstatement.setString(1,name.toUpperCase());
@@ -62,7 +33,10 @@ public class ArticleDAO {
 			pstatement.setInt(3, price);
 			pstatement.setInt(4, user_id);
 			pstatement.setBlob(5, image);
-			pstatement.executeUpdate();
+			outcome = pstatement.executeUpdate();
+			if(outcome == 0) {
+				throw new SQLException("Creating article failed, no rows affected.");
+			}
 		}catch(SQLException e) {
 			e.printStackTrace();
 			throw new SQLException(e);
@@ -77,11 +51,15 @@ public class ArticleDAO {
 	
 	public void addToAuction(int article_id, int auction_id) throws SQLException{
 		String query = "UPDATE article SET auction_id = ? where article_id = ?";
+		int outcome = 0;
 		try{
 			pstatement  = connection.prepareStatement(query);
 			pstatement.setInt(1,auction_id);
 			pstatement.setInt(2,article_id);
-			pstatement.executeUpdate();
+			outcome = pstatement.executeUpdate();
+			if(outcome == 0) {
+				throw new SQLException("Creating article failed, no rows affected.");
+			}
 		}catch(SQLException e) {
 			e.printStackTrace();
 			throw new SQLException(e);

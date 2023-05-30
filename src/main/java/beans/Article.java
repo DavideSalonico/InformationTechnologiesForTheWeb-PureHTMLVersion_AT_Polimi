@@ -32,10 +32,6 @@ public class Article {
 		this.name = name;
 	}
 
-	@Override
-	public boolean equals (Object x){
-		return this.article_id == ((Article) x).getArticle_id();
-	}
 	public String getDescription() {
 		return description;
 	}
@@ -84,4 +80,8 @@ public class Article {
 		this.sold = sold;
 	}
 
+	@Override
+	public boolean equals (Object x){
+		return this.article_id == ((Article) x).getArticle_id();
+	}
 }
