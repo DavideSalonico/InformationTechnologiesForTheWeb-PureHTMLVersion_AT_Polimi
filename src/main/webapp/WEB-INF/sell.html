@@ -95,7 +95,7 @@
                     </div>
 
                     <!-- Riquadro che mostra al client quali articoli stia aggiungendo all'asta in fase di creazione -->
-                    <div style="flex: 1;" th:if="${articlesSelected} != null">
+                    <div style="flex: 1;" th:if="${!articlesSelected.isEmpty()} ">
                         <h2>List of Articles selected :</h2>
                         <table>
                             <thead>
@@ -115,7 +115,7 @@
                             </tbody>
                         </table>
                     </div>
-                    <div style="flex: 1;" th:unless="${articlesSelected} != null">
+                    <div style="flex: 1;" th:unless="${!articlesSelected.isEmpty()}">
                         <h2>NO ARTICLES SELECTED :</h2>
                     </div>
                 </div>
