@@ -86,7 +86,7 @@
                                 <option th:each="article : ${articles}" th:value="${article.article_id}" th:text="${article.name}"></option>
                             </select><br/>
 
-                            <button name="auction-submit" type="submit">Aggiungi all'Asta</button>
+                            <button type="submit">Aggiungi all'Asta</button>
                         </div>
                         <div th:unless="${not articles.isEmpty()}">
                             <!-- Versione statica della pagina -->

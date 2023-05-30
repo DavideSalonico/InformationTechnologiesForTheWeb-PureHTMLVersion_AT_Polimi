@@ -186,7 +186,7 @@ public class AuctionDAO {
 	public void setInitialPrice(int auction_id, int initialPrice) throws SQLException{
 		int outcome = -1;
 		try {
-			pstatement = connection.prepareStatement("UPDATE `sys`.`auction` SET `initial_price` = ? WHERE `auction_id` = ?");
+			pstatement = connection.prepareStatement("UPDATE auction SET initial_price = ? WHERE auction_id = ?");
 			pstatement.setInt(1, initialPrice);
 			pstatement.setInt(2, auction_id);
 			outcome = pstatement.executeUpdate();
