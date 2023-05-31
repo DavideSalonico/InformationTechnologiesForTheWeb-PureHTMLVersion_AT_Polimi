@@ -27,8 +27,6 @@ public class ArticleDAO {
 			pstatement  = connection.prepareStatement(query);
 			pstatement.setString(1,name.toUpperCase());
 			pstatement.setString(2,description.toUpperCase());
-
-			//pstatement.setBlob(3, imageInputStream);
 			pstatement.setInt(3, price);
 			pstatement.setInt(4, user_id);
 			pstatement.setBlob(5, image);
