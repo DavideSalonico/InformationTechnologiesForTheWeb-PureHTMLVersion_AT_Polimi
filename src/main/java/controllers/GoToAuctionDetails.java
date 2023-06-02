@@ -162,7 +162,12 @@ public class GoToAuctionDetails extends HttpServlet {
 		ctx.setVariable("maxAuctionOffer", maxAuctionOffer);
 		ctx.setVariable("awardedUser", awardedUser);
 		ctx.setVariable("imageMap", imageMap);
-		templateEngine.process(path, ctx, response.getWriter());
+		try{
+			templateEngine.process(path, ctx, response.getWriter());
+		} catch (Exception e){
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+		}
+
     }
 	
 	public void destroy() {

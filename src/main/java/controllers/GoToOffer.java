@@ -66,7 +66,12 @@ public class GoToOffer extends HttpServlet {
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 		ctx.setVariable("offer", offer);
-		templateEngine.process(path, ctx, response.getWriter());
+		try{
+			templateEngine.process(path, ctx, response.getWriter());
+		} catch(Exception e){
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+		}
+
 	}
 	
 	public void destroy() {

@@ -38,7 +38,7 @@
         <form action="#" th:action="@{/MakeOffer}" method="post">
             <div>
                 <label for="offer">Value:</label>
-                <input type="number" name="offer" id="offer" min="1" max="2000000000" step="1" th:min="${min}" th:value="${min}" th:with="min=${not offers.isEmpty()} ? ${maxAuctionOffer.price + auction.minimum_raise} : ${auction.initial_price}" required>
+                <input type="number" name="offer" id="offer" min="1" max="2000000000" step="1" th:min="${min}" th:value="${min}" th:with="min=${!#maps.isEmpty(offers)} ? ${maxAuctionOffer.getPrice() + auction.minimum_raise} : ${auction.initial_price}" required>
                 <span>&euro;</span>
                 <input type="hidden" name="auctionId" th:value="${auction.auction_id}">
             </div>
