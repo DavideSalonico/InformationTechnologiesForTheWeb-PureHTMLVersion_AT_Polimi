@@ -51,10 +51,13 @@ public class Auction {
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
 		Auction auction = (Auction) o;
 		return auction_id == auction.auction_id && open == auction.open && initial_price == auction.initial_price && minimum_raise == auction.minimum_raise && creator == auction.creator && Objects.equals(expiring_date, auction.expiring_date);
 	}
 
+	@Override
+	public int hashCode() {
+		return 123;
+	}
 
 }

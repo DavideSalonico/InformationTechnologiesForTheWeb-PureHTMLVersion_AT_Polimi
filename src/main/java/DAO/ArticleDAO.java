@@ -21,7 +21,7 @@ public class ArticleDAO {
 
 
 	public void insertArticle(String name, String description, int price, int user_id, InputStream image) throws SQLException{
-		String query = "INSERT into article (name, description, price, sold, article_creator, image) VALUES (?,?,?,false,?,?)";
+		String query = "INSERT into article (name, description, price, article_creator, image) VALUES (?,?,?,?,?)";
 		int outcome;
 		try{
 			pstatement  = connection.prepareStatement(query);
@@ -102,7 +102,7 @@ public class ArticleDAO {
 	public List<Article> getAvailableUserArticles(int user_id) throws SQLException{
 		List<Article> articles = new ArrayList<Article>();
 		Article article;
-		String query = "SELECT * FROM article WHERE article_creator = ? and sold = 0 and auction_id  is null";
+		String query = "SELECT * FROM article WHERE article_creator = ? and auction_id  is null";
 		try {
 			pstatement = connection.prepareStatement(query);
 			pstatement.setInt(1, user_id);
@@ -194,7 +194,6 @@ public class ArticleDAO {
 		article.setArticle_creator(result.getInt("article_creator"));
 		article.setAuction_id(result.getInt("auction_id"));
 		article.setPrice(result.getInt("price"));
-		article.setSold(result.getBoolean("sold"));
 		
 		return article;
 	}

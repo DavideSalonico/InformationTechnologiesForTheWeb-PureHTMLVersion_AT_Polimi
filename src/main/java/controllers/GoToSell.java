@@ -70,8 +70,10 @@ public class GoToSell extends HttpServlet {
 
 		Offer maxOffer;
 
-		Map<Auction,List<Article>> userOpenAuctions = new HashMap<>();
-    	Map<Auction, List<Article>> userClosedAuctions = new LinkedHashMap<>();
+		// LINKED HASHMAPS ARE USED TO PRESERVE THE ORDER OF INSERTION
+		LinkedHashMap<Auction,List<Article>> userAuctions;
+		LinkedHashMap<Auction,List<Article>> userOpenAuctions = new LinkedHashMap<>();
+    	LinkedHashMap<Auction, List<Article>> userClosedAuctions = new LinkedHashMap<>();
     	HashMap<Integer, DiffTime> remainingTimes = new HashMap<>();
     	HashMap<Integer, Offer> maxOffers = new HashMap<>();
 
@@ -91,23 +93,15 @@ public class GoToSell extends HttpServlet {
 				chosenArticle = articleDAO.getArticle(selectedArticleId);
 				articlesSelected.add(chosenArticle);
 			}
-			openAuctions = auctionDAO.getOpenAuctions(user.getUser_id());
-			closedAuctions = auctionDAO.getClosedAuctions(user.getUser_id());
-			
+			userAuctions = auctionDAO.getUserAuctions(user.getUser_id());
 			//Manage all the user's open auction
-			for (Auction auction : openAuctions ) {
-				articles = articleDAO.getAuctionArticles(auction.getAuction_id());
+			for (Auction auction : userAuctions.keySet() ) {
 				maxOffer = offerDAO.getWinningOffer(auction.getAuction_id());
-				
-				for(Article article : articles) {
-					if(!userOpenAuctions.containsKey(auction)) {
-						userOpenAuctions.put(auction, new ArrayList<>());
-						userOpenAuctions.get(auction).add(article);
-					}
-					else {
-						userOpenAuctions.get(auction).add(article);
-					}
-				}
+
+				if (auction.isOpen())
+					userOpenAuctions.put(auction, userAuctions.get(auction));
+				else
+					userClosedAuctions.put(auction, userAuctions.get(auction));
 				
 				LocalDateTime logLdt = (LocalDateTime) request.getSession(false).getAttribute("creationTime");
 				DiffTime diff = DiffTime.getRemainingTime(logLdt, auction.getExpiring_date());
@@ -115,28 +109,7 @@ public class GoToSell extends HttpServlet {
 				if(maxOffer != null)
 					maxOffers.put(auction.getAuction_id(), maxOffer);
 			}
-			
-			//Manage all the user's closed auction
-			for (Auction auction : closedAuctions ) {
-				articles = articleDAO.getAuctionArticles(auction.getAuction_id());
-				maxOffer = offerDAO.getWinningOffer(auction.getAuction_id());
-				
-				for(Article article : articles) {
-					if(!userClosedAuctions.containsKey(auction)) {
-						userClosedAuctions.put(auction, new ArrayList<>());
-						userClosedAuctions.get(auction).add(article);
-					}
-					else {
-						userClosedAuctions.get(auction).add(article);
-					}
-				}
-				
-				LocalDateTime logLdt = (LocalDateTime) request.getSession(false).getAttribute("creationTime");
-				DiffTime diff = DiffTime.getRemainingTime(logLdt, auction.getExpiring_date());
-				remainingTimes.put(auction.getAuction_id(), diff);
-				if(maxOffer != null)
-					maxOffers.put(auction.getAuction_id(), maxOffer);
-			}
+
 
 			articles = articleDAO.getAvailableUserArticles(user.getUser_id());
 
