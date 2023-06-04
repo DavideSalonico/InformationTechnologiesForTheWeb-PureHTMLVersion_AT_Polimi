@@ -224,7 +224,7 @@ public class AuctionDAO {
 		auction.setCreator(result.getInt("creator"));
 		auction.setInitial_price(result.getInt("initial_price"));
 		auction.setMinimum_raise(result.getInt("minimum_raise"));
-		auction.setExpiring_date(result.getTimestamp("expiring_date").toLocalDateTime());
+		auction.setExpiring_date(result.getObject("expiring_date", LocalDateTime.class));
 		return auction;
 	}
 

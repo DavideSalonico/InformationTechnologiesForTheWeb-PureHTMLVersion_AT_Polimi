@@ -31,7 +31,7 @@ public class OfferDAO {
 				Offer off = new Offer();
 				off.setOffer_id(result.getInt("offer_id"));
 				off.setPrice(result.getInt("price"));
-				off.setTime(result.getTimestamp("time").toLocalDateTime());
+				off.setTime(result.getObject("time", LocalDateTime.class));
 				off.setUser(result.getInt("user"));
 				off.setAuction(result.getInt("auction"));
 				offers.add(off);
