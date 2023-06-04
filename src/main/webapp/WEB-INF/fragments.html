@@ -138,7 +138,7 @@
 			<!--/* It is possible to close the auction only if it is expired */-->
 			<!--/* "details" is the parameter passed by offerta.html or dettagli.html
 			it is used to distinguish between the 2 pages */-->
-			<a class="button-link" href="#" th:if="${details == 1 and !isExpired }" th:href="@{CloseAuction(auctionId= ${auction.auction_id})}">
+			<a class="button-link" href="#" th:if="${details == 1 and isExpired }" th:href="@{CloseAuction(auctionId= ${auction.auction_id})}">
 				<button>Close auction</button>
 			</a>
 
