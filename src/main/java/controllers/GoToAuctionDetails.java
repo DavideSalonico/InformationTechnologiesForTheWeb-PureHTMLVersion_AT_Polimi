@@ -113,7 +113,8 @@ public class GoToAuctionDetails extends HttpServlet {
 				// Since there is a maximum offer that belongs to the user, the user surely exists
 				awardedUser = userDAO.getUser(maxAuctionOffer.getUser());
 				if(awardedUser != null){
-					// Removes the password from the object for security purposes
+					// Removes the password and user_id from the object for security purposes
+					awardedUser.setUsername("");
 					awardedUser.setPassword("");
 				}
 			}
