@@ -52,7 +52,7 @@ public class GoToAuctionDetails extends HttpServlet {
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+			throws IOException {
 		String page;
 		int auctionId;
 	
@@ -114,7 +114,7 @@ public class GoToAuctionDetails extends HttpServlet {
 				awardedUser = userDAO.getUser(maxAuctionOffer.getUser());
 				if(awardedUser != null){
 					// Removes the password and user_id from the object for security purposes
-					awardedUser.setUsername("");
+					awardedUser.setUser_id(0);
 					awardedUser.setPassword("");
 				}
 			}
