@@ -44,7 +44,6 @@ public class CreateAuction extends HttpServlet {
 			ConnectionHandler.closeConnection(connection);
 		} catch (SQLException e) {
 			e.printStackTrace();
-			//TODO: show error page, not just stacktrace
 		}
 	}
 

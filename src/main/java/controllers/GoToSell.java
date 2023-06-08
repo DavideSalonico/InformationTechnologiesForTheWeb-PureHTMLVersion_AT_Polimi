@@ -140,4 +140,6 @@ public class GoToSell extends HttpServlet {
 		ctx.setVariable("articlesSelected", articlesSelected);
 		templateEngine.process(path, ctx, response.getWriter());
     }
+
+	//TODO: join in memoria
 }

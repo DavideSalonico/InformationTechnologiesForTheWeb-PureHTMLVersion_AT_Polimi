@@ -124,6 +124,7 @@ public class CreateArticle extends HttpServlet {
 				// Checks if the uploaded file is an image and if it has been parsed correclty
 				if (imgStream != null && imgStream.available() > 0 && mimeType.startsWith("image/"))
 					return imgStream;
+			//TODO: aggiungi controllo dimensione immagine (vedi JS)
 		} else{
 			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Wrong image format");
 			return null;

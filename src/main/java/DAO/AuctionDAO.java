@@ -2,6 +2,7 @@ package DAO;
 
 import beans.Article;
 import beans.Auction;
+import utils.AuctionDetailsInfo;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -215,6 +216,42 @@ public class AuctionDAO {
 			}
 		}
 		return false;
+	}
+
+	public AuctionDetailsInfo getAuctionDetails (int auction_id) throws SQLException {
+		AuctionDetailsInfo elem;
+
+		Auction auction = null;
+		List<Article> articles = new ArrayList<>();
+		boolean firstTime = true;
+		try {
+			pstatement = connection.prepareStatement("SELECT * FROM auction x JOIN article y on x.auction_id = y.auction_id WHERE x.auction_id = ?");
+			pstatement.setInt(1, auction_id);
+			result = pstatement.executeQuery();
+			while(result.next()) {
+				if (firstTime){
+					auction = resultToAuction(result);
+					firstTime = false;
+				}
+				Article article = resultToArticle(result);
+				articles.add(article);
+			}
+			elem = new AuctionDetailsInfo(auction, articles, null, null);
+		} catch (SQLException e) {
+			throw new SQLException(e);
+		} finally {
+			try {
+				result.close();
+			} catch (Exception e1) {
+				throw new SQLException(e1);
+			}
+			try {
+				pstatement.close();
+			} catch (Exception e2) {
+				throw new SQLException(e2);
+			}
+		}
+		return elem;
 	}
 
 	private Auction resultToAuction(ResultSet result) throws SQLException {

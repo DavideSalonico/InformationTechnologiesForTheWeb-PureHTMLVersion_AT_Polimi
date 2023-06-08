@@ -123,6 +123,8 @@ public class GoToPurchase extends HttpServlet {
 		templateEngine.process(path, ctx, response.getWriter());
 	}
 
+	//TODO: join in memoria
+
 	private boolean validateKey(String key){
     	// Checks if the key contains only letters and is longer than 2 characters, but less than 63
 		return key.matches("[a-zA-Z]+") && key.length() > 2 && key.length() < 63;

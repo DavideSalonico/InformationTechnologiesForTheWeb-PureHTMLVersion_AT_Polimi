@@ -85,7 +85,7 @@ public class MakeOffer extends HttpServlet {
 			aucId = Integer.parseInt(strAucId);
 			offerValue = Integer.parseInt(request.getParameter("offer"));
 		} catch (NumberFormatException e) {
-			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "auctionIn and offer must be integers!");
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "auctionId and offer must be integers!");
 			return;
 		}
 

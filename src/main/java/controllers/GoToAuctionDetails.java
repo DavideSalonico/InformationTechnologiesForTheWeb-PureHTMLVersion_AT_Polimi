@@ -10,7 +10,9 @@ import beans.Offer;
 import beans.User;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
+import utils.AuctionDetailsInfo;
 import utils.ConnectionHandler;
+import utils.Pair;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -79,11 +81,13 @@ public class GoToAuctionDetails extends HttpServlet {
 	private void setupPage(HttpServletRequest request, HttpServletResponse response, String page, Integer auctionId) throws IOException, SQLException {
 		Auction auction;
 		List <Article> articles;
-		Offer maxAuctionOffer;
-		List<Offer> auctionOffers;
+		Offer maxAuctionOffer = null;
+		List<Offer> auctionOffers = new ArrayList<>();
 		Map<Integer, String> imageMap = new HashMap<>();
 
-		LinkedHashMap<Offer, String> frmtAuctionOffers = null;
+		AuctionDetailsInfo auctionDetailsInfo;
+
+		LinkedHashMap<Offer, String> frmtAuctionOffers = new LinkedHashMap<>();
 		LinkedHashMap<Integer, String> users = new LinkedHashMap<>();
     	String frmtDeadline;
     	// Used to check if the auction is expired
@@ -103,40 +107,41 @@ public class GoToAuctionDetails extends HttpServlet {
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Unable to access the database");
 			return;
 		}
-		
-		try {
-			articles = articleDAO.getAuctionArticles(auctionId);
-			auctionOffers = offerDAO.getOffers(auctionId);
-			maxAuctionOffer = offerDAO.getWinningOffer(auctionId);
 
-			if(maxAuctionOffer != null){
-				// Since there is a maximum offer that belongs to the user, the user surely exists
-				awardedUser = userDAO.getUser(maxAuctionOffer.getUser());
+		try {
+			auctionDetailsInfo = auctionDAO.getAuctionDetails(auctionId);
+			articles = auctionDetailsInfo.getArticles();
+			List<Pair<Offer, String>> tmpOffers= new ArrayList<>();
+			tmpOffers = offerDAO.getOffersUsername(auctionId);
+			if(!tmpOffers.isEmpty()){
+				awardedUser = userDAO.getUser(tmpOffers.get(0).getFirst().getUser());
 				if(awardedUser != null){
-					// Removes the password and user_id from the object for security purposes
-					awardedUser.setUser_id(0);
+					// Removes the password from the object for security purposes
 					awardedUser.setPassword("");
+					awardedUser.setUser_id(0);
+				}
+
+				maxAuctionOffer = tmpOffers.get(0).getFirst();
+
+				for(Pair<Offer, String> pair : tmpOffers){
+					Offer offer = pair.getFirst();
+					auctionOffers.add(offer);
+					// Adds both the offer and it's formatted datetime
+					frmtAuctionOffers.put(offer, offer.getTime().format(DateTimeFormatter.ofPattern("dd MMM yyyy 'alle' HH:mm")));
+					if(!users.containsKey(offer.getUser())){
+						// Get all "username" of the users who made an offer
+						users.put(offer.getUser(), pair.getSecond());
+					}
 				}
 			}
-			
-		}catch(SQLException e) {
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error accessing the database!");
+
+			if (auctionDetailsInfo == null) {
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "auctionId is not valid");
+				return;
+			}
+		} catch (SQLException e) {
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Unable to access the database");
 			return;
-		}
-		
-		// Proceeds only if there is at least 1 offer for the auction
-		if(auctionOffers != null && !auctionOffers.isEmpty()){
-			frmtAuctionOffers = new LinkedHashMap<>();
-			// Iterates over the list of offers and formats the datetime properly
-    		for(Offer offer : auctionOffers){
-    			String frmtOfferTime = offer.getTime().format(DateTimeFormatter.ofPattern("dd MMM yyyy 'alle' HH:mm"));
-    			// Adds both the offer and it's formatted datetime
-    			frmtAuctionOffers.put(offer, frmtOfferTime);
-				if(!users.containsKey(offer.getUser())){
-					// Get all "username" of the users who made an offer
-					users.put(offer.getUser(), userDAO.getUser(offer.getUser()).getUsername());
-				}
-    		}
 		}
 
 		for(Article article : articles){
@@ -170,6 +175,8 @@ public class GoToAuctionDetails extends HttpServlet {
 		}
 
     }
+
+	//TODO: join in memoria
 	
 	public void destroy() {
 		try {
