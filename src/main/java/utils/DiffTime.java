@@ -31,7 +31,7 @@ public class DiffTime {
     public static DiffTime getRemainingTime(LocalDateTime requestLdt, LocalDateTime deadline)
     {
     	DiffTime dfTime = new DiffTime();
-    	int remainder = 0;
+    	int remainder;
     	// If the following condition is true, it means the auction is already expired
     	if(requestLdt.isAfter(deadline))
     	{
