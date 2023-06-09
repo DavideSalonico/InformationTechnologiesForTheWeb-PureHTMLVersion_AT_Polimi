@@ -112,6 +112,7 @@ public class CreateArticle extends HttpServlet {
 	}
 
 	private InputStream checkImage(Part image, HttpServletResponse response) throws IOException {
+		final long maxSize = 2 * 1024 * 1024; // 2MB
 		if (image != null) {
 			InputStream imgStream;
 			String mimeType;
@@ -120,15 +121,20 @@ public class CreateArticle extends HttpServlet {
 			mimeType = getServletContext().getMimeType(filename);
 			// Since the user could edit the html page, he could change the input type of the image
 			// And if he doesn't upload a file, mimeType is null and this would result in an unexpected server error
-			if (mimeType != null)
-				// Checks if the uploaded file is an image and if it has been parsed correclty
-				if (imgStream != null && imgStream.available() > 0 && mimeType.startsWith("image/"))
-					return imgStream;
-			//TODO: aggiungi controllo dimensione immagine (vedi JS)
-		} else{
+
+			// Checks if the uploaded file is an image and if it has been parsed correclty
+			if (mimeType != null && imgStream != null && imgStream.available() > 0 && mimeType.startsWith("image/") && image.getSize() <= maxSize) {
+				return imgStream;
+			}
+			else {
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Image size exceeds the maximum limit (2MB)");
+				imgStream.close();
+				return null;
+			}
+		}
+		else{
 			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Wrong image format");
 			return null;
 		}
-		return null;
 	}
 }
