@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
-@WebFilter({"/CloseAuction", "/CreateAuction", "/GoToAuctionDetails", "/GoToHome", "/GoToOffer", "/Purchase", "/GoToSell", "/MakeOffer"})
+@WebFilter({"/CloseAuction", "/CreateAuction", "/CreateArticle", "/GoToAuctionDetails", "/GoToHome", "/GoToOffer", "/GoToPurchase", "/GoToSell", "/MakeOffer"})
 public class LoginChecker implements Filter{
 
 	@Override

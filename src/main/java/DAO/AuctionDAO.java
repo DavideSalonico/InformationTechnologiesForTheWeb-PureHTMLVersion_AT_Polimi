@@ -9,7 +9,6 @@ import utils.AuctionFullInfo;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 public class AuctionDAO {
@@ -51,71 +50,6 @@ public class AuctionDAO {
 		return auction_id;
 	}
 
-	public List<Auction> search(String keyword, LocalDateTime time) throws SQLException {
-		List<Auction> filteredAuctions = new ArrayList<>();
-		try {
-			pstatement = connection.prepareStatement("SELECT DISTINCT au.* FROM auction au JOIN article ar ON ar.auction_id = au.auction_id WHERE (ar.name LIKE ? OR ar.description LIKE ?) AND au.expiring_date > ? AND au.open = '1' ORDER BY au.expiring_date ASC");
-			pstatement.setString(1, "%" + keyword.toUpperCase() + "%");
-			pstatement.setString(2, "%" + keyword.toUpperCase() + "%");
-			pstatement.setObject(3, time);
-			result = pstatement.executeQuery();
-			while (result.next()) {
-				filteredAuctions.add(resultToAuction(result));
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new SQLException(e);
-		} finally {
-			try {
-				result.close();
-			} catch (Exception e1) {
-				throw new SQLException(e1);
-			}
-			try {
-				pstatement.close();
-			} catch (Exception e2) {
-				throw new SQLException(e2);
-			}
-		}
-		return filteredAuctions;
-	}
-
-	public LinkedHashMap<Auction, List<Article>> getUserAuctions(int userId) throws SQLException {
-		LinkedHashMap<Auction, List<Article>> userAuctions = new LinkedHashMap<>();
-		try {
-			pstatement = connection.prepareStatement("SELECT * FROM auction x JOIN article y on x.auction_id = y.auction_id WHERE creator = ? ORDER BY x.expiring_date ASC");
-			pstatement.setInt(1, userId);
-			result = pstatement.executeQuery();
-			while(result.next()) {
-
-				Auction auction = resultToAuction(result);
-				if(userAuctions.containsKey(auction)) {
-					userAuctions.get(auction).add(resultToArticle(result));
-				}
-				else {
-					List<Article> articles = new ArrayList<>();
-					articles.add(resultToArticle(result));
-					userAuctions.put(auction, articles);
-				}
-
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				result.close();
-			} catch (Exception e1) {
-				throw new SQLException(e1);
-			}
-			try {
-				pstatement.close();
-			} catch (Exception e2) {
-				throw new SQLException(e2);
-			}
-		}
-		return userAuctions;
-	}
-
 
 	public Auction getAuction(int auction_id) throws SQLException {
 		Auction auction = null;
@@ -146,13 +80,11 @@ public class AuctionDAO {
 
 
 	public boolean changeAuctionStatus(int auction_id) throws SQLException {
-		int outcome = 0;
+		int outcome;
 		try {
 			pstatement = connection.prepareStatement("UPDATE auction SET open = 0 WHERE auction_id = ?");
 			pstatement.setInt(1, auction_id);
 			outcome = pstatement.executeUpdate();
-			//FAI CONTROLLO
-			// If there is an affected row, it means that the auction has been closed
 			if (outcome > 0)
 				return true;
 		} catch (SQLException e) {
@@ -169,7 +101,7 @@ public class AuctionDAO {
 	}
 
 	public void setInitialPrice(int auction_id, int initialPrice) throws SQLException {
-		int outcome = -1;
+		int outcome;
 		try {
 			pstatement = connection.prepareStatement("UPDATE auction SET initial_price = ? WHERE auction_id = ?");
 			pstatement.setInt(1, initialPrice);

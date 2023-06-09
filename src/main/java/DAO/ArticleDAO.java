@@ -69,35 +69,7 @@ public class ArticleDAO {
 		}
 	}
 	
-	public List<Article> getAuctionArticles(int auction_id) throws SQLException{
-		List<Article> articles = new ArrayList<Article>();
-		Article article = new Article();
-		String query = "SELECT * FROM article WHERE auction_id = ?";
-		try{
-			pstatement = connection.prepareStatement(query);
-			pstatement.setInt(1, auction_id);
-			result = pstatement.executeQuery();
-			while (result.next()) {
-				article = resultToArticle(result);
-				articles.add(article);
-			}
-		}catch(SQLException e) {
-			e.printStackTrace();
-			throw new SQLException(e);
-		}finally {
-			try {
-				result.close();
-			} catch (Exception e1) {
-				throw new SQLException(e1);
-			}
-			try {
-				pstatement.close();
-			} catch (Exception e2) {
-				throw new SQLException(e2);
-			}
-		}
-		return articles;
-	}
+
 	
 	public List<Article> getAvailableUserArticles(int user_id) throws SQLException{
 		List<Article> articles = new ArrayList<Article>();
