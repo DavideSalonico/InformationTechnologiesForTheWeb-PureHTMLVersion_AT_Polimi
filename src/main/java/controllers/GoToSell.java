@@ -2,7 +2,6 @@ package controllers;
 
 import DAO.ArticleDAO;
 import DAO.AuctionDAO;
-import DAO.OfferDAO;
 import beans.Article;
 import beans.Auction;
 import beans.Offer;
@@ -25,7 +24,10 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 @WebServlet("/GoToSell")
 public class GoToSell extends HttpServlet {
@@ -36,7 +38,6 @@ public class GoToSell extends HttpServlet {
     
 	private AuctionDAO auctionDAO;
 	private ArticleDAO articleDAO;
-	private OfferDAO offerDAO;
 
 	public void init() throws ServletException {
 		ServletContext servletContext = getServletContext();
@@ -46,7 +47,6 @@ public class GoToSell extends HttpServlet {
 		
 		auctionDAO = new AuctionDAO(connection);
 		articleDAO = new ArticleDAO(connection);
-		offerDAO = new OfferDAO(connection);
 	}
 	
 	public void destroy() {
@@ -57,7 +57,7 @@ public class GoToSell extends HttpServlet {
 		}
 	}
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		setupPage(request, response);
 	}
 	

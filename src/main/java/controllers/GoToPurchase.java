@@ -59,14 +59,14 @@ public class GoToPurchase extends HttpServlet {
 		}
 	}
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		User user;
 		Map<Integer, List<Article>> awardedAuctions = new HashMap<>();
 		Map<Integer, Offer> winningOffers = new HashMap<>();
 		List<Auction> filteredAuctions = new ArrayList<>();
 		Map<Integer, List<Article>> map = new HashMap<>();
 		HashMap<Integer, DiffTime> remainingTimes = new HashMap<Integer, DiffTime>();
-		LocalDateTime logLdt = null;
+		LocalDateTime logLdt;
 		LocalDateTime currLdt = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
 
 		List<AuctionFullInfo> fullAucListWon = new ArrayList<>();
@@ -129,7 +129,7 @@ public class GoToPurchase extends HttpServlet {
 		return key.matches("[a-zA-Z]+") && key.length() > 2 && key.length() < 63;
 	}
 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		doGet(request, response);
 	}
 }

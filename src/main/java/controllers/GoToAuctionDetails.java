@@ -1,6 +1,5 @@
 package controllers;
 
-import DAO.ArticleDAO;
 import DAO.AuctionDAO;
 import DAO.OfferDAO;
 import DAO.UserDAO;
@@ -38,7 +37,6 @@ public class GoToAuctionDetails extends HttpServlet {
 
 	private OfferDAO offerDAO;
 	private AuctionDAO auctionDAO;
-	private ArticleDAO articleDAO;
 	private UserDAO userDAO;
 	
 	public void init() throws ServletException {
@@ -49,7 +47,6 @@ public class GoToAuctionDetails extends HttpServlet {
 
 		offerDAO = new OfferDAO(connection);
 		auctionDAO = new AuctionDAO(connection);
-		articleDAO = new ArticleDAO(connection);
 		userDAO = new UserDAO(connection);
 	}
 

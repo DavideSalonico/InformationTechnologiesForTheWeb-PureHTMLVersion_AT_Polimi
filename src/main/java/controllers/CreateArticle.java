@@ -128,7 +128,9 @@ public class CreateArticle extends HttpServlet {
 			}
 			else {
 				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Image size exceeds the maximum limit (2MB)");
-				imgStream.close();
+				if (imgStream != null) {
+					imgStream.close();
+				}
 				return null;
 			}
 		}

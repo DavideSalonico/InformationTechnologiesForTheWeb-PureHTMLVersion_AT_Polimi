@@ -27,7 +27,7 @@ public class LogOut extends HttpServlet {
 		response.sendRedirect("index.html");
 	}
 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		doGet(request, response);
 	}
 }

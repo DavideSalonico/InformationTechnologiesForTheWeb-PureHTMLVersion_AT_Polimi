@@ -42,7 +42,7 @@ public class CheckLogin extends HttpServlet {
 	}
 	
 	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		WebContext context = new WebContext(request, response, getServletContext(), request.getLocale());
         templateEngine.process("index", context, response.getWriter());
 	}
