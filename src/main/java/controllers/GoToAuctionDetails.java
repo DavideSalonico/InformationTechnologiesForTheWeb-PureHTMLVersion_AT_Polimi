@@ -175,8 +175,6 @@ public class GoToAuctionDetails extends HttpServlet {
 		}
 
     }
-
-	//TODO: join in memoria
 	
 	public void destroy() {
 		try {
