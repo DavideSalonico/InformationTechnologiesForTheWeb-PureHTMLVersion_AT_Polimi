@@ -360,7 +360,7 @@ public class AuctionDAO {
 					        GROUP BY o3.auction
 					    ) o2 ON o1.auction = o2.auction AND o1.price = o2.max_price
 					) o ON o.auction = au.auction_id
-					WHERE creator = ?;""");
+					WHERE creator = ? ORDER BY expiring_date ASC;""");
 			pstatement.setInt(1, user_id);
 			result = pstatement.executeQuery();
 			int prev_auction_id = -1;
