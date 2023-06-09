@@ -16,7 +16,7 @@ public class LogOut extends HttpServlet {
 	@Serial
 	private static final long serialVersionUID = 1L;
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		HttpSession s = request.getSession(false);
 		// Checks if the session exists
 		if(s != null){
