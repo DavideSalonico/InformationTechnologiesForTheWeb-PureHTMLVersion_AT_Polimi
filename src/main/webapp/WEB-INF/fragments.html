@@ -14,12 +14,6 @@
 		"open" is used to distinguish between the user's open and closed auctions */-->
 		<section class="scrollable" th:fragment="showAuctions(auctions, open)">
 
-      		<!--/* The following lines iterate over the LinkedHashMap and dynamically create the elements
-      		(1) th:if="${not auctions.isEmpty()}" is used to ensure the HashMap is not empty
-      		(2) th:each="entry, stats : ${auctions}" is used to iterate over the HashMap
-      		(3) th:with="article=${entry.value}, auction=${entry.key}" creates 2 variables that contain each Article and each Auction object
-      		(4) th:class="${stats.odd}? 'odd' : even" checks if the current iteration is even or odd and assigns the correct value as class */-->
-
       		<!--/* th:href="@{GetAuctionDetails(auctionId= ${auction.id}, page='dettagli.html')} creates a relative url with 2 parameters
       		(1) auctionId is used to specify which is the auction in order to get it's details
       		(2) page is used to distinguish between dettagli.html and offerta.html, because the controller manages both template pages */-->
@@ -64,9 +58,7 @@
 		
 		
 		
-		<!--/* 2° FRAGMENT:
-		This is a fragment, it is requested by "offerta.html" and "dettagli.html"
-		in order to show the auction's and article's details */-->
+		<!--/* 2° FRAGMENT: Show all details related to Auction, called by auctionDetails.html or offer.html */-->
 		<div th:fragment="showDetails">
 			<h2 id="dtl-articles">List of Articles contained by auction</h2>
 			<th:block th:if="${not article.isEmpty()}">
@@ -97,16 +89,12 @@
 			<p><strong>Prezzo iniziale: </strong><span th:text="${#numbers.formatInteger(auction.initial_price,1,'POINT')}">x</span> &euro;</p>
 			<p><strong>Rialzo minimo: </strong><span th:text="${#numbers.formatInteger(auction.minimum_raise,1,'POINT')}">y</span> &euro;</p>
 			<p><strong>Scadenza: </strong><span th:text="${frmtDeadline}">gg MMM yyyy HH:mm</span></p>
-
-
 		</div>
 		
 		
 		
 		<!--/* 3° FRAGMENT:
-		This is a parameterized fragment, requested by "offerta.html" and "dettagli.html"
-		in order to display all the offers for the relative auction inside a table.
-		The parameter "details" is necessary to be able to distinguish between the 2 pages. */-->
+		Shows offers related to an auction, used by AuctionDetails.html and Offer.html*/-->
 		<section class="mid-col scrollable" th:fragment="showOffers(details)">
 			<h2 id="dtl-offers">OFFERS</h2>
 			<!--/* The paragraph exists only if there are no offers */-->
@@ -136,7 +124,7 @@
 				</tbody>
 			</table>
 			<!--/* It is possible to close the auction only if it is expired */-->
-			<!--/* "details" is the parameter passed by offerta.html or dettagli.html
+			<!--/* "details" is the parameter passed by offerta.html or auctionDetails.html
 			it is used to distinguish between the 2 pages */-->
 			<a class="button-link" href="#" th:if="${details == 1 and isExpired }" th:href="@{CloseAuction(auctionId= ${auction.auction_id})}">
 				<button>Close auction</button>
