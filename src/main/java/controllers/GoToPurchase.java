@@ -9,6 +9,7 @@ import beans.Offer;
 import beans.User;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
+import utils.AuctionFullInfo;
 import utils.ConnectionHandler;
 import utils.DiffTime;
 
@@ -24,6 +25,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,12 +62,15 @@ public class GoToPurchase extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		User user;
 		Map<Integer, List<Article>> awardedAuctions = new HashMap<>();
-		Map<Integer, Offer> winningOffers;
-		List<Auction> filteredAuctions = null;
+		Map<Integer, Offer> winningOffers = new HashMap<>();
+		List<Auction> filteredAuctions = new ArrayList<>();
 		Map<Integer, List<Article>> map = new HashMap<>();
 		HashMap<Integer, DiffTime> remainingTimes = new HashMap<Integer, DiffTime>();
 		LocalDateTime logLdt = null;
 		LocalDateTime currLdt = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
+
+		List<AuctionFullInfo> fullAucListWon = new ArrayList<>();
+		List<AuctionFullInfo> fullAucListFilt = new ArrayList<>();
 
 		try{
 			user = (User) request.getSession().getAttribute("user");
@@ -76,9 +81,10 @@ public class GoToPurchase extends HttpServlet {
 		}
 
 		try{
-			winningOffers = offerDAO.getWinningOfferByUser(user.getUser_id());
-			for(Integer auction : winningOffers.keySet()){
-				awardedAuctions.put(auction, articleDAO.getAuctionArticles(auction));
+			fullAucListWon = auctionDAO.getOfferWithArticle(user.getUser_id());
+			for(AuctionFullInfo auction : fullAucListWon){
+				winningOffers.put(auction.getAuction().getAuction_id(), auction.getMaxOffer());
+				awardedAuctions.put(auction.getAuction().getAuction_id(), auction.getArticles());
 			}
 		} catch (SQLException e) {
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not possible to recover the winning offers");
@@ -92,22 +98,17 @@ public class GoToPurchase extends HttpServlet {
 				return;
 			}
 			try {
-				filteredAuctions = auctionDAO.search(key, logLdt);
+				fullAucListFilt = auctionDAO.getFiltered(key, logLdt);
+
+				for(AuctionFullInfo auction : fullAucListFilt){
+					filteredAuctions.add(auction.getAuction());
+					map.put(auction.getAuction().getAuction_id(), auction.getArticles());
+					remainingTimes.put(auction.getAuction().getAuction_id(), DiffTime.getRemainingTime(currLdt, auction.getAuction().getExpiring_date()));
+				}
+
 			} catch (SQLException e) {
 				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error accessing the database!");
 				return;
-			}
-		}
-
-		if(filteredAuctions != null){
-			for(Auction auction : filteredAuctions){
-				try {
-					map.put(auction.getAuction_id(), articleDAO.getAuctionArticles(auction.getAuction_id()));
-					remainingTimes.put(auction.getAuction_id(), DiffTime.getRemainingTime(currLdt, auction.getExpiring_date()));
-				} catch (SQLException e) {
-					response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error accessing the database!");
-					return;
-				}
 			}
 		}
 
@@ -122,8 +123,6 @@ public class GoToPurchase extends HttpServlet {
 		ctx.setVariable("remainingTimes", remainingTimes);
 		templateEngine.process(path, ctx, response.getWriter());
 	}
-
-	//TODO: join in memoria
 
 	private boolean validateKey(String key){
     	// Checks if the key contains only letters and is longer than 2 characters, but less than 63

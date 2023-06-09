@@ -9,6 +9,7 @@ import beans.Offer;
 import beans.User;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
+import utils.AuctionFullInfo;
 import utils.ConnectionHandler;
 import utils.DiffTime;
 
@@ -63,19 +64,17 @@ public class GoToSell extends HttpServlet {
 	private void setupPage(HttpServletRequest request, HttpServletResponse response) throws IOException
     {
 		User user = (User) request.getSession().getAttribute("user");
+		LocalDateTime logLdt = (LocalDateTime) request.getSession(false).getAttribute("creationTime");
 
-		List<Auction> openAuctions;
-		List<Auction> closedAuctions;
 		List<Article> articles;
 
-		Offer maxOffer;
-
 		// LINKED HASHMAPS ARE USED TO PRESERVE THE ORDER OF INSERTION
-		LinkedHashMap<Auction,List<Article>> userAuctions;
 		LinkedHashMap<Auction,List<Article>> userOpenAuctions = new LinkedHashMap<>();
     	LinkedHashMap<Auction, List<Article>> userClosedAuctions = new LinkedHashMap<>();
     	HashMap<Integer, DiffTime> remainingTimes = new HashMap<>();
     	HashMap<Integer, Offer> maxOffers = new HashMap<>();
+
+		List<AuctionFullInfo> userFullAuctions = new ArrayList<>();
 
 		List <Article> articlesSelected = new ArrayList<>();
 		Article chosenArticle;
@@ -93,23 +92,17 @@ public class GoToSell extends HttpServlet {
 				chosenArticle = articleDAO.getArticle(selectedArticleId);
 				articlesSelected.add(chosenArticle);
 			}
-			userAuctions = auctionDAO.getUserAuctions(user.getUser_id());
-			//Manage all the user's open auction
-			for (Auction auction : userAuctions.keySet() ) {
-				maxOffer = offerDAO.getWinningOffer(auction.getAuction_id());
 
-				if (auction.isOpen())
-					userOpenAuctions.put(auction, userAuctions.get(auction));
+			userFullAuctions = auctionDAO.getAuctionsByUser(user.getUser_id());
+			for(AuctionFullInfo auctionFullInfo : userFullAuctions){
+				if(auctionFullInfo.getAuction().isOpen())
+					userOpenAuctions.put(auctionFullInfo.getAuction(), auctionFullInfo.getArticles());
 				else
-					userClosedAuctions.put(auction, userAuctions.get(auction));
-				
-				LocalDateTime logLdt = (LocalDateTime) request.getSession(false).getAttribute("creationTime");
-				DiffTime diff = DiffTime.getRemainingTime(logLdt, auction.getExpiring_date());
-				remainingTimes.put(auction.getAuction_id(), diff);
-				if(maxOffer != null)
-					maxOffers.put(auction.getAuction_id(), maxOffer);
-			}
+					userClosedAuctions.put(auctionFullInfo.getAuction(), auctionFullInfo.getArticles());
 
+				remainingTimes.put(auctionFullInfo.getAuction().getAuction_id(), DiffTime.getRemainingTime(logLdt, auctionFullInfo.getAuction().getExpiring_date()));
+				maxOffers.put(auctionFullInfo.getAuction().getAuction_id(), auctionFullInfo.getMaxOffer());
+			}
 
 			articles = articleDAO.getAvailableUserArticles(user.getUser_id());
 
@@ -119,10 +112,12 @@ public class GoToSell extends HttpServlet {
 				}
 			}
 
+
 		}catch(SQLException e){
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not possible to recover articles in database");
 			return;
 		}
+
 
 		// Get the current LocalDateTime and creates the ldt variable
 		// It is used as initial value for the datetime-local tag in sell.html
@@ -140,6 +135,4 @@ public class GoToSell extends HttpServlet {
 		ctx.setVariable("articlesSelected", articlesSelected);
 		templateEngine.process(path, ctx, response.getWriter());
     }
-
-	//TODO: join in memoria
 }

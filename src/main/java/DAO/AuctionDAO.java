@@ -2,12 +2,11 @@ package DAO;
 
 import beans.Article;
 import beans.Auction;
+import beans.Offer;
 import utils.AuctionDetailsInfo;
+import utils.AuctionFullInfo;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -254,6 +253,147 @@ public class AuctionDAO {
 		return elem;
 	}
 
+	public List<AuctionFullInfo> getOfferWithArticle(int user_id) throws SQLException{
+		List<AuctionFullInfo> auctions = new ArrayList<>();
+		try {
+			pstatement = connection.prepareStatement("""
+					SELECT *, o.price AS offer_price
+					FROM auction au
+					JOIN article ar ON au.auction_id = ar.auction_id
+					LEFT JOIN (
+					    SELECT o1.*
+					    FROM offer o1
+					    INNER JOIN (
+					        SELECT o3.auction, MAX(o3.price) AS max_price
+					        FROM offer o3
+					        GROUP BY o3.auction
+					    ) o2 ON o1.auction = o2.auction AND o1.price = o2.max_price
+					) o ON o.auction = au.auction_id
+					WHERE user = ?;""");
+			pstatement.setInt(1, user_id);
+			result = pstatement.executeQuery();
+			int prev_auction_id = -1;
+			while(result.next()) {
+				if(result.getInt("auction_id") != prev_auction_id){
+					List<Article> articles = new ArrayList<>();
+					articles.add(resultToArticle(result));
+					auctions.add(new AuctionFullInfo(resultToAuction(result), articles, resultToOffer(result)));
+					prev_auction_id = result.getInt("auction_id");
+				}
+				else{
+					auctions.get(auctions.size()-1).addArticle(resultToArticle(result));
+				}
+
+			}
+		} catch (SQLException e) {
+			throw new SQLException(e);
+
+		} finally {
+			try {
+				result.close();
+			} catch (Exception e1) {
+				throw new SQLException(e1);
+			}
+			try {
+				pstatement.close();
+			} catch (Exception e2) {
+				throw new SQLException(e2);
+			}
+		}
+		return auctions;
+	}
+
+	public List<AuctionFullInfo> getFiltered(String keyword, LocalDateTime time) throws SQLException{
+
+		List<AuctionFullInfo> auctionFullList = new ArrayList<>();
+
+		try{
+			pstatement = connection.prepareStatement("SELECT * FROM auction x JOIN article y on x.auction_id= y.auction_id where x.auction_id IN (SELECT DISTINCT au.auction_id FROM auction au JOIN article ar ON ar.auction_id = au.auction_id WHERE (ar.name LIKE ? OR ar.description LIKE ?) AND au.expiring_date > ? AND au.open = '1') ORDER BY x.expiring_date ASC, y.article_id ASC");
+			pstatement.setString(1, "%" + keyword.toUpperCase() + "%");
+			pstatement.setString(2, "%" + keyword.toUpperCase() + "%");
+			pstatement.setObject(3, time);
+			result = pstatement.executeQuery();
+			int prev_auction_id = -1;
+			while (result.next()) {
+				Auction auction = resultToAuction(result);
+				Article article = resultToArticle(result);
+				if(auction.getAuction_id() == prev_auction_id){
+					auctionFullList.get(auctionFullList.size()-1).addArticle(article);
+				}
+				else{
+					List<Article> articles = new ArrayList<>();
+					articles.add(article);
+					auctionFullList.add(new AuctionFullInfo(auction, articles, null));
+					prev_auction_id = auction.getAuction_id();
+				}
+			}
+		} catch(SQLException e) {
+			throw new SQLException(e);
+		} finally {
+			try {
+				result.close();
+			} catch(Exception e1) {
+				throw new SQLException(e1);
+			}
+			try {
+				pstatement.close();
+			} catch(Exception e2) {
+				throw new SQLException(e2);
+			}
+		}
+		return auctionFullList;
+	}
+
+	public List<AuctionFullInfo> getAuctionsByUser(int user_id) throws SQLException{
+		List<AuctionFullInfo> auctions = new ArrayList<>();
+		try {
+			pstatement = connection.prepareStatement("""
+					SELECT *, o.price AS offer_price
+					FROM auction au
+					JOIN article ar ON au.auction_id = ar.auction_id
+					LEFT JOIN (
+					    SELECT o1.*
+					    FROM offer o1
+					    INNER JOIN (
+					        SELECT o3.auction, MAX(o3.price) AS max_price
+					        FROM offer o3
+					        GROUP BY o3.auction
+					    ) o2 ON o1.auction = o2.auction AND o1.price = o2.max_price
+					) o ON o.auction = au.auction_id
+					WHERE creator = ?;""");
+			pstatement.setInt(1, user_id);
+			result = pstatement.executeQuery();
+			int prev_auction_id = -1;
+			while(result.next()) {
+				if(result.getInt("auction_id") != prev_auction_id){
+					List<Article> articles = new ArrayList<>();
+					articles.add(resultToArticle(result));
+					auctions.add(new AuctionFullInfo(resultToAuction(result), articles, resultToOffer(result)));
+					prev_auction_id = result.getInt("auction_id");
+				}
+				else{
+					auctions.get(auctions.size()-1).addArticle(resultToArticle(result));
+				}
+
+			}
+		} catch (SQLException e) {
+			throw new SQLException(e);
+
+		} finally {
+			try {
+				result.close();
+			} catch (Exception e1) {
+				throw new SQLException(e1);
+			}
+			try {
+				pstatement.close();
+			} catch (Exception e2) {
+				throw new SQLException(e2);
+			}
+		}
+		return auctions;
+	}
+
 	private Auction resultToAuction(ResultSet result) throws SQLException {
 		Auction auction = new Auction();
 		auction.setAuction_id(result.getInt("auction_id"));
@@ -276,6 +416,18 @@ public class AuctionDAO {
 		article.setPrice(result.getInt("price"));
 
 		return article;
+	}
+
+	public Offer resultToOffer(ResultSet result) throws SQLException{
+		Offer offer = new Offer();
+		offer.setOffer_id(result.getInt("offer_id"));
+		offer.setAuction(result.getInt("auction"));
+		offer.setUser(result.getInt("user"));
+		offer.setPrice(result.getInt("offer_price"));
+		Timestamp ldt = result.getTimestamp("time");
+		if(ldt != null)
+			offer.setTime(ldt.toLocalDateTime());
+		return offer;
 	}
 
 }
