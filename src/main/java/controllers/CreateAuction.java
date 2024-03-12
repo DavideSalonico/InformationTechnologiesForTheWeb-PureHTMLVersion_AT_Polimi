@@ -91,6 +91,7 @@ public class CreateAuction extends HttpServlet {
 		}
 
 		// INSERT AUCTION, LINK ALL THE ARTICLES TO THE AUCTION, SET INITIAL PRICE OF AUCTION
+		connection.setAutoCommit(false);
 		try {
 			int auction_id = auctionDAO.insertAuction(expiring_date, minimum_raise, creator);
 			for (Integer id : articlesToAdd){
@@ -98,9 +99,13 @@ public class CreateAuction extends HttpServlet {
 			}
 			initial_price = articleDAO.getAuctionInitialPrice(auction_id);
 			auctionDAO.setInitialPrice(auction_id, initial_price);
+			connection.commit()
 		} catch (SQLException e) {
+			connection.rollback();
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not possible to create auction. Error in database");
 			return;
+		} finally{
+			connection.setAutoCommmit(true);
 		}
 
 		String path = getServletContext().getContextPath() + "/GoToSell";
